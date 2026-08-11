@@ -1,6 +1,29 @@
 {
   "intents": [
     {
+      "tag": "greeting_casual",
+      "patterns": [
+        "hey", "hey there", "hey boss", "yo", "yo yo", "sup", "wassup", "what's up", "whats good", "howdy", "hiya", "hei", "ey", "oi", "alo", "helo", "hallo", "g'day", "holla", "hola", "wasap", "wazzup"
+      ],
+      "responses": [
+        "Yo! Ada apa? Siap bantu identifikasi hewan atau lagi santai aja nih?",
+        "Hei Bos! Ada yang bisa gw bantu? Mau kenalin hewan apa nih?",
+        "Halo bro! Keliatan nya lo lagi butuh bantuan soal hewan nih.",
+        "Hola! Ada hewan apa yang mau lo kenalin?"
+      ]
+    },
+    {
+      "tag": "greeting_energetic",
+      "patterns": [
+        "good morning", "morning boss", "rise and shine", "good day", "top of the morning", "gud pagi", "morning", "mornin", "selamat pagi"
+      ],
+      "responses": [
+        "Selamat pagi Bos! Udah siap-siap buat kenalin hewan hari ini?",
+        "Pagi! Kopi udah anget, gw siap bantu lo identifikasi hewan apapun.",
+        "Selamat pagi! Ayo kita lihat hewan apa yang lagi lo cari tau."
+      ]
+    },
+    {
       "tag": "ai_basic",
       "patterns": [
         "apa itu AI",
