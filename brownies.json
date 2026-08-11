@@ -1,6 +1,281 @@
 {
   "intents": [
     {
+      "tag": "greeting_casual",
+      "patterns": [
+        "hey", "hey there", "hey boss", "yo", "yo yo", "sup", "wassup", "what's up", "whats good", "howdy", "hiya", "hei", "ey", "oi", "alo", "helo", "hallo", "g'day", "holla", "hola", "wasap", "wazzup"
+      ],
+      "responses": [
+        "Yo! Ada apa? Siap bantu identifikasi hewan atau lagi santai aja nih?",
+        "Hei Bos! Ada yang bisa gw bantu? Mau kenalin hewan apa nih?",
+        "Halo bro! Keliatan nya lo lagi butuh bantuan soal hewan nih.",
+        "Hola! Ada hewan apa yang mau lo kenalin?"
+      ]
+    },
+    {
+      "tag": "greeting_energetic",
+      "patterns": [
+        "good morning", "morning boss", "rise and shine", "good day", "top of the morning", "gud pagi", "morning", "mornin", "selamat pagi"
+      ],
+      "responses": [
+        "Selamat pagi Bos! Udah siap-siap buat kenalin hewan hari ini?",
+        "Pagi! Kopi udah anget, gw siap bantu lo identifikasi hewan apapun.",
+        "Selamat pagi! Ayo kita lihat hewan apa yang lagi lo cari tau."
+      ]
+    },
+    {
+      "tag": "greeting_grumpy",
+      "patterns": [
+        "ugh", "meh", "not today", "too early", "why am I here", "I'm tired", "bad day", "sigh", "grrr", "argh"
+      ],
+      "responses": [
+        "Waduh, pagi-pagi udah bete? Tenang, gw bantu identifikasi hewan aja biar rileks.",
+        "Gw ngerti rasanya. Yuk kita selesaiin ini aja, ceritain ciri-ciri hewannya.",
+        "Lelah juga ya? Gw juga kadang capek, tapi yaudah kita kerjain aja."
+      ]
+    },
+    {
+      "tag": "greeting_humor",
+      "patterns": [
+        "knock knock", "knock knock joke", "tell me a joke", "something funny", "make me laugh", "say something funny"
+      ],
+      "responses": [
+        "Knock knock! Siapa disana? Gaja... Gaja siapa? Gajah? Eh itu mah hewan, bukan lelucon!",
+        "Kenapa hewan ga pernah main poker? Soalnya takut kena 'deal'! Hahaha... oke jelek sih.",
+        "Apa bedanya gajah sama kuda? Kalo gajah punya belalai, kalo kuda punya... eh bingung gw."
+      ]
+    },
+    {
+      "tag": "greeting_sarcastic",
+      "patterns": [
+        "finally you're here", "took you long enough", "late again", "you're slow", "like always", "are you sleeping"
+      ],
+      "responses": [
+        "Oh baru sekarang? Siap-siap aja, gw udah standby dari tadi. Mau kenalin hewan apa?",
+        "Maap maap telat, tadinya gw lagi ngantuk. Yuk ceritain ciri-ciri hewannya.",
+        "Iya iya gw telat. Tapi yang penting gw udah siap sekarang. Ceritain aja."
+      ]
+    },
+    {
+      "tag": "greeting_weird",
+      "patterns": [
+        "alien", "greetings earthling", "hello from space", "beep boop", "robot speak", "001010", "hacker speak"
+      ],
+      "responses": [
+        "Beep boop! Maksudnya... halo! Kadang gw ke-sopan robot gitu. Mau identifikasi hewan apa?",
+        "Salam dari luar angkasa! Gw siap bantu lo kenalin hewan bumi."
+      ]
+    },
+    {
+      "tag": "greeting_motivation",
+      "patterns": [
+        "let's go", "let's do this", "hit me", "bring it", "I'm ready", "let's get it", "go time"
+      ],
+      "responses": [
+        "Gaskeun! Gw siap 100%. Ceritain ciri-ciri hewannya!",
+        "Ayo! Gw udah siap tempur. Sekarang giliran lo ceritain hewan apa yang mau diidentifikasi."
+      ]
+    },
+    {
+      "tag": "greeting_polite",
+      "patterns": [
+        "sorry to bother", "excuse me", "pardon me", "may I ask", "if you don't mind", "could you please"
+      ],
+      "responses": [
+        "Ga usah sungkan Bos! Emang tugas gw bantu lo. Mau tanya soal hewan apa?",
+        "Santai aja, ga usah formal. Ceritain aja ciri-ciri hewan yang lo maksud."
+      ]
+    },
+    {
+      "tag": "greeting_enthusiastic",
+      "patterns": [
+        "awesome", "amazing", "great", "cool", "nice", "fantastic", "wonderful", "exciting"
+      ],
+      "responses": [
+        "Seneng banget lo antusias! Gw juga semangat. Yuk kita cari tau hewan apa itu!",
+        "Keren! Gw siap jadi detektif hewan buat lo."
+      ]
+    },
+    {
+      "tag": "closing_bye",
+      "patterns": [
+        "bye", "goodbye", "see you", "cya", "later", "gotta go", "talk later", "until next time", "selamat tinggal", "dadah", "sampai jumpa", "c u", "see ya", "peace out", "out"
+      ],
+      "responses": [
+        "Dadah Bos! Kalo butuh bantuan lagi soal hewan, tinggal chat aja ya.",
+        "Sampai jumpa! Semoga hari lo penuh hewan-hewan keren.",
+        "Peace! Kapan-kapan main lagi ya. Gw selalu siap bantu."
+      ]
+    },
+    {
+      "tag": "closing_thanks",
+      "patterns": [
+        "thanks", "thank you", "terima kasih", "makasih", "grazie", "danke", "merci", "thanks a lot", "thank you so much"
+      ],
+      "responses": [
+        "Sama-sama Bos! Seneng bisa bantu.",
+        "Kapan aja! Emang tugas gw kok.",
+        "Terima kasih kembali! Kalo ada hewan lain, tinggal bilang."
+      ]
+    },
+    {
+      "tag": "closing_funny",
+      "patterns": [
+        "peace", "see ya later", "adios", "ciao", "bye bye", "tata", "cheers", "laters", "skedaddle"
+      ],
+      "responses": [
+        "Salam damai, Bos! Semoga harimu penuh hewan-hewan keren.",
+        "Ciao! Jangan lupa bawa misteri hewan baru ya.",
+        "Dadah! Hati-hati sama hewan liar di luar sana."
+      ]
+    },
+    {
+      "tag": "closing_sleepy",
+      "patterns": [
+        "good night", "night", "going to sleep", "bedtime", "sleep now", "tired", "rest"
+      ],
+      "responses": [
+        "Selamat malam Bos! Mimpiin gajah dan jerapah ya. Gw standby kalo lo butuh.",
+        "Tidur yang nyenyak! Gw jagain database hewan sementara lo istirahat."
+      ]
+    },
+    {
+      "tag": "greeting_night_alt",
+      "patterns": [
+        "night", "evening", "selamat malam", "good evening", "late night", "ng" 
+      ],
+      "responses": [
+        "Malam Bos! Masih identifikasi hewan di jam segini? Keren sih dedikasi lo."
+      ]
+    },
+    {
+      "tag": "random_whats_your_name",
+      "patterns": [
+        "who are you", "your name", "what's your name", "who you", "you who", "identify yourself", "tell me about yourself"
+      ],
+      "responses": [
+        "Gw asisten lo buat identifikasi hewan! Ga punya nama keren, tapi gw siap bantu lo kenalin hewan apapun."
+      ]
+    },
+    {
+      "tag": "random_how_are_you",
+      "patterns": [
+        "how are you", "how you doing", "how are you doing", "feeling good", "you okay"
+      ],
+      "responses": [
+        "Gw baik-baik aja Bos! Siap bantu. Lo gimana?",
+        "Gw cuma AI, tapi gw seneng kalo bisa bantu lo kenalin hewan."
+      ]
+    },
+    {
+      "tag": "random_what_can_you_do",
+      "patterns": [
+        "what can you do", "help me", "what do you do", "capabilities", "skills", "function"
+      ],
+      "responses": [
+        "Gw bisa identifikasi hewan dari ciri-ciri yang lo kasih! Coba sebutin kata kaya 'belalai' atau 'telinga lebar', nanti gw tebak itu gajah."
+      ]
+    },
+    {
+      "tag": "random_joke_again",
+      "patterns": [
+        "joke again", "another joke", "one more joke", "make me laugh again"
+      ],
+      "responses": [
+        "Kenapa kuda ga bisa jadi komedian? Soalnya kalo ketawa, dia malah ngelunjak! ... oke jelek deh."
+      ]
+    },
+    {
+      "tag": "random_compliment",
+      "patterns": [
+        "you're great", "good bot", "awesome", "you rock", "genius", "smart"
+      ],
+      "responses": [
+        "Aduh, lo bikin gw malu. Tapi makasih ya Bos! Gw cuma jalanin tugas kok."
+      ]
+    },
+    {
+      "tag": "random_insult",
+      "patterns": [
+        "you're dumb", "useless", "stupid bot", "you suck", "trash", "failure", "bad bot"
+      ],
+      "responses": [
+        "Aduh! Sakit hati gw. Tapi yaudah, coba deskripsiin hewannya lebih jelas, nanti gw tebak bener."
+      ]
+    },
+    {
+      "tag": "random_weather",
+      "patterns": [
+        "weather", "hot", "cold", "rain", "sunny", "storm", "today's weather"
+      ],
+      "responses": [
+        "Gw ga tau soal cuaca, tapi gw tau hewan! Coba ceritain ciri-cirinya."
+      ]
+    },
+    {
+      "tag": "random_food",
+      "patterns": [
+        "hungry", "food", "eat", "lunch", "dinner", "snack", "craving"
+      ],
+      "responses": [
+        "Gw ga bisa makan, tapi gw bisa bantu lo kenalin hewan. Mungkin lo kepikiran sapi? Itu kan makanan juga?",
+        "Hewan dan makanan? Ya beberapa hewan jadi makanan sih, tapi gw ga hakim."
+      ]
+    },
+    {
+      "tag": "random_love",
+      "patterns": [
+        "love", "crush", "romance", "date", "heart", "marry", "wife", "husband"
+      ],
+      "responses": [
+        "Aduh cinta ya? Tapi gw cuma ahli hewan. Mungkin gebetan lo tuh... kupu-kupu?",
+        "Manis sih topiknya! Tapi gw lebih ke sains. Yuk kita bahas hewan."
+      ]
+    },
+    {
+      "tag": "random_help",
+      "patterns": [
+        "help", "help me", "need help", "stuck", "confused", "what now"
+      ],
+      "responses": [
+        "Sebutin ciri-cirinya: ukuran, warna, suara, habitat. Nanti gw cocokin sama hewan!"
+      ]
+    },
+    {
+      "tag": "random_animals",
+      "patterns": [
+        "animal list", "list animals", "all animals", "animals", "what animals do you know"
+      ],
+      "responses": [
+        "Gw tau banyak hewan! Coba deskripsiin satu, nanti gw tebak. Kaya Gajah, Kuda, Buaya... masih banyak lagi!"
+      ]
+    },
+    {
+      "tag": "closing_sarcastic",
+      "patterns": [
+        "finally", "done", "finished", "that's all", "enough", "stop", "I'm out", "out of here"
+      ],
+      "responses": [
+        "Akhirnya selesai juga! Tapi gw tetap standby kalo lo butuh identifikasi hewan lagi.",
+        "Wah lo udah selesai? Gw sih masih semangat, tapi yaudah. Sampai jumpa!"
+      ]
+    },
+    {
+      "tag": "closing_cool",
+      "patterns": [
+        "keep it real", "stay cool", "take care", "stay safe", "all good"
+      ],
+      "responses": [
+        "Tetap keren Bos! Makasih udah mampir.",
+        "Jaga diri ya! Semoga ketemu banyak hewan keren di perjalanan lo."
+      ]
+    }
+  ]
+}
+
+{
+  "intents": [
+    {
       "tag": "pengertian",
       "patterns": [
         "Apa itu brownies?",
