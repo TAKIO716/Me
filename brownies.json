@@ -271,10 +271,6 @@
       ]
     }
   ]
-}
-
-{
-  "intents": [
     {
       "tag": "pengertian",
       "patterns": [
