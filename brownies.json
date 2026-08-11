@@ -1,0 +1,136 @@
+{
+  "intents": [
+    {
+      "tag": "pengertian",
+      "patterns": [
+        "Apa itu brownies?",
+        "Brownies itu apa?",
+        "Jelaskan tentang brownies",
+        "Apa yang dimaksud brownies?"
+      ],
+      "responses": [
+        "Brownies adalah kue yang memiliki tekstur lembut dan padat dengan rasa cokelat yang khas."
+      ]
+    },
+    {
+      "tag": "bahan",
+      "patterns": [
+        "Apa bahan brownies?",
+        "Bahan membuat brownies apa saja?",
+        "Brownies dibuat dari apa?",
+        "Apa saja bahan brownies?"
+      ],
+      "responses": [
+        "Bahan brownies umumnya terdiri dari tepung terigu, cokelat atau bubuk kakao, gula, telur, mentega atau margarin, dan bahan tambahan sesuai resep."
+      ]
+    },
+    {
+      "tag": "cara_membuat",
+      "patterns": [
+        "Bagaimana cara membuat brownies?",
+        "Cara membuat brownies",
+        "Bagaimana membuat brownies?",
+        "Langkah membuat brownies"
+      ],
+      "responses": [
+        "Cara membuat brownies yaitu mencampurkan bahan sesuai resep, memasukkan adonan ke loyang, lalu memanggangnya sampai matang."
+      ]
+    },
+    {
+      "tag": "rasa",
+      "patterns": [
+        "Brownies rasanya bagaimana?",
+        "Apa rasa brownies?",
+        "Brownies itu manis?",
+        "Bagaimana rasa brownies?"
+      ],
+      "responses": [
+        "Brownies umumnya memiliki rasa manis dan cokelat yang kuat. Rasanya bisa berbeda tergantung bahan dan topping yang digunakan."
+      ]
+    },
+    {
+      "tag": "tekstur",
+      "patterns": [
+        "Bagaimana tekstur brownies?",
+        "Tekstur brownies seperti apa?",
+        "Brownies lembut atau keras?",
+        "Apa tekstur brownies?"
+      ],
+      "responses": [
+        "Tekstur brownies dapat berbeda-beda. Brownies fudgy cenderung padat dan lembut, sedangkan brownies cakey lebih ringan seperti kue."
+      ]
+    },
+    {
+      "tag": "jenis",
+      "patterns": [
+        "Apa saja jenis brownies?",
+        "Jenis brownies apa saja?",
+        "Brownies ada berapa jenis?",
+        "Sebutkan jenis brownies"
+      ],
+      "responses": [
+        "Beberapa jenis brownies yang populer adalah brownies fudgy, brownies cakey, brownies kukus, dan brownies panggang."
+      ]
+    },
+    {
+      "tag": "penyimpanan",
+      "patterns": [
+        "Bagaimana menyimpan brownies?",
+        "Brownies disimpan dimana?",
+        "Cara menyimpan brownies",
+        "Apakah brownies bisa disimpan?"
+      ],
+      "responses": [
+        "Brownies sebaiknya disimpan dalam wadah tertutup agar tetap terjaga kualitasnya. Untuk penyimpanan lebih lama, brownies dapat disimpan di lemari pendingin."
+      ]
+    },
+    {
+      "tag": "topping",
+      "patterns": [
+        "Apa topping brownies?",
+        "Topping apa yang cocok untuk brownies?",
+        "Brownies bisa diberi topping apa?",
+        "Topping brownies apa saja?"
+      ],
+      "responses": [
+        "Brownies dapat diberi berbagai topping seperti keju, kacang, choco chips, meses, atau cokelat leleh."
+      ]
+    },
+    {
+      "tag": "harga",
+      "patterns": [
+        "Berapa harga brownies?",
+        "Harga brownies berapa?",
+        "Brownies harganya berapa?",
+        "Berapa harga satu brownies?"
+      ],
+      "responses": [
+        "Harga brownies tergantung ukuran, bahan, topping, dan tempat penjualannya."
+      ]
+    },
+    {
+      "tag": "manfaat",
+      "patterns": [
+        "Apa manfaat brownies?",
+        "Brownies memiliki manfaat apa?",
+        "Apakah brownies bermanfaat?",
+        "Manfaat makan brownies"
+      ],
+      "responses": [
+        "Brownies dapat menjadi sumber energi karena mengandung karbohidrat dan lemak. Namun, sebaiknya dikonsumsi secukupnya."
+      ]
+    },
+    {
+      "tag": "sapaan",
+      "patterns": [
+        "Halo",
+        "Hai",
+        "Hello",
+        "Hi"
+      ],
+      "responses": [
+        "Halo! Ada yang ingin kamu tanyakan tentang brownies?"
+      ]
+    }
+  ]
+}
