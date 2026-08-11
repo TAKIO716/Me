@@ -1,0 +1,3706 @@
+{
+  "intents": [
+    {
+      "tag": "ai_basic",
+      "patterns": [
+        "apa itu AI",
+        "apa itu kecerdasan buatan",
+        "definisi AI",
+        "pengertian AI",
+        "AI singkatan dari apa",
+        "artificial intelligence itu apa",
+        "jelaskan AI secara singkat",
+        "apa yang dimaksud dengan kecerdasan buatan",
+        "AI itu apa sih",
+        "maksud AI",
+        "AI adalah",
+        "definisi kecerdasan buatan"
+      ],
+      "responses": [
+        "AI atau Kecerdasan Buatan adalah simulasi proses kecerdasan manusia oleh mesin, terutama sistem komputer. AI belajar dari data, mengenali pola, dan membuat keputusan dengan sedikit atau tanpa campur tangan manusia.",
+        "AI (Artificial Intelligence) adalah cabang ilmu komputer yang berfokus pada pembuatan mesin yang bisa berpikir, belajar, dan bertindak seperti manusia.",
+        "Kecerdasan Buatan adalah teknologi yang memungkinkan mesin meniru perilaku cerdas manusia seperti belajar, bernalar, dan memecahkan masalah."
+      ]
+    },
+    {
+      "tag": "ai_sejarah",
+      "patterns": [
+        "sejarah AI",
+        "kapan AI ditemukan",
+        "siapa penemu AI",
+        "sejarah kecerdasan buatan",
+        "asal usul AI",
+        "perkembangan AI",
+        "awal mula AI",
+        "tokoh AI pertama",
+        "John McCarthy AI",
+        "konferensi Dartmouth 1956"
+      ],
+      "responses": [
+        "Istilah 'Artificial Intelligence' pertama kali diperkenalkan oleh John McCarthy pada konferensi Dartmouth tahun 1956. Sejak itu, AI berkembang melalui berbagai fase mulai dari simbolik AI, AI musim dingin, hingga kebangkitan dengan machine learning dan deep learning.",
+        "Sejarah AI dimulai dari tahun 1950-an dengan Alan Turing yang mengajukan tes Turing. Lalu John McCarthy menciptakan istilah AI di Dartmouth 1956.",
+        "AI mengalami naik turun — era keemasan 1956-1974, kemudian AI winter karena keterbatasan komputasi, lalu bangkit lagi di era 2000-an dengan big data dan GPU."
+      ]
+    },
+    {
+      "tag": "ai_jenis",
+      "patterns": [
+        "jenis AI",
+        "macam macam AI",
+        "kategori AI",
+        "tingkatan AI",
+        "AI lemah dan kuat",
+        "weak AI",
+        "strong AI",
+        "general AI",
+        "narrow AI",
+        "super AI",
+        "ANI AGI ASI"
+      ],
+      "responses": [
+        "AI terbagi menjadi 3 tingkat: Narrow AI (AI yang fokus pada satu tugas seperti Siri atau ChatGPT), General AI (AI yang bisa melakukan semua tugas kognitif seperti manusia, belum tercapai), dan Super AI (AI yang melebihi kecerdasan manusia, masih teori).",
+        "Ada 3 jenis utama AI: Artificial Narrow Intelligence (ANI) - spesialis, Artificial General Intelligence (AGI) - setara manusia, dan Artificial Superintelligence (ASI) - melampaui manusia."
+      ]
+    },
+    {
+      "tag": "machine_learning",
+      "patterns": [
+        "apa itu machine learning",
+        "pengertian machine learning",
+        "ML itu apa",
+        "machine learning adalah",
+        "belajar mesin",
+        "apa yang dimaksud machine learning",
+        "perbedaan AI dan ML",
+        "AI vs ML",
+        "machine learning untuk pemula"
+      ],
+      "responses": [
+        "Machine Learning adalah cabang AI yang memungkinkan komputer belajar dari data tanpa diprogram secara eksplisit. ML menggunakan algoritma untuk menemukan pola dalam data dan membuat prediksi.",
+        "Machine Learning adalah metode AI di mana mesin belajar dari data historis untuk mengambil keputusan atau prediksi di masa depan.",
+        "ML adalah subset dari AI. Jika AI adalah otak, ML adalah cara otak itu belajar dari pengalaman."
+      ]
+    },
+    {
+      "tag": "deep_learning",
+      "patterns": [
+        "apa itu deep learning",
+        "pengertian deep learning",
+        "deep learning adalah",
+        "DL itu apa",
+        "jaringan saraf tiruan",
+        "neural network",
+        "deep neural network",
+        "perbedaan ML dan DL",
+        "apa itu neural network"
+      ],
+      "responses": [
+        "Deep Learning adalah subset dari Machine Learning yang menggunakan jaringan saraf tiruan dengan banyak lapisan (deep neural networks) untuk memproses data dan ekstraksi fitur secara hierarkis.",
+        "Deep Learning menggunakan arsitektur neural network yang terinspirasi dari otak manusia. Semakin dalam lapisannya, semakin kompleks pola yang bisa dipelajari."
+      ]
+    },
+    {
+      "tag": "supervised_learning",
+      "patterns": [
+        "supervised learning",
+        "apa itu supervised learning",
+        "pembelajaran terawasi",
+        "labeled data",
+        "contoh supervised learning",
+        "algoritma supervised",
+        "klasifikasi dan regresi"
+      ],
+      "responses": [
+        "Supervised Learning adalah metode ML di mana model dilatih menggunakan data berlabel (labeled data). Tujuannya adalah mempelajari hubungan antara input dan output agar bisa memprediksi data baru.",
+        "Contoh supervised learning: klasifikasi (spam email, deteksi gambar) dan regresi (prediksi harga rumah)."
+      ]
+    },
+    {
+      "tag": "unsupervised_learning",
+      "patterns": [
+        "unsupervised learning",
+        "apa itu unsupervised learning",
+        "pembelajaran tidak terawasi",
+        "unlabeled data",
+        "clustering",
+        "contoh unsupervised learning",
+        "K-Means",
+        "PCA"
+      ],
+      "responses": [
+        "Unsupervised Learning adalah metode ML yang menggunakan data tanpa label. Model mencari pola tersembunyi atau struktur dalam data tanpa panduan.",
+        "Contoh unsupervised learning: clustering (pengelompokan pelanggan) dan dimensionality reduction (PCA)."
+      ]
+    },
+    {
+      "tag": "reinforcement_learning",
+      "patterns": [
+        "reinforcement learning",
+        "apa itu reinforcement learning",
+        "RL",
+        "pembelajaran penguatan",
+        "agent environment reward",
+        "contoh reinforcement learning",
+        "AlphaGo",
+        "Q-learning"
+      ],
+      "responses": [
+        "Reinforcement Learning adalah metode di mana agen belajar mengambil keputusan dengan mencoba aksi di lingkungan dan menerima reward atau hukuman. Tujuannya memaksimalkan total reward.",
+        "AlphaGo yang mengalahkan pemain Go dunia adalah contoh terkenal dari Reinforcement Learning."
+      ]
+    },
+    {
+      "tag": "nlp",
+      "patterns": [
+        "apa itu NLP",
+        "natural language processing",
+        "pengertian NLP",
+        "AI bahasa",
+        "pemrosesan bahasa alami",
+        "contoh NLP",
+        "chatbot NLP",
+        "sentimen analisis"
+      ],
+      "responses": [
+        "Natural Language Processing (NLP) adalah cabang AI yang fokus pada interaksi antara komputer dan bahasa manusia. NLP memungkinkan mesin memahami, menafsirkan, dan menghasilkan bahasa manusia.",
+        "Contoh NLP: chatbot, penerjemah bahasa, analisis sentimen, dan text summarization."
+      ]
+    },
+    {
+      "tag": "computer_vision",
+      "patterns": [
+        "apa itu computer vision",
+        "pengertian computer vision",
+        "visi komputer",
+        "AI penglihatan",
+        "deteksi objek",
+        "image recognition",
+        "face recognition",
+        "OCR"
+      ],
+      "responses": [
+        "Computer Vision adalah cabang AI yang memungkinkan komputer untuk menafsirkan dan memahami informasi visual dari gambar atau video.",
+        "Aplikasi computer vision: face recognition, deteksi objek, mobil otonom, dan OCR (optical character recognition)."
+      ]
+    },
+    {
+      "tag": "ai_algoritma",
+      "patterns": [
+        "algoritma AI",
+        "algoritma machine learning",
+        "algoritma populer AI",
+        "decision tree",
+        "random forest",
+        "SVM",
+        "KNN",
+        "naive bayes",
+        "algoritma regresi",
+        "algoritma klasifikasi"
+      ],
+      "responses": [
+        "Beberapa algoritma ML populer: Linear Regression, Logistic Regression, Decision Tree, Random Forest, SVM, KNN, Naive Bayes, dan Neural Networks.",
+        "Setiap algoritma memiliki kelebihan: Decision Tree mudah diinterpretasi, SVM bagus untuk data dimensi tinggi, Random Forest tahan overfitting."
+      ]
+    },
+    {
+      "tag": "ai_framework",
+      "patterns": [
+        "framework AI",
+        "library AI",
+        "TensorFlow",
+        "PyTorch",
+        "Keras",
+        "Scikit-learn",
+        "apa itu TensorFlow",
+        "apa itu PyTorch",
+        "perbedaan TensorFlow dan PyTorch"
+      ],
+      "responses": [
+        "Framework AI populer: TensorFlow (Google), PyTorch (Meta), Keras, Scikit-learn. TensorFlow dan PyTorch untuk deep learning, Scikit-learn untuk ML tradisional.",
+        "PyTorch lebih populer di penelitian karena dinamis dan mudah debugging. TensorFlow lebih matang untuk produksi."
+      ]
+    },
+    {
+      "tag": "ai_bahasa_indonesia",
+      "patterns": [
+        "AI bahasa Indonesia",
+        "NLP Indonesia",
+        "model bahasa Indonesia",
+        "IndoBERT",
+        "AI berbahasa Indonesia",
+        "chatbot Indonesia",
+        "dataset Indonesia AI"
+      ],
+      "responses": [
+        "Ada banyak model bahasa Indonesia seperti IndoBERT, IndoGPT, dan mT5. Indosat dan beberapa startup juga mengembangkan AI berbahasa Indonesia.",
+        "Dataset bahasa Indonesia seperti KOMPAS, IDN Times, dan Twitter Indonesia digunakan untuk melatih model NLP lokal."
+      ]
+    },
+    {
+      "tag": "ai_chatgpt",
+      "patterns": [
+        "apa itu ChatGPT",
+        "ChatGPT",
+        "OpenAI ChatGPT",
+        "GPT-3",
+        "GPT-4",
+        "chatGPT cara kerja",
+        "generative AI",
+        "LLM",
+        "large language model"
+      ],
+      "responses": [
+        "ChatGPT adalah large language model dari OpenAI yang menggunakan arsitektur GPT (Generative Pre-trained Transformer). ChatGPT dilatih dengan data teks besar untuk menghasilkan respons seperti manusia.",
+        "GPT-4 adalah versi terbaru, mampu memproses gambar dan teks, lebih akurat dan reasoning yang lebih baik."
+      ]
+    },
+    {
+      "tag": "ai_generative",
+      "patterns": [
+        "generative AI",
+        "AI bikin gambar",
+        "AI generate teks",
+        "DALL-E",
+        "Midjourney",
+        "Stable Diffusion",
+        "AI art",
+        "AI content generator"
+      ],
+      "responses": [
+        "Generative AI adalah AI yang bisa menghasilkan konten baru: teks, gambar, suara, atau video. Contohnya ChatGPT (teks), DALL-E dan Midjourney (gambar), dan Suno (musik).",
+        "Generative AI menggunakan model seperti GAN, VAE, dan diffusion untuk menghasilkan data realistis dari prompt."
+      ]
+    },
+    {
+      "tag": "ai_ethics",
+      "patterns": [
+        "etika AI",
+        "bahaya AI",
+        "AI kejahatan",
+        "AI bias",
+        "AI etika",
+        "AI berbahaya",
+        "regulasi AI",
+        "AI safety",
+        "kecerdasan buatan etika"
+      ],
+      "responses": [
+        "Etika AI mencakup: bias algoritmik, privasi data, transparansi, akuntabilitas, dan dampak sosial. AI harus dikembangkan dengan prinsip keadilan dan keamanan.",
+        "Bahaya AI: diskriminasi, deepfake, privasi, dan potensi penggantian pekerjaan. Diperlukan regulasi dan pengawasan ketat."
+      ]
+    },
+    {
+      "tag": "ai_future",
+      "patterns": [
+        "masa depan AI",
+        "prediksi AI",
+        "AI 2030",
+        "AI 2050",
+        "perkembangan AI kedepan",
+        "AI akan menggantikan manusia",
+        "super AI kapan",
+        "AGI kapan tercapai",
+        "future of AI"
+      ],
+      "responses": [
+        "Masa depan AI: AGI mungkin tercapai dalam 10-30 tahun, AI akan semakin terintegrasi dengan kehidupan sehari-hari, healthcare, transportasi, dan pendidikan. Namun, super AI masih spekulatif.",
+        "AI akan menjadi asisten kolaboratif bagi manusia, bukan pengganti. Peran manusia akan bergeser ke problem solving tingkat tinggi dan kreativitas."
+      ]
+    },
+    {
+      "tag": "ai_karier",
+      "patterns": [
+        "karier AI",
+        "kerja di AI",
+        "prospek kerja AI",
+        "data scientist",
+        "machine learning engineer",
+        "AI engineer",
+        "gaji AI",
+        "belajar AI untuk kerja"
+      ],
+      "responses": [
+        "Karier di AI: Data Scientist, ML Engineer, AI Researcher, NLP Engineer, Computer Vision Engineer. Gaji rata-rata di Indonesia Rp 15-50 juta per bulan tergantung pengalaman.",
+        "Skill yang dibutuhkan: Python, statistik, linear algebra, ML algoritma, dan domain spesifik seperti NLP atau CV."
+      ]
+    },
+    {
+      "tag": "ai_belajar",
+      "patterns": [
+        "belajar AI",
+        "belajar machine learning",
+        "kursus AI",
+        "AI untuk pemula",
+        "materi AI",
+        "roadmap AI",
+        "mulai belajar AI",
+        "buku AI"
+      ],
+      "responses": [
+        "Roadmap belajar AI: Python, matematika (statistik, aljabar linear), ML basic, deep learning, lalu spesialisasi. Mulai dengan Andrew Ng di Coursera dan Youtube.",
+        "Buku rekomendasi: 'Hands-On ML' oleh Aurélien Géron, 'Deep Learning' oleh Ian Goodfellow, dan 'Pattern Recognition' oleh Bishop."
+      ]
+    },
+    {
+      "tag": "ai_tools",
+      "patterns": [
+        "tools AI",
+        "aplikasi AI",
+        "AI tools gratis",
+        "AI buat coding",
+        "AI buat desain",
+        "AI productivity",
+        "Copilot",
+        "Claude AI"
+      ],
+      "responses": [
+        "Tools AI populer: ChatGPT, GitHub Copilot (coding), Midjourney (desain), Grammarly (writing), Tome (presentasi), dan Notion AI (produktivitas).",
+        "Untuk ML: Jupyter Notebook, TensorBoard, Weights & Biases, dan Hugging Face untuk model pre-trained."
+      ]
+    },
+    {
+      "tag": "ai_data",
+      "patterns": [
+        "dataset AI",
+        "dataset machine learning",
+        "data latih AI",
+        "sumber dataset",
+        "dataset gratis",
+        "Kaggle dataset",
+        "OpenAI dataset"
+      ],
+      "responses": [
+        "Sumber dataset: Kaggle, UCI Machine Learning Repository, Google Dataset Search, Hugging Face Datasets, dan data.go.id untuk dataset Indonesia.",
+        "Dataset populer: MNIST (gambar tangan), CIFAR-10, ImageNet, IMDb (sentimen), dan WikiText (NLP)."
+      ]
+    },
+    {
+      "tag": "ai_python",
+      "patterns": [
+        "python AI",
+        "library python AI",
+        "install library AI",
+        "numpy AI",
+        "pandas AI",
+        "matplotlib AI",
+        "scikit-learn install"
+      ],
+      "responses": [
+        "Python adalah bahasa utama AI. Library penting: NumPy (komputasi), Pandas (data), Matplotlib (visualisasi), Scikit-learn (ML), TensorFlow/PyTorch (deep learning).",
+        "Install: pip install numpy pandas matplotlib scikit-learn tensorflow"
+      ]
+    },
+    {
+      "tag": "ai_gpu",
+      "patterns": [
+        "GPU untuk AI",
+        "AI butuh GPU",
+        "GPU vs CPU AI",
+        "CUDA",
+        "GPU murah AI",
+        "training AI GPU"
+      ],
+      "responses": [
+        "GPU sangat penting untuk deep learning karena mampu memproses matriks secara paralel. NVIDIA GPU dengan CUDA adalah standar industri.",
+        "Untuk pemula, GPU di Google Colab (T4) sudah cukup. Untuk serius, investasi RTX 3060/4090 atau cloud AWS/GCP."
+      ]
+    },
+    {
+      "tag": "ai_cloud",
+      "patterns": [
+        "AI cloud",
+        "cloud AI",
+        "AWS AI",
+        "Google Cloud AI",
+        "Azure AI",
+        "AI platform cloud",
+        "SageMaker"
+      ],
+      "responses": [
+        "Cloud AI platform: AWS SageMaker, Google Cloud AI Platform, Azure Machine Learning. Semua menyediakan layanan training dan deployment AI.",
+        "Google Colab dan Kaggle gratis untuk eksperimen awal."
+      ]
+    },
+    {
+      "tag": "ai_robotika",
+      "patterns": [
+        "AI robotika",
+        "robot AI",
+        "robot cerdas",
+        "robot humanoid",
+        "Boston Dynamics",
+        "robotika dan AI"
+      ],
+      "responses": [
+        "Robotika menggabungkan AI untuk navigasi, penglihatan, dan pengambilan keputusan. Contoh: Boston Dynamics Atlas dan Spot.",
+        "AI pada robotika menggunakan reinforcement learning dan computer vision untuk bergerak dan berinteraksi dengan lingkungan."
+      ]
+    },
+    {
+      "tag": "ai_healthcare",
+      "patterns": [
+        "AI kesehatan",
+        "AI medical",
+        "AI diagnosis",
+        "AI deteksi penyakit",
+        "AI rumah sakit",
+        "medical imaging AI"
+      ],
+      "responses": [
+        "AI di healthcare digunakan untuk diagnosis penyakit (radiologi, patologi), penemuan obat, dan prediksi wabah. Contoh: AI deteksi kanker dari scan CT.",
+        "Google Health dan IBM Watson adalah contoh AI di bidang medis."
+      ]
+    },
+    {
+      "tag": "ai_finance",
+      "patterns": [
+        "AI keuangan",
+        "AI trading",
+        "AI investasi",
+        "AI bank",
+        "fraud detection AI",
+        "AI deteksi penipuan"
+      ],
+      "responses": [
+        "AI di finance digunakan untuk trading algoritmik, deteksi fraud, credit scoring, dan analisis risiko.",
+        "AI trading menggunakan reinforcement learning dan time series analysis untuk memprediksi pasar."
+      ]
+    },
+    {
+      "tag": "ai_autonomous",
+      "patterns": [
+        "AI kendaraan otonom",
+        "mobil self-driving",
+        "Tesla AI",
+        "autonomous vehicle",
+        "AI mobil tanpa sopir"
+      ],
+      "responses": [
+        "Autonomous vehicle adalah kendaraan yang menggunakan AI, sensor, dan computer vision untuk mengemudi tanpa manusia. Tesla, Waymo, dan Cruise adalah pelopor.",
+        "Level otonomi dari Level 0 (manual) sampai Level 5 (tanpa kemudi)."
+      ]
+    },
+    {
+      "tag": "ai_education",
+      "patterns": [
+        "AI pendidikan",
+        "AI pembelajaran",
+        "AI tutor",
+        "AI untuk guru",
+        "AI di sekolah",
+        "adaptive learning AI"
+      ],
+      "responses": [
+        "AI di pendidikan menciptakan personalized learning, tutor AI, dan grading otomatis. Contoh: Duolingo (AI untuk belajar bahasa).",
+        "Adaptive learning menyesuaikan materi dengan kecepatan dan gaya belajar siswa."
+      ]
+    },
+    {
+      "tag": "ai_agriculture",
+      "patterns": [
+        "AI pertanian",
+        "AI agriculture",
+        "AI tanaman",
+        "precision farming",
+        "AI deteksi hama",
+        "AI irigasi"
+      ],
+      "responses": [
+        "AI di pertanian: drone untuk monitoring tanaman, deteksi hama dengan computer vision, prediksi cuaca, dan optimalisasi irigasi.",
+        "Precision farming menggunakan AI untuk meningkatkan hasil panen dan efisiensi sumber daya."
+      ]
+    },
+    {
+      "tag": "ai_defense",
+      "patterns": [
+        "AI militer",
+        "AI pertahanan",
+        "AI perang",
+        "autonomous weapon",
+        "AI drone militer",
+        "cyber security AI"
+      ],
+      "responses": [
+        "AI digunakan dalam pertahanan: drone otonom, cyber security, pengenalan ancaman, dan sistem komando. Ini kontroversial dan diatur oleh hukum internasional.",
+        "Penggunaan AI militer harus mengikuti etika dan hukum perang."
+      ]
+    },
+    {
+      "tag": "ai_art",
+      "patterns": [
+        "AI seni",
+        "AI art",
+        "AI lukis",
+        "AI gambar",
+        "AI kreatif",
+        "AI generate music",
+        "AI komposisi musik"
+      ],
+      "responses": [
+        "AI art menggunakan generative AI untuk membuat gambar, musik, puisi, dan karya kreatif. Contoh: DALL-E, Midjourney, dan AIVA (musik).",
+        "AI tidak menggantikan seniman, tetapi menjadi alat kolaborasi kreatif."
+      ]
+    },
+    {
+      "tag": "ai_hardware",
+      "patterns": [
+        "AI hardware",
+        "chip AI",
+        "TPU",
+        "NPU",
+        "GPU AI",
+        "Tensor Processing Unit",
+        "Google TPU"
+      ],
+      "responses": [
+        "Hardware AI: GPU (NVIDIA), TPU (Google), dan NPU (Apple/Qualcomm). TPU lebih efisien untuk training jaringan saraf besar.",
+        "NVIDIA A100 dan H100 adalah GPU terbaik untuk AI saat ini."
+      ]
+    },
+    {
+      "tag": "ai_open_source",
+      "patterns": [
+        "AI open source",
+        "open source AI",
+        "model AI gratis",
+        "AI open source Indonesia",
+        "Hugging Face",
+        "open source LLM"
+      ],
+      "responses": [
+        "Open source AI: TensorFlow, PyTorch, Scikit-learn, Hugging Face models (BERT, GPT-2, LLaMA), dan Stable Diffusion.",
+        "Model open source memungkinkan developer membuat aplikasi AI tanpa biaya lisensi besar."
+      ]
+    },
+    {
+      "tag": "ai_quantum",
+      "patterns": [
+        "quantum AI",
+        "AI kuantum",
+        "quantum computing AI",
+        "komputasi kuantum AI"
+      ],
+      "responses": [
+        "Quantum AI menggabungkan komputasi kuantum dengan machine learning. Diharapkan bisa memecahkan masalah yang tidak bisa dipecahkan oleh komputasi klasik.",
+        "Quantum AI masih dalam tahap penelitian, dengan Google Quantum AI dan IBM sebagai pelopor."
+      ]
+    },
+    {
+      "tag": "ai_transfer_learning",
+      "patterns": [
+        "transfer learning",
+        "fine tuning AI",
+        "pre-trained model",
+        "apa itu transfer learning",
+        "transfer learning deep learning"
+      ],
+      "responses": [
+        "Transfer learning adalah teknik menggunakan model yang sudah dilatih pada dataset besar dan menyesuaikannya (fine-tuning) pada tugas spesifik dengan data lebih sedikit.",
+        "Contoh: BERT untuk NLP, ResNet untuk image classification."
+      ]
+    },
+    {
+      "tag": "ai_gan",
+      "patterns": [
+        "apa itu GAN",
+        "GAN AI",
+        "generative adversarial network",
+        "GAN deep learning",
+        "contoh GAN"
+      ],
+      "responses": [
+        "GAN (Generative Adversarial Network) adalah arsitektur yang terdiri dari dua jaringan: generator (membuat data palsu) dan discriminator (membedakan data asli vs palsu).",
+        "GAN digunakan untuk generate gambar realistis, deepfake, dan super-resolution."
+      ]
+    },
+    {
+      "tag": "ai_llm",
+      "patterns": [
+        "LLM",
+        "large language model",
+        "apa itu LLM",
+        "model bahasa besar",
+        "contoh LLM",
+        "LLM Indonesia"
+      ],
+      "responses": [
+        "Large Language Model (LLM) adalah model AI yang dilatih dengan data teks sangat besar untuk memahami dan menghasilkan bahasa alami. Contoh: GPT-4, LLaMA, Gemma.",
+        "LLM Indonesia: IndoGPT, IndoBERT, dan Merak-7B."
+      ]
+    },
+    {
+      "tag": "ai_prompt_engineering",
+      "patterns": [
+        "prompt engineering",
+        "apa itu prompt engineering",
+        "teknik prompt",
+        "prompt AI",
+        "cara prompt AI",
+        "zero shot chain of thought"
+      ],
+      "responses": [
+        "Prompt engineering adalah seni merancang input (prompt) untuk mendapatkan output terbaik dari AI. Teknik: zero-shot, few-shot, dan chain-of-thought.",
+        "Prompt yang baik spesifik, jelas, dan memberikan konteks yang cukup."
+      ]
+    },
+    {
+      "tag": "ai_vision_models",
+      "patterns": [
+        "vision model",
+        "CLIP",
+        "DALL-E",
+        "Stable Diffusion",
+        "vision transformer",
+        "ViT"
+      ],
+      "responses": [
+        "Vision model populer: CLIP (multi-modal gambar-teks), DALL-E (generasi gambar), Stable Diffusion, dan Vision Transformer (ViT) untuk klasifikasi gambar.",
+        "Vision Transformer menggunakan arsitektur transformer untuk image recognition, menggantikan CNN."
+      ]
+    },
+    {
+      "tag": "ai_speech_recognition",
+      "patterns": [
+        "speech recognition",
+        "pengenalan suara",
+        "AI suara",
+        "voice AI",
+        "ASR",
+        "Whisper AI",
+        "speech to text"
+      ],
+      "responses": [
+        "Speech recognition adalah kemampuan AI untuk mengubah suara menjadi teks. Contoh: Google Speech-to-Text, OpenAI Whisper, dan Siri.",
+        "Whisper adalah model speech recognition open-source terbaik dari OpenAI, mendukung banyak bahasa."
+      ]
+    },
+    {
+      "tag": "ai_tts",
+      "patterns": [
+        "text to speech",
+        "TTS",
+        "AI suara sintesis",
+        "suara AI",
+        "ElevenLabs",
+        "TTS Indonesia"
+      ],
+      "responses": [
+        "TTS (Text-to-Speech) adalah AI yang mengubah teks menjadi suara manusia. Contoh: ElevenLabs, Google TTS, dan Microsoft Azure TTS.",
+        "Suara AI Indonesia tersedia di Google TTS dan Amazon Polly."
+      ]
+    },
+    {
+      "tag": "ai_recommendation",
+      "patterns": [
+        "recommendation system",
+        "sistem rekomendasi",
+        "AI rekomendasi",
+        "Netflix AI",
+        "YouTube algorithm",
+        "AI recommendation engine"
+      ],
+      "responses": [
+        "Sistem rekomendasi menggunakan AI untuk merekomendasikan produk, film, atau konten berdasarkan data pengguna. Contoh: Netflix, YouTube, dan TikTok.",
+        "Metode: collaborative filtering, content-based filtering, dan hybrid."
+      ]
+    },
+    {
+      "tag": "ai_big_data",
+      "patterns": [
+        "AI big data",
+        "big data AI",
+        "data besar AI",
+        "analitik big data",
+        "AI dan big data"
+      ],
+      "responses": [
+        "Big data dan AI saling terkait. AI membutuhkan data besar untuk belajar, dan big data membutuhkan AI untuk dianalisis.",
+        "Tools: Hadoop, Spark, Kafka untuk data, dan ML untuk analisis."
+      ]
+    },
+    {
+      "tag": "ai_apache",
+      "patterns": [
+        "Spark AI",
+        "Apache Spark",
+        "MLlib",
+        "Apache Hadoop",
+        "big data framework AI"
+      ],
+      "responses": [
+        "Apache Spark dengan MLlib adalah framework untuk pemrosesan data besar dan ML. Mendukung Python, Scala, dan Java.",
+        "Spark cocok untuk training ML pada dataset yang sangat besar (TB/PB)."
+      ]
+    },
+    {
+      "tag": "ai_cv_apps",
+      "patterns": [
+        "aplikasi computer vision",
+        "face recognition",
+        "deteksi wajah",
+        "OCR",
+        "plate recognition",
+        "object detection"
+      ],
+      "responses": [
+        "Aplikasi CV: face recognition (keamanan), OCR (scan dokumen), plate recognition (parkir), object detection (retail), dan medical imaging.",
+        "Library: OpenCV, YOLO, MediaPipe."
+      ]
+    },
+    {
+      "tag": "ai_rest_api",
+      "patterns": [
+        "API AI",
+        "AI API",
+        "OpenAI API",
+        "Gemini API",
+        "Google AI API",
+        "API machine learning"
+      ],
+      "responses": [
+        "API AI memungkinkan aplikasi memanggil model AI melalui HTTP. Contoh: OpenAI API (ChatGPT), Google Gemini API, dan Hugging Face Inference API.",
+        "Biasanya menggunakan REST dengan JSON payload."
+      ]
+    },
+    {
+      "tag": "ai_web3",
+      "patterns": [
+        "AI web3",
+        "AI blockchain",
+        "decentralized AI",
+        "AI crypto",
+        "blockchain AI"
+      ],
+      "responses": [
+        "AI dan Web3 menggabungkan kecerdasan buatan dengan blockchain untuk data terdesentralisasi. Contoh: Fetch.ai, SingularityNET.",
+        "Potensi: AI marketplace, data sharing, dan komputasi terdistribusi."
+      ]
+    },
+    {
+      "tag": "ai_sustainability",
+      "patterns": [
+        "AI sustainability",
+        "AI lingkungan",
+        "AI climate change",
+        "AI energi",
+        "green AI"
+      ],
+      "responses": [
+        "AI digunakan untuk climate modeling, monitoring deforestasi, optimasi energi, dan prediksi bencana alam.",
+        "Green AI adalah gerakan untuk membuat AI lebih hemat energi."
+      ]
+    },
+    {
+      "tag": "ai_mindset",
+      "patterns": [
+        "AI menggantikan manusia",
+        "AI vs manusia",
+        "AI overhype",
+        "AI realita",
+        "AI hubungan manusia"
+      ],
+      "responses": [
+        "AI bukan pengganti manusia, tapi alat kolaborasi. Kreativitas, empati, dan etika tetap menjadi keunggulan manusia.",
+        "AI akan mengotomatiskan tugas repetitif, tetapi menciptakan pekerjaan baru di bidang pengembangan AI dan etika."
+      ]
+    },
+    {
+      "tag": "ai_knowledge_base",
+      "patterns": [
+        "knowledge base AI",
+        "AI knowledge graph",
+        "knowledge graph",
+        "AI basis pengetahuan",
+        "ontology AI"
+      ],
+      "responses": [
+        "Knowledge graph adalah representasi data yang menghubungkan entitas dan hubungannya. Digunakan dalam AI untuk reasoning dan retrieval.",
+        "Contoh: Google Knowledge Graph, Wikidata."
+      ]
+    },
+    {
+      "tag": "ai_explainability",
+      "patterns": [
+        "explainable AI",
+        "XAI",
+        "AI transparan",
+        "interpretability AI",
+        "black box AI",
+        "SHAP",
+        "LIME"
+      ],
+      "responses": [
+        "Explainable AI (XAI) berusaha membuat model AI dapat dijelaskan dan dipahami manusia. Penting untuk regulasi dan kepercayaan.",
+        "Metode: SHAP, LIME, dan feature importance."
+      ]
+    },
+    {
+      "tag": "ai_edge",
+      "patterns": [
+        "edge AI",
+        "AI di edge",
+        "AI embedded",
+        "AI smartphone",
+        "TinyML",
+        "AI IoT"
+      ],
+      "responses": [
+        "Edge AI adalah menjalankan AI langsung di perangkat (smartphone, IoT) tanpa cloud. Lebih cepat dan privasi lebih terjaga.",
+        "Contoh: Face unlock smartphone, Google Assistant offline. TinyML untuk device baterai rendah."
+      ]
+    },
+    {
+      "tag": "ai_data_privacy",
+      "patterns": [
+        "privasi data AI",
+        "data privacy AI",
+        "AI GDPR",
+        "AI data protection",
+        "federated learning",
+        "differential privacy"
+      ],
+      "responses": [
+        "AI dan privasi data: federated learning (training di device tanpa mengirim data), differential privacy (menambahkan noise ke data), dan homomorphic encryption.",
+        "GDPR dan UU PDP mengatur penggunaan data di AI."
+      ]
+    },
+    {
+      "tag": "ai_agi",
+      "patterns": [
+        "AGI",
+        "artificial general intelligence",
+        "AI setara manusia",
+        "kapan AGI tercapai",
+        "AGI vs AI",
+        "bahaya AGI"
+      ],
+      "responses": [
+        "AGI (Artificial General Intelligence) adalah AI dengan kecerdasan setara manusia di semua domain. Belum tercapai, perkiraan antara 2030-2050.",
+        "AGI akan merevolusi semua sektor, tapi juga mengundang risiko kontrol yang serius."
+      ]
+    },
+    {
+      "tag": "ai_asi",
+      "patterns": [
+        "ASI",
+        "artificial superintelligence",
+        "super AI",
+        "AI melampaui manusia",
+        "Nick Bostrom superintelligence"
+      ],
+      "responses": [
+        "ASI (Artificial Superintelligence) adalah AI yang melampaui kecerdasan manusia terbaik di semua bidang. Masih teori dan kontroversial.",
+        "Filsuf Nick Bostrom membahas risiko ASI dalam bukunya 'Superintelligence'."
+      ]
+    },
+    {
+      "tag": "ai_law",
+      "patterns": [
+        "hukum AI",
+        "regulasi AI",
+        "UU AI",
+        "EU AI Act",
+        "AI regulation"
+      ],
+      "responses": [
+        "Regulasi AI: EU AI Act adalah regulasi pertama untuk AI, mengkategorikan risiko AI dan mengatur penggunaannya.",
+        "Indonesia sedang menyusun regulasi AI di bawah Kominfo."
+      ]
+    },
+    {
+      "tag": "ai_deepfake",
+      "patterns": [
+        "deepfake",
+        "AI deepfake",
+        "deteksi deepfake",
+        "video palsu AI",
+        "deepfake detection"
+      ],
+      "responses": [
+        "Deepfake adalah video/suara palsu yang dihasilkan AI. Bisa digunakan untuk hiburan, tapi juga misinformasi dan penipuan.",
+        "Deteksi deepfake: menggunakan model AI yang dilatih untuk membedakan asli dan palsu."
+      ]
+    },
+    {
+      "tag": "ai_artificial_neural_network",
+      "patterns": [
+        "neural network dasar",
+        "cara kerja neural network",
+        "neuron AI",
+        "activation function",
+        "backpropagation"
+      ],
+      "responses": [
+        "Neural network terdiri dari neuron yang terhubung dengan bobot. Input diproses melalui activation function, dan backpropagation menyesuaikan bobot untuk mengurangi error.",
+        "Activation functions: ReLU, Sigmoid, Tanh. ReLU paling populer untuk hidden layer."
+      ]
+    },
+    {
+      "tag": "ai_optimization",
+      "patterns": [
+        "optimization AI",
+        "gradient descent",
+        "stochastic gradient descent",
+        "Adam optimizer",
+        "optimizer AI"
+      ],
+      "responses": [
+        "Optimization dalam ML adalah proses mengurangi loss function. Gradient descent adalah dasar, dan variannya: SGD, Adam, RMSprop.",
+        "Adam optimizer paling sering digunakan karena adaptif dan cepat konvergen."
+      ]
+    },
+    {
+      "tag": "ai_loss_function",
+      "patterns": [
+        "loss function",
+        "fungsi loss",
+        "cross entropy",
+        "mean squared error",
+        "MSE",
+        "fungsi biaya AI"
+      ],
+      "responses": [
+        "Loss function mengukur seberapa baik model memprediksi. Regresi: MSE, MAE. Klasifikasi: Cross-Entropy, Hinge Loss.",
+        "Pilih loss function sesuai masalah: MSE untuk regresi, Cross-Entropy untuk klasifikasi."
+      ]
+    },
+    {
+      "tag": "ai_regularization",
+      "patterns": [
+        "regularization",
+        "overfitting",
+        "underfitting",
+        "dropout",
+        "L1 L2 regularization",
+        "mencegah overfitting"
+      ],
+      "responses": [
+        "Regularization mencegah overfitting. Teknik: L1/L2, Dropout, Early Stopping, dan Data Augmentation.",
+        "Dropout adalah teknik yang 'mematikan' neuron acak saat training untuk membuat model lebih general."
+      ]
+    },
+    {
+      "tag": "ai_batch_normalization",
+      "patterns": [
+        "batch normalization",
+        "batchnorm",
+        "normalisasi batch",
+        "BN AI"
+      ],
+      "responses": [
+        "Batch Normalization adalah teknik menormalkan input tiap layer untuk mempercepat training dan stabilisasi. Sangat efektif di deep learning.",
+        "Batchnorm mengurangi masalah internal covariate shift."
+      ]
+    },
+    {
+      "tag": "ai_transformer",
+      "patterns": [
+        "transformer AI",
+        "attention mechanism",
+        "self attention",
+        "apa itu transformer",
+        "transformers in NLP",
+        "BERT transformer"
+      ],
+      "responses": [
+        "Transformer adalah arsitektur yang menggunakan attention mechanism untuk memproses data secara paralel. Dasar dari GPT, BERT, dan model modern lainnya.",
+        "Self-attention memungkinkan model melihat hubungan antar kata tanpa mempedulikan jarak."
+      ]
+    },
+    {
+      "tag": "ai_bert",
+      "patterns": [
+        "BERT",
+        "apa itu BERT",
+        "BERT NLP",
+        "Bidirectional Encoder",
+        "BERT Indonesia"
+      ],
+      "responses": [
+        "BERT (Bidirectional Encoder Representations from Transformers) adalah model NLP dari Google yang membaca teks secara bidirectional. Sangat kuat untuk klasifikasi dan QA.",
+        "IndoBERT adalah versi Indonesia dari BERT."
+      ]
+    },
+    {
+      "tag": "ai_gpt",
+      "patterns": [
+        "GPT",
+        "generative pre-trained transformer",
+        "GPT model",
+        "GPT arsitektur",
+        "GPT vs BERT"
+      ],
+      "responses": [
+        "GPT (Generative Pre-trained Transformer) adalah model generative dari OpenAI yang menggunakan arsitektur transformer decoder. Versi: GPT-1, 2, 3, 4.",
+        "GPT-4 multimodal (teks + gambar) dengan 1.76 triliun parameter."
+      ]
+    },
+    {
+      "tag": "ai_rag",
+      "patterns": [
+        "RAG",
+        "retrieval augmented generation",
+        "RAG AI",
+        "AI retrieval",
+        "RAG vs fine tuning"
+      ],
+      "responses": [
+        "RAG (Retrieval-Augmented Generation) menggabungkan retrieval (pencarian dokumen) dengan generation (LLM) untuk memberikan jawaban yang lebih akurat dan up-to-date.",
+        "RAG digunakan untuk chatbot yang perlu akses ke data spesifik atau basis pengetahuan."
+      ]
+    },
+    {
+      "tag": "ai_embedding",
+      "patterns": [
+        "embeddings",
+        "word embedding",
+        "vector embedding",
+        "text embedding",
+        "image embedding",
+        "word2vec",
+        "glove"
+      ],
+      "responses": [
+        "Embedding adalah representasi vektor dari data (teks, gambar, dll) sehingga mirip secara semantik memiliki jarak dekat. Contoh: Word2Vec, GloVe, BERT embeddings.",
+        "Text embedding digunakan untuk semantic search dan clustering."
+      ]
+    },
+    {
+      "tag": "ai_federated",
+      "patterns": [
+        "federated learning",
+        "pembelajaran federasi",
+        "AI privasi",
+        "Google federated",
+        "federated AI"
+      ],
+      "responses": [
+        "Federated Learning adalah teknik training AI di mana model dilatih di device lokal, dan hanya update yang dikirim ke server. Privasi tetap terjaga.",
+        "Google menggunakan FL untuk keyboard prediktif."
+      ]
+    },
+    {
+      "tag": "ai_tiny",
+      "patterns": [
+        "TinyML",
+        "AI kecil",
+        "AI embedded",
+        "AI mikrokontroler",
+        "TensorFlow Lite",
+        "Edge Impulse"
+      ],
+      "responses": [
+        "TinyML adalah ML pada perangkat dengan resource terbatas (RAM < 1 MB). TensorFlow Lite Micro dan Edge Impulse adalah framework-nya.",
+        "Contoh: pengenalan suara di smartwatch, deteksi anomali di sensor."
+      ]
+    },
+    {
+      "tag": "ai_robotics",
+      "patterns": [
+        "AI robotics",
+        "robotika Indonesia",
+        "robot AI Indonesia",
+        "robot humanoid Indonesia"
+      ],
+      "responses": [
+        "Robotika AI di Indonesia masih berkembang, dengan penggunaan di industri, pertanian, dan pendidikan. ITS dan ITB memiliki laboratorium robotika.",
+        "Robot AI membutuhkan kombinasi CV, NLP, dan reinforcement learning."
+      ]
+    },
+    {
+      "tag": "ai_research",
+      "patterns": [
+        "riset AI",
+        "jurnal AI",
+        "konferensi AI",
+        "NeurIPS",
+        "ICML",
+        "ICLR",
+        "penelitian AI terbaru"
+      ],
+      "responses": [
+        "Konferensi AI top: NeurIPS, ICML, ICLR, CVPR, ACL. Jurnal: JMLR, IEEE TPAMI, AIJ.",
+        "Research AI terbaru: multimodal AI, efficient LLM, dan AI for science."
+      ]
+    },
+    {
+      "tag": "ai_career_path",
+      "patterns": [
+        "path karier AI",
+        "jadi AI engineer",
+        "data scientist path",
+        "ML career",
+        "sertifikasi AI"
+      ],
+      "responses": [
+        "Career path: Junior ML Engineer -> ML Engineer -> Senior ML Engineer -> AI Researcher. Juga: Data Scientist, NLP Engineer, CV Engineer.",
+        "Sertifikasi: TensorFlow Developer, AWS ML, Azure AI."
+      ]
+    },
+    {
+      "tag": "ai_freelance",
+      "patterns": [
+        "freelance AI",
+        "kerja lepas AI",
+        "proyek AI freelance",
+        "AI freelance Indonesia",
+        "upwork AI"
+      ],
+      "responses": [
+        "Freelance AI: platform seperti Upwork, Fiverr, Freelancer. Proyek: chatbots, data analysis, computer vision, AI integration.",
+        "Rate: $30-$150 per jam tergantung pengalaman."
+      ]
+    },
+    {
+      "tag": "ai_indonesia",
+      "patterns": [
+        "AI Indonesia",
+        "perkembangan AI Indonesia",
+        "startup AI Indonesia",
+        "AI di Indonesia",
+        "kecerdasan buatan Indonesia"
+      ],
+      "responses": [
+        "Perkembangan AI Indonesia: Ada banyak startup AI seperti Kata.ai, Nodeflux, dan beberapa inisiatif pemerintah. Gojek dan Tokopedia menggunakan AI.",
+        "Indonesia memiliki potensi besar di bidang AI, terutama untuk solusi lokal seperti pertanian, bahasa, dan kemacetan."
+      ]
+    },
+    {
+      "tag": "ai_whatsapp",
+      "patterns": [
+        "AI WhatsApp",
+        "chatbot WhatsApp AI",
+        "WA bot AI",
+        "AI WhatsApp Indonesia"
+      ],
+      "responses": [
+        "AI di WhatsApp: chatbot AI untuk customer service, marketing, dan otomasi. Bisa menggunakan OpenAI API atau Dialogflow.",
+        "Akurasi dan natural response tergantung training data."
+      ]
+    },
+    {
+      "tag": "ai_telegram",
+      "patterns": [
+        "AI Telegram",
+        "Telegram bot AI",
+        "bot AI Telegram",
+        "AI di Telegram"
+      ],
+      "responses": [
+        "Telegram bot AI: bisa pakai Python dengan library python-telegram-bot, diintegrasikan dengan OpenAI atau model custom.",
+        "Fitur: menjawab pertanyaan, generate gambar, summarization."
+      ]
+    },
+    {
+      "tag": "ai_no_code",
+      "patterns": [
+        "no code AI",
+        "AI tanpa coding",
+        "drag and drop AI",
+        "Lobe AI",
+        "Teachable Machine"
+      ],
+      "responses": [
+        "No-code AI platform: Google Teachable Machine, Lobe, Runway ML, dan Obviously AI. Tanpa coding, cocok untuk prototyping.",
+        "Teachable Machine bisa train image, sound, dan pose detection."
+      ]
+    },
+    {
+      "tag": "ai_meta",
+      "patterns": [
+        "Meta AI",
+        "LLaMA",
+        "Meta Llama",
+        "AI Meta",
+        "Llama 3"
+      ],
+      "responses": [
+        "Meta AI mengembangkan model LLaMA (Large Language Model Meta AI) yang open-source. Versi terbaru LLaMA 3 dengan performa setara GPT-4.",
+        "LLaMA banyak digunakan oleh komunitas open source karena bebas akses."
+      ]
+    },
+    {
+      "tag": "ai_google",
+      "patterns": [
+        "Google AI",
+        "Gemini AI",
+        "Bard AI",
+        "Google DeepMind",
+        "AI Google"
+      ],
+      "responses": [
+        "Google AI: Gemini (generative AI), DeepMind (AlphaGo, AlphaFold), TensorFlow, dan Google Cloud AI.",
+        "AlphaFold memprediksi struktur protein, terobosan besar untuk biologi."
+      ]
+    },
+    {
+      "tag": "ai_apple",
+      "patterns": [
+        "Apple AI",
+        "AI Apple",
+        "Siri AI",
+        "Apple Neural Engine",
+        "Apple Intelligence"
+      ],
+      "responses": [
+        "Apple Intelligence adalah AI terintegrasi di iOS, dengan Siri yang lebih pintar, on-device AI, dan privacy-first.",
+        "Apple Neural Engine (ANE) di chip Apple untuk inferensi cepat dan hemat daya."
+      ]
+    },
+    {
+      "tag": "ai_microsoft",
+      "patterns": [
+        "Microsoft AI",
+        "Azure AI",
+        "Copilot AI",
+        "MSFT AI",
+        "AI Microsoft"
+      ],
+      "responses": [
+        "Microsoft AI: Azure Machine Learning, Cognitive Services, dan Copilot di Office & GitHub. Investasi besar di OpenAI.",
+        "Azure Cognitive Services menyediakan API untuk vision, speech, dan language."
+      ]
+    },
+    {
+      "tag": "ai_anthropic",
+      "patterns": [
+        "Anthropic AI",
+        "Claude AI",
+        "Claude 3",
+        "AI Anthropic",
+        "Constitutional AI"
+      ],
+      "responses": [
+        "Anthropic adalah perusahaan AI yang mengembangkan Claude, dengan fokus pada safety dan constitutional AI. Claude 3 setara GPT-4.",
+        "Constitutional AI adalah metode melatih AI agar sesuai dengan prinsip etika."
+      ]
+    },
+    {
+      "tag": "ai_amazon",
+      "patterns": [
+        "Amazon AI",
+        "AWS AI",
+        "Alexa AI",
+        "SageMaker",
+        "Amazon Q"
+      ],
+      "responses": [
+        "Amazon AI: AWS SageMaker (platform ML), Rekognition (vision), Polly (TTS), dan Lex (chatbot), serta Alexa.",
+        "SageMaker memudahkan end-to-end ML di cloud."
+      ]
+    },
+    {
+      "tag": "ai_startup",
+      "patterns": [
+        "startup AI Indonesia",
+        "AI startup",
+        "bisnis AI",
+        "membangun startup AI",
+        "investasi AI Indonesia"
+      ],
+      "responses": [
+        "Startup AI Indonesia: Kata.ai (NLP), Nodeflux (vision), Danabijak (fintech AI), dan banyak lainnya.",
+        "AI startup bisa fokus pada solusi vertikal: kesehatan, pendidikan, pertanian, atau logistik."
+      ]
+    },
+    {
+      "tag": "ai_kecerdasan_buatan",
+      "patterns": [
+        "kecerdasan buatan",
+        "pengertian kecerdasan buatan",
+        "definisi kecerdasan buatan",
+        "AI kecerdasan buatan"
+      ],
+      "responses": [
+        "Kecerdasan Buatan (AI) adalah cabang ilmu komputer yang menciptakan mesin cerdas yang dapat belajar dari pengalaman, beradaptasi, dan melakukan tugas-tugas yang biasanya membutuhkan kecerdasan manusia.",
+        "AI adalah simulasi dari proses kecerdasan manusia oleh mesin, khususnya dalam sistem komputer."
+      ]
+    },
+    {
+      "tag": "ai_neuromorphic",
+      "patterns": [
+        "neuromorphic computing",
+        "komputasi neuromorfik",
+        "chip otak AI",
+        "spiking neural network",
+        "IBM TrueNorth"
+      ],
+      "responses": [
+        "Neuromorphic computing adalah arsitektur yang meniru struktur otak manusia, menggunakan spiking neural networks (SNN). Lebih hemat energi.",
+        "IBM TrueNorth dan Intel Loihi adalah contoh chip neuromorphic."
+      ]
+    },
+    {
+      "tag": "ai_commonsense",
+      "patterns": [
+        "common sense AI",
+        "AI common sense",
+        "penalaran AI",
+        "AI reasoning",
+        "abductive reasoning AI"
+      ],
+      "responses": [
+        "Common sense reasoning adalah kemampuan AI untuk memahami dunia seperti manusia. Masih menjadi tantangan besar karena AI tidak punya pengalaman fisik.",
+        "Proyek seperti ConceptNet dan Cyc berusaha membangun common sense database."
+      ]
+    },
+    {
+      "tag": "ai_moral",
+      "patterns": [
+        "moral AI",
+        "etika moral AI",
+        "AI moralitas",
+        "AI membuat keputusan moral",
+        "AI trolley problem"
+      ],
+      "responses": [
+        "AI moral: bagaimana AI membuat keputusan yang etis? 'Trolley problem' adalah contoh klasik. AI harus diprogram dengan aturan etika yang jelas.",
+        "Keputusan moral AI sangat tergantung pada data dan algoritma yang digunakan."
+      ]
+    },
+    {
+      "tag": "ai_entertainment",
+      "patterns": [
+        "AI entertainment",
+        "AI film",
+        "AI musik",
+        "AI game",
+        "AI kreatif hiburan"
+      ],
+      "responses": [
+        "AI di entertainment: game (AI NPC), film (CGI, scriptwriting), musik (komposisi), dan konten interaktif.",
+        "Contoh: AI di game seperti The Sims, AI-generated music di AIVA."
+      ]
+    },
+    {
+      "tag": "ai_social_media",
+      "patterns": [
+        "AI social media",
+        "AI TikTok",
+        "AI Instagram",
+        "AI content social media",
+        "algorithm AI sosial media"
+      ],
+      "responses": [
+        "AI di social media: algoritma feed, rekomendasi konten, content moderation, dan analisis sentimen. TikTok dan Instagram menggunakan AI untuk personalisasi.",
+        "AI juga digunakan untuk mendeteksi ujaran kebencian dan spam."
+      ]
+    },
+    {
+      "tag": "ai_voice_cloning",
+      "patterns": [
+        "voice cloning AI",
+        "suara AI clone",
+        "AI tiru suara",
+        "ElevenLabs voice",
+        "voice synthesis"
+      ],
+      "responses": [
+        "Voice cloning adalah AI yang dapat meniru suara seseorang dengan sample kecil. Elemen penting untuk TTS dan dubbing.",
+        "Aplikasi: audiobook, voice assistant, dan voiceover. Etis: harus mendapatkan izin."
+      ]
+    },
+    {
+      "tag": "ai_avatar",
+      "patterns": [
+        "AI avatar",
+        "digital human",
+        "AI influencer",
+        "virtual avatar AI",
+        "AI character"
+      ],
+      "responses": [
+        "AI avatar adalah representasi digital yang dikendalikan AI. Digunakan untuk virtual influencer, customer service, dan metaverse.",
+        "Contoh: Lil Miquela, AI influencer di Instagram."
+      ]
+    },
+    {
+      "tag": "ai_metaverse",
+      "patterns": [
+        "AI metaverse",
+        "metaverse AI",
+        "AI virtual world",
+        "digital twin AI"
+      ],
+      "responses": [
+        "AI di metaverse: menciptakan dunia virtual interaktif, NPC cerdas, dan digital twin (duplikat digital dari objek nyata).",
+        "AI memungkinkan interaksi yang lebih natural di metaverse."
+      ]
+    },
+    {
+      "tag": "ai_smart_city",
+      "patterns": [
+        "smart city AI",
+        "AI kota pintar",
+        "AI traffic",
+        "AI urban planning",
+        "smart city Indonesia"
+      ],
+      "responses": [
+        "AI di smart city: manajemen lalu lintas, keamanan publik, pengelolaan sampah, dan energi. Contoh: penggunaan CCTV dengan face recognition.",
+        "Jakarta, Bandung, dan Surabaya mulai mengadopsi smart city."
+      ]
+    },
+    {
+      "tag": "ai_mental_health",
+      "patterns": [
+        "AI mental health",
+        "AI kesehatan mental",
+        "AI konseling",
+        "chatbot mental health",
+        "AI wellness"
+      ],
+      "responses": [
+        "AI di mental health: chatbot konseling (Woebot, Wysa), deteksi depresi dari pola bicara, dan monitoring kesehatan mental.",
+        "AI tidak menggantikan terapis, tapi menjadi alat screening dan dukungan."
+      ]
+    },
+    {
+      "tag": "ai_linguistics",
+      "patterns": [
+        "AI linguistik",
+        "AI bahasa",
+        "AI terjemahan",
+        "linguistik komputasi",
+        "computational linguistics"
+      ],
+      "responses": [
+        "Computational linguistics adalah cabang AI yang mempelajari bahasa manusia secara formal dan komputasional. Mendasari NLP.",
+        "Contoh: machine translation, parsing, dan speech recognition."
+      ]
+    },
+    {
+      "tag": "ai_creative_writing",
+      "patterns": [
+        "AI menulis",
+        "AI creative writing",
+        "AI nulis cerita",
+        "AI generate story",
+        "AI content creator"
+      ],
+      "responses": [
+        "AI creative writing menggunakan LLM untuk menghasilkan cerita, puisi, skrip, dan konten kreatif lainnya. Dapat digunakan sebagai asisten menulis.",
+        "Tools: ChatGPT, Sudowrite, Jasper."
+      ]
+    },
+    {
+      "tag": "ai_marketing",
+      "patterns": [
+        "AI marketing",
+        "AI digital marketing",
+        "AI advertising",
+        "AI copywriting",
+        "AI SEO"
+      ],
+      "responses": [
+        "AI di marketing: personalisasi iklan, copywriting, analisis pelanggan, dan optimasi kampanye. Contoh: programmatic advertising.",
+        "Tools: Phrasee, Persado, dan ChatGPT untuk content."
+      ]
+    },
+    {
+      "tag": "ai_sales",
+      "patterns": [
+        "AI sales",
+        "AI penjualan",
+        "AI lead generation",
+        "sales forecasting AI",
+        "CRM AI"
+      ],
+      "responses": [
+        "AI di sales: lead scoring, sales forecasting, chatbot sales, dan CRM analytics. Meningkatkan efisiensi tim penjualan.",
+        "Contoh: Salesforce Einstein, HubSpot AI."
+      ]
+    },
+    {
+      "tag": "ai_hr",
+      "patterns": [
+        "AI HR",
+        "AI rekrutmen",
+        "AI screening resume",
+        "AI HRD",
+        "AI talent management"
+      ],
+      "responses": [
+        "AI di HR: screening resume otomatis, assessment kandidat, prediksi retention, dan employee engagement.",
+        "Tools: HireVue, Pymetrics, dan Eightfold."
+      ]
+    },
+    {
+      "tag": "ai_legal",
+      "patterns": [
+        "AI legal",
+        "AI hukum",
+        "AI contract review",
+        "AI litigation prediction",
+        "AI law firm"
+      ],
+      "responses": [
+        "AI di hukum: review kontrak otomatis, riset kasus, prediksi putusan, dan due diligence. Meningkatkan efisiensi firma hukum.",
+        "Tools: Luminance, ROSS Intelligence."
+      ]
+    },
+    {
+      "tag": "ai_real_estate",
+      "patterns": [
+        "AI real estate",
+        "AI property",
+        "AI harga properti",
+        "AI properti Indonesia",
+        "AI real estate Indonesia"
+      ],
+      "responses": [
+        "AI di real estate: prediksi harga properti, rekomendasi properti, virtual tour, dan analisis pasar.",
+        "Model prediksi harga menggunakan regresi atau decision tree."
+      ]
+    },
+    {
+      "tag": "ai_supply_chain",
+      "patterns": [
+        "AI supply chain",
+        "AI logistik",
+        "AI inventory",
+        "AI warehouse",
+        "AI distribusi"
+      ],
+      "responses": [
+        "AI di supply chain: demand forecasting, optimasi rute, inventory management, dan deteksi anomali.",
+        "Contoh: Amazon menggunakan AI untuk logistik dan warehouse."
+      ]
+    },
+    {
+      "tag": "ai_security",
+      "patterns": [
+        "AI security",
+        "AI cybersecurity",
+        "AI deteksi malware",
+        "AI firewall",
+        "AI threat intelligence"
+      ],
+      "responses": [
+        "AI di cybersecurity: deteksi malware, monitoring anomali, incident response, dan threat intelligence.",
+        "Machine learning digunakan untuk mendeteksi pola serangan baru."
+      ]
+    },
+    {
+      "tag": "ai_backup",
+      "patterns": [
+        "AI backup",
+        "AI recovery",
+        "AI data recovery",
+        "AI backup strategy"
+      ],
+      "responses": [
+        "AI di backup: prediksi kegagalan, scheduling otomatis, dan optimasi penyimpanan. Mencegah data loss.",
+        "AI dapat mendeteksi file yang korup sebelum backup."
+      ]
+    },
+    {
+      "tag": "ai_iot",
+      "patterns": [
+        "AI IoT",
+        "AI Internet of Things",
+        "AI sensor",
+        "AI perangkat pintar",
+        "AI smart home"
+      ],
+      "responses": [
+        "AI IoT menggabungkan AI dengan perangkat IoT. Contoh: smart home, monitoring industri, dan kesehatan wearable.",
+        "Edge AI di IoT memungkinkan inferensi real-time di perangkat."
+      ]
+    },
+    {
+      "tag": "ai_biometrics",
+      "patterns": [
+        "AI biometrics",
+        "AI sidik jari",
+        "AI iris recognition",
+        "AI biometric authentication",
+        "face recognition AI"
+      ],
+      "responses": [
+        "AI biometrics: face recognition, fingerprint, iris scanning, dan voice recognition. Digunakan untuk keamanan dan autentikasi.",
+        "Mobile phone menggunakan face recognition dan fingerprint."
+      ]
+    },
+    {
+      "tag": "ai_space",
+      "patterns": [
+        "AI space",
+        "AI luar angkasa",
+        "AI NASA",
+        "AI satelit",
+        "AI astronomi"
+      ],
+      "responses": [
+        "AI di ruang angkasa: analisis citra satelit, prediksi cuaca antariksa, navigasi rover, dan astronomi (deteksi exoplanet).",
+        "NASA menggunakan AI untuk menganalisis data dari teleskop."
+      ]
+    },
+    {
+      "tag": "ai_ocean",
+      "patterns": [
+        "AI ocean",
+        "AI laut",
+        "AI marine",
+        "AI kelautan",
+        "AI perikanan"
+      ],
+      "responses": [
+        "AI di kelautan: monitoring terumbu karang, prediksi cuaca laut, deteksi ikan, dan pemetaan laut.",
+        "AI membantu konservasi laut dan perikanan berkelanjutan."
+      ]
+    },
+    {
+      "tag": "ai_ar",
+      "patterns": [
+        "AI AR",
+        "augmented reality AI",
+        "AI augmented reality",
+        "AR dengan AI"
+      ],
+      "responses": [
+        "AI dengan AR: object tracking, face filters, dan real-time translation. Contoh: Snapchat filter, Google Lens.",
+        "AI membuat AR lebih interaktif dan akurat."
+      ]
+    },
+    {
+      "tag": "ai_vr",
+      "patterns": [
+        "AI VR",
+        "virtual reality AI",
+        "AI VR gaming",
+        "virtual assistant VR"
+      ],
+      "responses": [
+        "AI di VR: interaksi natural, NPC cerdas, dan avatar AI. Membuat pengalaman VR lebih imersif.",
+        "AI dapat menyesuaikan lingkungan VR berdasarkan perilaku pengguna."
+      ]
+    },
+    {
+      "tag": "ai_blockchain",
+      "patterns": [
+        "AI blockchain",
+        "blockchain AI",
+        "smart contract AI",
+        "AI crypto trading",
+        "AI di blockchain"
+      ],
+      "responses": [
+        "AI dan blockchain: smart contract yang cerdas, analisis market crypto, dan decentralized AI.",
+        "Potensi untuk AI marketplace dan data sharing yang aman."
+      ]
+    },
+    {
+      "tag": "ai_gaming",
+      "patterns": [
+        "AI gaming",
+        "AI game",
+        "AI game development",
+        "AI NPC",
+        "AI game balance"
+      ],
+      "responses": [
+        "AI di game: NPC pintar, procedural content generation, game balance, dan adaptive difficulty.",
+        "Contoh: AI dalam game seperti The Last of Us, Cyberpunk 2077."
+      ]
+    },
+    {
+      "tag": "ai_sports",
+      "patterns": [
+        "AI sports",
+        "AI olahraga",
+        "AI analisis performa",
+        "AI prediksi pertandingan",
+        "AI sports analytics"
+      ],
+      "responses": [
+        "AI di olahraga: analisis performa, prediksi hasil, injury detection, dan optimasi latihan.",
+        "Contoh: IBM Watson untuk tenis, Catapult untuk atlet."
+      ]
+    },
+    {
+      "tag": "ai_ecommerce",
+      "patterns": [
+        "AI ecommerce",
+        "AI online shop",
+        "AI rekomendasi produk",
+        "AI ecommerce Indonesia",
+        "AI personalisasi"
+      ],
+      "responses": [
+        "AI di ecommerce: rekomendasi produk, personalisasi, chatbot CS, dan dynamic pricing.",
+        "Shopee, Tokopedia, dan Lazada menggunakan AI."
+      ]
+    },
+    {
+      "tag": "ai_tourism",
+      "patterns": [
+        "AI tourism",
+        "AI pariwisata",
+        "AI travel",
+        "AI rekomendasi wisata",
+        "AI hotel"
+      ],
+      "responses": [
+        "AI di pariwisata: rekomendasi destinasi, dynamic pricing, chatbot travel, dan analisis sentimen review.",
+        "Contoh: Google Travel, TripAdvisor."
+      ]
+    },
+    {
+      "tag": "ai_food",
+      "patterns": [
+        "AI food",
+        "AI makanan",
+        "AI nutrisi",
+        "AI rekomendasi menu",
+        "AI agriculture"
+      ],
+      "responses": [
+        "AI di food: rekomendasi nutrisi, analisis makanan, prediksi tren kuliner, dan optimasi produksi pangan.",
+        "Contoh: FoodAI, Google Lens untuk makanan."
+      ]
+    },
+    {
+      "tag": "ai_automotive",
+      "patterns": [
+        "AI automotive",
+        "AI mobil",
+        "AI kendaraan",
+        "AI manufacturing",
+        "AI mobil listrik"
+      ],
+      "responses": [
+        "AI di otomotif: mobil otonom, predictive maintenance, factory automation, dan sistem keselamatan.",
+        "Tesla, Waymo, dan BMW adalah pelopor AI di otomotif."
+      ]
+    },
+    {
+      "tag": "ai_manufacturing",
+      "patterns": [
+        "AI manufacturing",
+        "AI industri",
+        "AI pabrik",
+        "AI predictive maintenance",
+        "AI quality control"
+      ],
+      "responses": [
+        "AI di manufaktur: quality control dengan CV, predictive maintenance, supply chain optimasi, dan robotik.",
+        "Contoh: Siemens, GE menggunakan AI untuk industri 4.0."
+      ]
+    },
+    {
+      "tag": "ai_construction",
+      "patterns": [
+        "AI construction",
+        "AI konstruksi",
+        "AI bangunan",
+        "AI project management",
+        "AI BIM"
+      ],
+      "responses": [
+        "AI di konstruksi: project scheduling, safety monitoring, drone inspection, dan BIM (Building Information Modeling).",
+        "Mengurangi biaya dan meningkatkan keamanan proyek."
+      ]
+    },
+    {
+      "tag": "ai_mining",
+      "patterns": [
+        "AI mining",
+        "AI pertambangan",
+        "AI tambang",
+        "AI geologi",
+        "AI eksplorasi tambang"
+      ],
+      "responses": [
+        "AI di pertambangan: eksplorasi mineral, monitoring alat berat, safety analysis, dan optimasi operasi.",
+        "Contoh: Rio Tinto menggunakan AI untuk truk otonom."
+      ]
+    },
+    {
+      "tag": "ai_petroleum",
+      "patterns": [
+        "AI petroleum",
+        "AI minyak",
+        "AI gas",
+        "AI energi",
+        "AI oil and gas"
+      ],
+      "responses": [
+        "AI di minyak dan gas: eksplorasi, prediksi produksi, monitoring pipa, dan predictive maintenance.",
+        "Contoh: BP, Shell menggunakan AI."
+      ]
+    },
+    {
+      "tag": "ai_pharma",
+      "patterns": [
+        "AI pharma",
+        "AI farmasi",
+        "AI drug discovery",
+        "AI obat",
+        "AI clinical trial"
+      ],
+      "responses": [
+        "AI di farmasi: drug discovery, clinical trial optimization, dan personalized medicine.",
+        "Contoh: Insilico Medicine, Atomwise."
+      ]
+    },
+    {
+      "tag": "ai_science",
+      "patterns": [
+        "AI science",
+        "AI fisika",
+        "AI biologi",
+        "AI kimia",
+        "AI untuk penelitian"
+      ],
+      "responses": [
+        "AI untuk sains: AlphaFold untuk biologi, AI untuk simulasi fisika, dan discovery material baru.",
+        "AI mempercepat penemuan ilmiah."
+      ]
+    },
+    {
+      "tag": "ai_math",
+      "patterns": [
+        "AI matematika",
+        "AI math",
+        "AI integral",
+        "AI aljabar",
+        "AI solving math"
+      ],
+      "responses": [
+        "AI dapat memecahkan masalah matematika menggunakan symbolic reasoning dan neural networks. Contoh: ChatGPT untuk math, PhotoMath.",
+        "Tapi AI masih sering error pada soal cerita kompleks."
+      ]
+    },
+    {
+      "tag": "ai_physics",
+      "patterns": [
+        "AI fisika",
+        "AI physics",
+        "AI mekanika",
+        "AI quantum physics",
+        "AI simulasi fisika"
+      ],
+      "responses": [
+        "AI di fisika: simulasi fenomena, prediksi, dan analisis data dari eksperimen fisika partikel.",
+        "CERN menggunakan AI untuk menganalisis data dari Large Hadron Collider."
+      ]
+    },
+    {
+      "tag": "ai_biology",
+      "patterns": [
+        "AI biologi",
+        "AI biology",
+        "AI genetika",
+        "AI DNA",
+        "AI bioinformatics"
+      ],
+      "responses": [
+        "AI di biologi: genomics, protein folding (AlphaFold), drug discovery, dan ecological modeling.",
+        "Bioinformatika menggunakan AI untuk menganalisis data DNA."
+      ]
+    },
+    {
+      "tag": "ai_genetics",
+      "patterns": [
+        "AI genetics",
+        "AI genetika",
+        "AI DNA sequencing",
+        "AI genome",
+        "AI CRISPR"
+      ],
+      "responses": [
+        "AI di genetika: sequening DNA, analisis varian, dan CRISPR design. Membantu memprediksi efek mutasi.",
+        "Contoh: DeepVariant dari Google."
+      ]
+    },
+    {
+      "tag": "ai_climate",
+      "patterns": [
+        "AI climate",
+        "AI iklim",
+        "AI perubahan iklim",
+        "AI prediksi cuaca",
+        "AI climate change"
+      ],
+      "responses": [
+        "AI untuk perubahan iklim: prediksi cuaca, monitoring emisi, model iklim, dan energi terbarukan optimasi.",
+        "Contoh: DeepMind untuk prediksi cuaca."
+      ]
+    },
+    {
+      "tag": "ai_geology",
+      "patterns": [
+        "AI geology",
+        "AI geologi",
+        "AI gempa",
+        "AI earthquake",
+        "AI prediction"
+      ],
+      "responses": [
+        "AI di geologi: prediksi gempa, analisis data seismik, dan eksplorasi mineral.",
+        "Prediksi gempa dengan AI masih sulit tapi ada kemajuan dengan deep learning."
+      ]
+    },
+    {
+      "tag": "ai_astronomy",
+      "patterns": [
+        "AI astronomy",
+        "AI astronomi",
+        "AI teleskop",
+        "AI exoplanet",
+        "AI black hole"
+      ],
+      "responses": [
+        "AI di astronomi: deteksi exoplanet, klasifikasi galaksi, dan analisis data teleskop (seperti dari Hubble atau JWST).",
+        "AI membantu menemukan objek langit baru."
+      ]
+    },
+    {
+      "tag": "ai_semantic_search",
+      "patterns": [
+        "semantic search AI",
+        "AI search engine",
+        "AI pencarian",
+        "AI semantic search",
+        "vector search"
+      ],
+      "responses": [
+        "Semantic search menggunakan embeddings untuk mencari berdasarkan makna, bukan keyword exact. Hasilnya lebih relevan.",
+        "Contoh: Google Search yang semakin semantic."
+      ]
+    },
+    {
+      "tag": "ai_retrieval",
+      "patterns": [
+        "retrieval AI",
+        "AI information retrieval",
+        "AI pencarian dokumen",
+        "AI RAG",
+        "AI search"
+      ],
+      "responses": [
+        "Information Retrieval dengan AI: menggunakan embeddings dan RAG untuk pencarian dokumen yang akurat.",
+        "Dipakai di search engine perusahaan dan chatbot."
+      ]
+    },
+    {
+      "tag": "ai_qa",
+      "patterns": [
+        "AI question answering",
+        "AI tanya jawab",
+        "AI QA",
+        "AI jawab pertanyaan",
+        "chatbot QA"
+      ],
+      "responses": [
+        "Question Answering (QA) adalah tugas AI untuk menjawab pertanyaan berdasarkan konteks. Bisa closed-book (LLM) atau open-book (RAG).",
+        "Contoh: ChatGPT, Google Search QA."
+      ]
+    },
+    {
+      "tag": "ai_summarization",
+      "patterns": [
+        "AI summarization",
+        "AI ringkasan",
+        "AI summarize",
+        "AI text summarization",
+        "AI meringkas"
+      ],
+      "responses": [
+        "Text summarization adalah AI yang meringkas teks panjang menjadi pendek, dengan tetap mempertahankan informasi penting.",
+        "Ekstraktif (ambil kalimat) atau abstraktif (generate kalimat baru)."
+      ]
+    },
+    {
+      "tag": "ai_translation",
+      "patterns": [
+        "AI translation",
+        "AI translator",
+        "AI terjemahan",
+        "Google Translate AI",
+        "AI penerjemah"
+      ],
+      "responses": [
+        "AI translation menggunakan neural machine translation untuk menerjemahkan antar bahasa. Contoh: Google Translate, DeepL.",
+        "Model transformer seperti mBART dan M2M-100 mendukung banyak bahasa."
+      ]
+    },
+    {
+      "tag": "ai_grammar",
+      "patterns": [
+        "AI grammar",
+        "AI grammar checker",
+        "AI proofreading",
+        "AI tata bahasa",
+        "Grammarly AI"
+      ],
+      "responses": [
+        "AI grammar checker seperti Grammarly menggunakan NLP untuk memeriksa tata bahasa, ejaan, dan gaya penulisan.",
+        "Bisa juga digunakan untuk belajar bahasa."
+      ]
+    },
+    {
+      "tag": "ai_parsing",
+      "patterns": [
+        "AI parsing",
+        "AI syntactic parsing",
+        "AI grammar parsing",
+        "constituency parsing",
+        "dependency parsing"
+      ],
+      "responses": [
+        "Parsing adalah analisis struktur sintaksis kalimat. Dependency parsing dan constituency parsing digunakan untuk memahami hubungan kata.",
+        "Diperlukan untuk NLP tingkat lanjut."
+      ]
+    },
+    {
+      "tag": "ai_named_entity",
+      "patterns": [
+        "NER",
+        "named entity recognition",
+        "AI NER",
+        "named entity",
+        "entity recognition"
+      ],
+      "responses": [
+        "Named Entity Recognition (NER) adalah ekstraksi entitas seperti nama orang, tempat, organisasi, dan tanggal dari teks.",
+        "Digunakan untuk information extraction dan knowledge graph."
+      ]
+    },
+    {
+      "tag": "ai_sentiment",
+      "patterns": [
+        "sentiment analysis",
+        "AI sentimen",
+        "analisis sentimen",
+        "AI opini",
+        "sentiment AI"
+      ],
+      "responses": [
+        "Sentiment analysis adalah analisis opini atau emosi dalam teks: positif, negatif, atau netral. Digunakan di brand monitoring.",
+        "Bisa menggunakan model seperti BERT atau LSTM."
+      ]
+    },
+    {
+      "tag": "ai_topic_modeling",
+      "patterns": [
+        "topic modeling",
+        "AI topic modeling",
+        "LDA",
+        "latent dirichlet allocation",
+        "topic extraction"
+      ],
+      "responses": [
+        "Topic modeling adalah menemukan topik dalam kumpulan dokumen. LDA (Latent Dirichlet Allocation) adalah metode populer.",
+        "Digunakan untuk mengelompokkan artikel atau dokumen."
+      ]
+    },
+    {
+      "tag": "ai_dialog",
+      "patterns": [
+        "AI dialog",
+        "dialog system",
+        "AI conversation",
+        "AI chatbot",
+        "conversational AI"
+      ],
+      "responses": [
+        "Conversational AI adalah sistem yang bisa berinteraksi dengan manusia secara natural. Contoh: chatbots, voice assistants.",
+        "Menggunakan NLP, NLU, dan NLG untuk dialog yang dinamis."
+      ]
+    },
+    {
+      "tag": "ai_action_recognition",
+      "patterns": [
+        "action recognition",
+        "AI action detection",
+        "AI gerakan",
+        "AI deteksi aktivitas",
+        "pose estimation"
+      ],
+      "responses": [
+        "Action recognition adalah AI yang mengenali aktivitas manusia dari video atau gambar. Digunakan untuk keamanan dan sports analytics.",
+        "Menggunakan CNN dan LSTM."
+      ]
+    },
+    {
+      "tag": "ai_gaze_tracking",
+      "patterns": [
+        "gaze tracking",
+        "AI eye tracking",
+        "AI pelacakan mata",
+        "gaze AI"
+      ],
+      "responses": [
+        "Gaze tracking adalah AI yang melacak arah pandangan mata. Digunakan untuk UX research, gaming, dan kesehatan.",
+        "Bisa menggunakan kamera untuk inferensi."
+      ]
+    },
+    {
+      "tag": "ai_emotion",
+      "patterns": [
+        "AI emotion",
+        "AI emosi",
+        "emotion recognition",
+        "AI deteksi emosi",
+        "facial expression AI"
+      ],
+      "responses": [
+        "Emotion recognition adalah AI yang mendeteksi emosi dari ekspresi wajah, suara, atau teks. Digunakan di customer service dan pendidikan.",
+        "Menggunakan CV untuk ekspresi wajah, NLP untuk sentimen."
+      ]
+    },
+    {
+      "tag": "ai_knowledge_graph",
+      "patterns": [
+        "knowledge graph AI",
+        "AI knowledge graph",
+        "graph database AI",
+        "AI graph",
+        "graph neural network"
+      ],
+      "responses": [
+        "Knowledge graph adalah representasi data yang menghubungkan entitas dengan relasi. Digunakan untuk reasoning dan retrieval.",
+        "Contoh: Google Knowledge Graph, Wikidata."
+      ]
+    },
+    {
+      "tag": "ai_graph_neural_network",
+      "patterns": [
+        "GNN",
+        "graph neural network",
+        "AI graph",
+        "graph network",
+        "GCN"
+      ],
+      "responses": [
+        "Graph Neural Network (GNN) adalah neural network untuk data berbentuk graph. Digunakan untuk social network, molekuler, dan knowledge graph.",
+        "Arsitektur: GCN, GraphSAGE, GAT."
+      ]
+    },
+    {
+      "tag": "ai_meta_learning",
+      "patterns": [
+        "meta learning",
+        "AI meta",
+        "learning to learn",
+        "meta AI",
+        "few shot meta"
+      ],
+      "responses": [
+        "Meta learning adalah AI yang belajar bagaimana cara belajar. Bertujuan untuk belajar cepat dengan sedikit data.",
+        "Contoh: MAML, Reptile. Berguna untuk few-shot learning."
+      ]
+    },
+    {
+      "tag": "ai_few_shot",
+      "patterns": [
+        "few shot learning",
+        "few shot AI",
+        "AI sedikit data",
+        "few shot classification",
+        "one shot learning"
+      ],
+      "responses": [
+        "Few-shot learning adalah kemampuan model untuk belajar dengan sangat sedikit contoh. Digunakan ketika data langka.",
+        "Contoh: siamese networks, prototypical networks."
+      ]
+    },
+    {
+      "tag": "ai_zero_shot",
+      "patterns": [
+        "zero shot learning",
+        "zero shot AI",
+        "AI tanpa data",
+        "zero shot classification",
+        "zero shot CLIP"
+      ],
+      "responses": [
+        "Zero-shot learning adalah model yang dapat mengklasifikasikan data tanpa pernah melihat kelas tersebut saat training. Contoh: CLIP dari OpenAI.",
+        "Menggunakan embeddings untuk generalisasi."
+      ]
+    },
+    {
+      "tag": "ai_active_learning",
+      "patterns": [
+        "active learning",
+        "AI active learning",
+        "AI data labelling",
+        "active learning ML"
+      ],
+      "responses": [
+        "Active learning adalah strategi di mana model memilih data mana yang paling bermanfaat untuk diberi label oleh manusia. Menghemat biaya labeling.",
+        "Sangat berguna untuk dataset besar."
+      ]
+    },
+    {
+      "tag": "ai_semi_supervised",
+      "patterns": [
+        "semi supervised learning",
+        "semi supervised AI",
+        "AI label sedikit",
+        "semi supervised ML"
+      ],
+      "responses": [
+        "Semi-supervised learning menggunakan sedikit data berlabel dan banyak data tidak berlabel. Mengurangi kebutuhan label yang mahal.",
+        "Contoh: self-training, consistency regularization."
+      ]
+    },
+    {
+      "tag": "ai_self_supervised",
+      "patterns": [
+        "self supervised learning",
+        "self supervised AI",
+        "SSL AI",
+        "kontrastif learning"
+      ],
+      "responses": [
+        "Self-supervised learning membuat label dari data itu sendiri. Contoh: BERT yang memprediksi kata yang di-mask, atau SimCLR untuk gambar.",
+        "Sangat kuat untuk pra-training."
+      ]
+    },
+    {
+      "tag": "ai_autoencoder",
+      "patterns": [
+        "autoencoder",
+        "AI autoencoder",
+        "autoencoder deep learning",
+        "variational autoencoder",
+        "VAE"
+      ],
+      "responses": [
+        "Autoencoder adalah neural network yang belajar mengompres data ke representasi yang lebih kecil (encoding) dan merekonstruksinya kembali.",
+        "VAE (Variational Autoencoder) digunakan untuk generative modeling."
+      ]
+    },
+    {
+      "tag": "ai_attention",
+      "patterns": [
+        "attention mechanism",
+        "self attention",
+        "cross attention",
+        "multi head attention",
+        "attention AI"
+      ],
+      "responses": [
+        "Attention mechanism adalah cara model fokus pada bagian tertentu dari input. Multi-head attention menggunakan beberapa kepala untuk menangkap berbagai hubungan.",
+        "Dasar dari transformer."
+      ]
+    },
+    {
+      "tag": "ai_positional_encoding",
+      "patterns": [
+        "positional encoding",
+        "positional embedding",
+        "AI posisi",
+        "transformer positional"
+      ],
+      "responses": [
+        "Positional encoding menambahkan informasi posisi ke embedding sehingga transformer memahami urutan kata.",
+        "Menggunakan fungsi sinus dan kosinus pada transformer asli."
+      ]
+    },
+    {
+      "tag": "ai_fine_tuning",
+      "patterns": [
+        "fine tuning AI",
+        "fine tune model",
+        "fine tuning LLM",
+        "fine tuning indonesia"
+      ],
+      "responses": [
+        "Fine tuning adalah melatih model pre-trained pada data spesifik untuk tugas tertentu. Lebih efisien daripada training dari nol.",
+        "Contoh: fine tuning BERT untuk sentimen analisis di Indonesia."
+      ]
+    },
+    {
+      "tag": "ai_pretrained",
+      "patterns": [
+        "pre-trained model",
+        "model AI siap pakai",
+        "pretrained AI",
+        "pretrained LLM"
+      ],
+      "responses": [
+        "Pre-trained model adalah model yang sudah dilatih pada dataset besar dan bisa langsung digunakan atau fine-tuned. Contoh: BERT, GPT, ResNet.",
+        "Tersedia di Hugging Face, TensorFlow Hub, dan PyTorch Hub."
+      ]
+    },
+    {
+      "tag": "ai_huggingface",
+      "patterns": [
+        "Hugging Face",
+        "huggingface AI",
+        "model huggingface",
+        "transformers library"
+      ],
+      "responses": [
+        "Hugging Face adalah platform yang menyediakan ribuan pre-trained model, dataset, dan library transformers. Populer untuk NLP.",
+        "Library: transformers, datasets, diffusers (untuk gambar)."
+      ]
+    },
+    {
+      "tag": "ai_ollama",
+      "patterns": [
+        "Ollama AI",
+        "ollama LLM",
+        "AI lokal",
+        "AI offline",
+        "ollama indonesia"
+      ],
+      "responses": [
+        "Ollama adalah aplikasi yang memungkinkan menjalankan LLM secara lokal (offline). Mendukung model seperti LLaMA, Mistral, Gemma, dan banyak lagi.",
+        "Cocok untuk yang ingin AI tanpa internet atau data privacy."
+      ]
+    },
+    {
+      "tag": "ai_lm_studio",
+      "patterns": [
+        "LM Studio",
+        "LM Studio AI",
+        "AI lokal LM",
+        "LLM desktop"
+      ],
+      "responses": [
+        "LM Studio adalah aplikasi desktop untuk menjalankan LLM lokal dengan GUI. Mudah digunakan, download model, dan chat langsung.",
+        "Sama seperti Ollama tapi dengan antarmuka visual."
+      ]
+    },
+    {
+      "tag": "ai_gemma",
+      "patterns": [
+        "Gemma AI",
+        "Google Gemma",
+        "Gemma model",
+        "AI Gemma"
+      ],
+      "responses": [
+        "Gemma adalah model open-source dari Google, berbasis arsitektur Gemini. Ukuran 2B dan 7B parameter, cocok untuk on-device AI.",
+        "Bisa dijalankan lokal dengan Ollama atau Hugging Face."
+      ]
+    },
+    {
+      "tag": "ai_mistral",
+      "patterns": [
+        "Mistral AI",
+        "Mistral model",
+        "Mistral 7B",
+        "Mistral open source"
+      ],
+      "responses": [
+        "Mistral adalah model AI open-source yang sangat efisien, dengan performa tinggi di ukuran kecil (7B). Perusahaan Prancis yang kompetitif.",
+        "Mistral 7B mengungguli LLaMA 2 13B di banyak benchmark."
+      ]
+    },
+    {
+      "tag": "ai_llama",
+      "patterns": [
+        "LLaMA",
+        "Meta LLaMA",
+        "Llama 3",
+        "Llama AI",
+        "llama model"
+      ],
+      "responses": [
+        "LLaMA adalah model open-source dari Meta. LLaMA 3 memiliki kinerja setara GPT-4, tersedia dalam ukuran 8B dan 70B.",
+        "Sangat populer di komunitas open-source."
+      ]
+    },
+    {
+      "tag": "ai_phi",
+      "patterns": [
+        "Microsoft Phi",
+        "Phi 3",
+        "Phi model",
+        "AI Phi"
+      ],
+      "responses": [
+        "Phi adalah model LLM kecil dari Microsoft (3.8B) dengan performa tinggi untuk ukurannya, cocok untuk perangkat dengan resource terbatas.",
+        "Phi-3 memiliki kemampuan reasoning yang baik."
+      ]
+    },
+    {
+      "tag": "ai_qwen",
+      "patterns": [
+        "Qwen AI",
+        "Qwen LLM",
+        "Alibaba Qwen",
+        "Qwen 2.5"
+      ],
+      "responses": [
+        "Qwen adalah model LLM dari Alibaba yang open-source, dengan ukuran 0.5B sampai 72B. Performa kuat di benchmark bahasa China dan Inggris.",
+        "Qwen 2.5 memiliki kemampuan coding dan reasoning yang baik."
+      ]
+    },
+    {
+      "tag": "ai_deepseek",
+      "patterns": [
+        "DeepSeek AI",
+        "DeepSeek model",
+        "DeepSeek LLM",
+        "AI Cina deepseek"
+      ],
+      "responses": [
+        "DeepSeek adalah model AI dari Cina yang sangat kompetitif dengan GPT-4, dengan biaya training yang rendah. Menggunakan arsitektur MoE (Mixture of Experts).",
+        "DeepSeek V3 dan R1 menjadi berita besar karena efisiensi dan performa."
+      ]
+    },
+    {
+      "tag": "ai_grok",
+      "patterns": [
+        "Grok AI",
+        "xAI Grok",
+        "Elon Musk AI",
+        "Grok model"
+      ],
+      "responses": [
+        "Grok adalah AI dari xAI (Elon Musk), dengan kepribadian yang keren dan real-time access ke X (Twitter). Grok-2 adalah versi terbaru.",
+        "Dikenal dengan jawaban yang 'edgy' dan tidak terlalu politis."
+      ]
+    },
+    {
+      "tag": "ai_claude",
+      "patterns": [
+        "Claude AI",
+        "Claude 3",
+        "Claude Sonnet",
+        "Claude Opus",
+        "AI Claude"
+      ],
+      "responses": [
+        "Claude adalah AI dari Anthropic, dengan fokus pada safety dan constitutional AI. Claude 3 Opus adalah yang paling canggih, setara GPT-4.",
+        "Claude memiliki konteks 200K token, sangat kuat untuk analisis dokumen panjang."
+      ]
+    },
+    {
+      "tag": "ai_openai",
+      "patterns": [
+        "OpenAI",
+        "OpenAI API",
+        "OpenAI model",
+        "gpt openai"
+      ],
+      "responses": [
+        "OpenAI adalah perusahaan AI terkemuka yang mengembangkan GPT, DALL-E, Whisper, dan lainnya. API OpenAI menjadi standar industri.",
+        "OpenAI didukung oleh Microsoft dan memimpin di generative AI."
+      ]
+    },
+    {
+      "tag": "ai_agent",
+      "patterns": [
+        "AI agent",
+        "autonomous agent",
+        "AI agent framework",
+        "agent AI",
+        "LangChain"
+      ],
+      "responses": [
+        "AI agent adalah sistem yang dapat bertindak otonom untuk mencapai tujuan, menggunakan tools dan reasoning. Contoh: AutoGPT, BabyAGI.",
+        "Framework: LangChain, AutoGen, CrewAI."
+      ]
+    },
+    {
+      "tag": "ai_langchain",
+      "patterns": [
+        "LangChain",
+        "AI agent LangChain",
+        "framework langchain",
+        "langchain RAG"
+      ],
+      "responses": [
+        "LangChain adalah framework untuk membangun aplikasi berbasis LLM dengan integrasi tools, memory, dan RAG. Sangat populer.",
+        "Memudahkan pembuatan AI agent dan chatbot kompleks."
+      ]
+    },
+    {
+      "tag": "ai_dify",
+      "patterns": [
+        "Dify AI",
+        "Dify platform",
+        "AI workflow Dify",
+        "Dify RAG"
+      ],
+      "responses": [
+        "Dify adalah platform open-source untuk membangun aplikasi AI dengan UI drag-and-drop, mendukung RAG dan agent. Alternatif LangChain.",
+        "Cocok untuk non-coder dan cepat prototyping."
+      ]
+    },
+    {
+      "tag": "ai_flowise",
+      "patterns": [
+        "Flowise AI",
+        "Flowise platform",
+        "AI low code",
+        "Flowise RAG"
+      ],
+      "responses": [
+        "Flowise adalah low-code/no-code platform untuk membangun aplikasi LLM dengan visual drag-and-drop. Berbasis LangChain.",
+        "Mudah digunakan untuk membuat chatbot dan agent."
+      ]
+    },
+    {
+      "tag": "ai_vector_database",
+      "patterns": [
+        "vector database",
+        "AI vector db",
+        "Pinecone",
+        "Milvus",
+        "ChromaDB",
+        "Qdrant"
+      ],
+      "responses": [
+        "Vector database adalah database yang menyimpan embeddings untuk semantic search dan RAG. Contoh: Pinecone, Milvus, ChromaDB, Qdrant.",
+        "Digunakan untuk retrieval cepat pada aplikasi AI."
+      ]
+    },
+    {
+      "tag": "ai_chromadb",
+      "patterns": [
+        "ChromaDB",
+        "vector db Chroma",
+        "chromadb AI",
+        "RAG chroma"
+      ],
+      "responses": [
+        "ChromaDB adalah vector database open-source yang ringan, mudah digunakan untuk aplikasi RAG dan semantic search.",
+        "Bisa dijalankan lokal atau embedded."
+      ]
+    },
+    {
+      "tag": "ai_pinecone",
+      "patterns": [
+        "Pinecone AI",
+        "Pinecone vector",
+        "vector db pinecone",
+        "AI pinecone"
+      ],
+      "responses": [
+        "Pinecone adalah vector database cloud yang terkelola, dengan performa tinggi dan mudah diintegrasikan dengan API AI.",
+        "Cocok untuk production RAG."
+      ]
+    },
+    {
+      "tag": "ai_milvus",
+      "patterns": [
+        "Milvus AI",
+        "vector db Milvus",
+        "Milvus open source",
+        "AI milvus"
+      ],
+      "responses": [
+        "Milvus adalah vector database open-source yang scalable, bisa dijalankan di cloud atau on-premise.",
+        "Mendukung GPU acceleration untuk pencarian cepat."
+      ]
+    },
+    {
+      "tag": "ai_weaviate",
+      "patterns": [
+        "Weaviate AI",
+        "Weaviate vector",
+        "vector db weaviate",
+        "AI weaviate"
+      ],
+      "responses": [
+        "Weaviate adalah vector database open-source dengan built-in graphQL, mendukung RAG dan hybrid search.",
+        "Mudah diintegrasikan dengan model AI."
+      ]
+    },
+    {
+      "tag": "ai_openrouter",
+      "patterns": [
+        "OpenRouter AI",
+        "OpenRouter API",
+        "AI router",
+        "openrouter models"
+      ],
+      "responses": [
+        "OpenRouter adalah platform yang menggabungkan banyak LLM (OpenAI, Anthropic, Google, open-source) dalam satu API.",
+        "Memudahkan memilih model terbaik untuk setiap tugas."
+      ]
+    },
+    {
+      "tag": "ai_vllm",
+      "patterns": [
+        "vLLM",
+        "vLLM AI",
+        "LLM serving",
+        "AI inference",
+        "high performance LLM"
+      ],
+      "responses": [
+        "vLLM adalah library untuk serving LLM dengan performa tinggi, menggunakan PagedAttention untuk efisiensi memori.",
+        "Dapat menjalankan model besar dengan latency rendah."
+      ]
+    },
+    {
+      "tag": "ai_text_generation",
+      "patterns": [
+        "text generation AI",
+        "AI generate teks",
+        "AI nulis",
+        "AI content generator",
+        "AI writing"
+      ],
+      "responses": [
+        "Text generation adalah tugas menghasilkan teks baru dari prompt. Digunakan untuk chatbot, content creation, dan creative writing.",
+        "Model: GPT, LLaMA, Mistral."
+      ]
+    },
+    {
+      "tag": "ai_code_generation",
+      "patterns": [
+        "code generation AI",
+        "AI bikin kode",
+        "AI coding assistant",
+        "AI generate code",
+        "Copilot AI"
+      ],
+      "responses": [
+        "Code generation adalah AI yang menulis kode dari deskripsi atau menyelesaikan kode. Contoh: GitHub Copilot, ChatGPT.",
+        "Mempercepat development dan debugging."
+      ]
+    },
+    {
+      "tag": "ai_sql",
+      "patterns": [
+        "AI SQL",
+        "AI generate SQL",
+        "SQL AI",
+        "AI query database",
+        "text to SQL"
+      ],
+      "responses": [
+        "Text-to-SQL adalah AI yang mengubah bahasa alami menjadi query SQL. Memudahkan non-teknis mengakses database.",
+        "Contoh: OpenAI Codex, LangChain SQL agent."
+      ]
+    },
+    {
+      "tag": "ai_excel",
+      "patterns": [
+        "AI Excel",
+        "AI spreadsheet",
+        "AI formula Excel",
+        "AI analisis data",
+        "AI Excel formula"
+      ],
+      "responses": [
+        "AI di Excel: generate formula, analisis data, visualisasi, dan prediksi. Coba dengan ChatGPT atau tools seperti Ajelix.",
+        "Microsoft juga mengintegrasikan Copilot di Excel."
+      ]
+    },
+    {
+      "tag": "ai_presentation",
+      "patterns": [
+        "AI presentation",
+        "AI slide",
+        "AI powerpoint",
+        "AI buat presentasi",
+        "AI deck"
+      ],
+      "responses": [
+        "AI untuk presentasi: generate slide, desain, dan konten. Tools: Tome, Gamma, Beautiful.ai.",
+        "Menghemat waktu membuat slide."
+      ]
+    },
+    {
+      "tag": "ai_design",
+      "patterns": [
+        "AI design",
+        "AI desain",
+        "AI graphic design",
+        "AI gambar",
+        "Canva AI"
+      ],
+      "responses": [
+        "AI untuk desain: generate gambar, logo, layout, dan konten visual. Canva AI, Adobe Firefly, dan Midjourney.",
+        "Mempercepat proses desain kreatif."
+      ]
+    },
+    {
+      "tag": "ai_video",
+      "patterns": [
+        "AI video",
+        "AI generate video",
+        "AI video editing",
+        "AI animasi",
+        "Runway AI"
+      ],
+      "responses": [
+        "AI untuk video: generate video dari teks, editing otomatis, dan animasi. Contoh: Runway Gen-2, Pika, Sora (OpenAI).",
+        "Sora dapat menghasilkan video realistis dari prompt."
+      ]
+    },
+    {
+      "tag": "ai_music",
+      "patterns": [
+        "AI music",
+        "AI generate music",
+        "AI komposisi musik",
+        "Suno AI",
+        "AI audio"
+      ],
+      "responses": [
+        "AI music generation: menghasilkan lagu dari prompt. Contoh: Suno AI, Udio, AIVA.",
+        "Bisa menghasilkan musik dengan vokal dan instrumen."
+      ]
+    },
+    {
+      "tag": "ai_voice",
+      "patterns": [
+        "AI voice",
+        "AI suara",
+        "voice AI",
+        "AI clone suara",
+        "ElevenLabs"
+      ],
+      "responses": [
+        "AI voice: TTS, voice cloning, dan voice synthesis. ElevenLabs adalah yang terbaik untuk suara natural.",
+        "Digunakan untuk audiobook, dubbing, dan asisten suara."
+      ]
+    },
+    {
+      "tag": "ai_3d",
+      "patterns": [
+        "AI 3D",
+        "AI generate 3D",
+        "AI 3D model",
+        "AI 3D object"
+      ],
+      "responses": [
+        "AI untuk 3D: generate model 3D dari gambar atau teks. Contoh: Shap-E, DreamFusion, Luma AI.",
+        "Berguna untuk game, film, dan AR/VR."
+      ]
+    },
+    {
+      "tag": "ai_api_key",
+      "patterns": [
+        "API key AI",
+        "OpenAI API key",
+        "get API key",
+        "AI API key gratis"
+      ],
+      "responses": [
+        "API key adalah kunci untuk mengakses API AI. Dapatkan dari platform seperti OpenAI, Google Gemini, atau Hugging Face.",
+        "Gratis: Hugging Face, Google Gemini (ada quota)."
+      ]
+    },
+    {
+      "tag": "ai_cost",
+      "patterns": [
+        "biaya AI",
+        "harga API AI",
+        "AI API price",
+        "OpenAI pricing",
+        "AI murah"
+      ],
+      "responses": [
+        "Harga API AI: OpenAI GPT-4 sekitar $0.03 per 1K token input, GPT-3.5 lebih murah. Model open-source gratis tapi butuh infrastruktur.",
+        "Untuk hemat, gunakan model lokal atau yang lebih kecil seperti Gemma/Mistral."
+      ]
+    },
+    {
+      "tag": "ai_local",
+      "patterns": [
+        "AI lokal",
+        "AI offline",
+        "AI tanpa internet",
+        "local AI",
+        "AI di laptop"
+      ],
+      "responses": [
+        "Local AI menjalankan model di perangkat sendiri tanpa internet. Ollama, LM Studio, dan llama.cpp adalah tools populer.",
+        "Keuntungan: privacy, offline, dan tidak ada biaya API."
+      ]
+    },
+    {
+      "tag": "ai_llama_cpp",
+      "patterns": [
+        "llama.cpp",
+        "AI C++",
+        "LLM C++",
+        "llama cpp quantized"
+      ],
+      "responses": [
+        "llama.cpp adalah library C++ untuk menjalankan LLM secara efisien di CPU. Mendukung kuantisasi untuk ukuran kecil.",
+        "Populer di kalangan yang tidak punya GPU."
+      ]
+    },
+    {
+      "tag": "ai_gguf",
+      "patterns": [
+        "GGUF",
+        "GGUF model",
+        "AI quantized",
+        "GGUF format"
+      ],
+      "responses": [
+        "GGUF adalah format model yang di-kuantisasi untuk efisiensi, digunakan oleh llama.cpp dan Ollama. Ukuran lebih kecil dengan performa tetap baik.",
+        "Mendukung berbagai model seperti LLaMA, Mistral, Gemma."
+      ]
+    },
+    {
+      "tag": "ai_quantization",
+      "patterns": [
+        "kuantisasi AI",
+        "AI quantization",
+        "model compression",
+        "quantized LLM"
+      ],
+      "responses": [
+        "Quantization adalah mengurangi presisi bobot model (contoh: FP16 ke INT8) untuk menghemat memori dan mempercepat inferensi.",
+        "Mengurangi ukuran model hingga 4x tanpa penurunan akurasi signifikan."
+      ]
+    },
+    {
+      "tag": "ai_pruning",
+      "patterns": [
+        "pruning AI",
+        "model pruning",
+        "AI compression",
+        "pruning neural network"
+      ],
+      "responses": [
+        "Pruning adalah menghapus neuron atau bobot yang kurang penting untuk mengurangi ukuran model. Meningkatkan efisiensi.",
+        "Sering dikombinasikan dengan quantization."
+      ]
+    },
+    {
+      "tag": "ai_distillation",
+      "patterns": [
+        "knowledge distillation",
+        "distillation AI",
+        "teacher student AI",
+        "model distillation"
+      ],
+      "responses": [
+        "Knowledge distillation adalah mentransfer pengetahuan dari model besar (teacher) ke model kecil (student). Hasilnya model kecil dengan performa mendekati model besar.",
+        "Contoh: DistilBERT."
+      ]
+    },
+    {
+      "tag": "ai_benchmark",
+      "patterns": [
+        "benchmark AI",
+        "AI benchmark",
+        "MMLU",
+        "HumanEval",
+        "GLUE",
+        "SuperGLUE"
+      ],
+      "responses": [
+        "Benchmark AI: MMLU (pengetahuan umum), HumanEval (coding), GLUE/SuperGLUE (NLP), dan MATH (matematika).",
+        "Digunakan untuk membandingkan performa model."
+      ]
+    },
+    {
+      "tag": "ai_evaluation",
+      "patterns": [
+        "evaluasi AI",
+        "AI evaluation",
+        "metrik AI",
+        "accuracy precision recall",
+        "F1 score"
+      ],
+      "responses": [
+        "Metrik evaluasi AI: accuracy, precision, recall, F1-score, AUC-ROC, dan perplexity untuk language model.",
+        "Pilih metrik sesuai masalah: F1 untuk imbalance data."
+      ]
+    },
+    {
+      "tag": "ai_hyperparameter",
+      "patterns": [
+        "hyperparameter AI",
+        "tuning hyperparameter",
+        "grid search",
+        "random search",
+        "hyperparameter optimization"
+      ],
+      "responses": [
+        "Hyperparameter adalah parameter yang ditentukan sebelum training: learning rate, batch size, jumlah layer. Tuning penting untuk performa optimal.",
+        "Teknik: Grid Search, Random Search, Bayesian Optimization."
+      ]
+    },
+    {
+      "tag": "ai_cross_validation",
+      "patterns": [
+        "cross validation",
+        "validasi silang",
+        "k-fold cross validation",
+        "CV AI"
+      ],
+      "responses": [
+        "Cross validation adalah teknik untuk mengevaluasi model dengan membagi data menjadi beberapa fold. K-fold adalah yang paling umum.",
+        "Mengurangi overfitting dan memberikan estimasi performa yang lebih stabil."
+      ]
+    },
+    {
+      "tag": "ai_data_augmentation",
+      "patterns": [
+        "data augmentation",
+        "augmentasi data",
+        "AI augmentasi",
+        "data generation"
+      ],
+      "responses": [
+        "Data augmentation adalah teknik memperbanyak data dengan modifikasi: rotasi gambar, flipping, noise, atau synonym replacement untuk teks.",
+        "Mencegah overfitting dan meningkatkan generalisasi."
+      ]
+    },
+    {
+      "tag": "ai_pytorch_vs_tensorflow",
+      "patterns": [
+        "perbedaan PyTorch dan TensorFlow",
+        "PyTorch vs TensorFlow",
+        "pilih framework AI",
+        "PyTorch atau TensorFlow"
+      ],
+      "responses": [
+        "PyTorch lebih populer di penelitian karena dinamis dan mudah debugging. TensorFlow lebih matang untuk produksi dan deployment.",
+        "Keduanya powerful — pilih sesuai kebutuhan."
+      ]
+    },
+    {
+      "tag": "ai_jupyter",
+      "patterns": [
+        "Jupyter AI",
+        "Jupyter notebook",
+        "AI di Jupyter",
+        "Jupyter lab"
+      ],
+      "responses": [
+        "Jupyter Notebook adalah environment interaktif untuk coding Python, sangat populer untuk eksperimen AI dan data science.",
+        "Bisa dijalankan lokal atau di cloud seperti Google Colab."
+      ]
+    },
+    {
+      "tag": "ai_colab",
+      "patterns": [
+        "Google Colab",
+        "Colab AI",
+        "AI di Colab",
+        "Colab GPU"
+      ],
+      "responses": [
+        "Google Colab adalah notebook online gratis dengan GPU. Sangat populer untuk eksperimen AI tanpa perlu hardware mahal.",
+        "Colab Pro menyediakan GPU lebih baik dan lebih lama."
+      ]
+    },
+    {
+      "tag": "ai_deployment",
+      "patterns": [
+        "deployment AI",
+        "deploy model AI",
+        "serving AI",
+        "AI production",
+        "deploy model ML"
+      ],
+      "responses": [
+        "Deployment AI: menyajikan model ke produksi. Tools: Flask/FastAPI, TensorFlow Serving, TorchServe, dan cloud (AWS/GCP/Azure).",
+        "Pertimbangan: latency, skala, dan monitoring."
+      ]
+    },
+    {
+      "tag": "ai_docker",
+      "patterns": [
+        "Docker AI",
+        "AI container",
+        "dockerize AI",
+        "AI deployment docker"
+      ],
+      "responses": [
+        "Docker digunakan untuk containerize aplikasi AI, memastikan konsistensi lingkungan dan memudahkan deployment.",
+        "Sering digunakan bersama Kubernetes untuk skala besar."
+      ]
+    },
+    {
+      "tag": "ai_mlflow",
+      "patterns": [
+        "MLflow",
+        "MLflow AI",
+        "ML lifecycle",
+        "model registry AI"
+      ],
+      "responses": [
+        "MLflow adalah platform untuk mengelola siklus hidup ML: tracking eksperimen, packaging kode, dan registry model.",
+        "Membantu reproducible research dan deployment."
+      ]
+    },
+    {
+      "tag": "ai_kubernetes",
+      "patterns": [
+        "Kubernetes AI",
+        "AI k8s",
+        "orchestration AI",
+        "Kubeflow"
+      ],
+      "responses": [
+        "Kubernetes digunakan untuk orchestrate container AI di scale. Kubeflow adalah platform ML di Kubernetes.",
+        "Memudahkan scalable training dan deployment."
+      ]
+    },
+    {
+      "tag": "ai_auto_ml",
+      "patterns": [
+        "AutoML",
+        "Auto ML",
+        "AI otomatis",
+        "automated machine learning",
+        "AutoML tools"
+      ],
+      "responses": [
+        "AutoML adalah otomatisasi proses ML seperti feature engineering, model selection, dan hyperparameter tuning. Contoh: Auto-sklearn, H2O.ai, Google AutoML.",
+        "Cocok untuk non-eksperts atau rapid prototyping."
+      ]
+    },
+    {
+      "tag": "ai_nas",
+      "patterns": [
+        "neural architecture search",
+        "NAS AI",
+        "cari arsitektur AI",
+        "auto architecture"
+      ],
+      "responses": [
+        "Neural Architecture Search (NAS) adalah teknik otomatis mencari arsitektur neural network terbaik. Contoh: DARTS, ENAS.",
+        "Membutuhkan komputasi besar, tapi hasilnya sering outperform desain manual."
+      ]
+    },
+    {
+      "tag": "ai_kaggle",
+      "patterns": [
+        "Kaggle AI",
+        "Kaggle competition",
+        "kaggle ML",
+        "Kaggle dataset"
+      ],
+      "responses": [
+        "Kaggle adalah platform kompetisi data science dan ML. Banyak dataset tersedia, dan kompetisi bisa meningkatkan skill.",
+        "Grandmasters Kaggle sering mendapat pekerjaan di perusahaan top."
+      ]
+    },
+    {
+      "tag": "ai_notebook",
+      "patterns": [
+        "notebook AI",
+        "AI notebook",
+        "Google Colab notebook",
+        "Jupyter notebook AI"
+      ],
+      "responses": [
+        "Notebook AI adalah environment interaktif untuk coding dan visualisasi. Populer di eksplorasi data dan prototyping ML.",
+        "Colab dan Jupyter adalah yang paling umum."
+      ]
+    },
+    {
+      "tag": "ai_bi",
+      "patterns": [
+        "AI business intelligence",
+        "AI BI",
+        "AI analytics",
+        "AI dashboard",
+        "AI untuk bisnis"
+      ],
+      "responses": [
+        "AI di BI: analisis data otomatis, prediksi tren, dan dashboard cerdas. Contoh: Tableau AI, Power BI Copilot.",
+        "Membantu pengambilan keputusan berbasis data."
+      ]
+    },
+    {
+      "tag": "ai_project_management",
+      "patterns": [
+        "AI project management",
+        "AI manajemen proyek",
+        "AI PM",
+        "AI scheduling"
+      ],
+      "responses": [
+        "AI di manajemen proyek: prediksi risiko, scheduling otomatis, dan resource allocation. Contoh: Asana AI, ClickUp AI.",
+        "Meningkatkan efisiensi tim."
+      ]
+    },
+    {
+      "tag": "ai_personal_assistant",
+      "patterns": [
+        "AI personal assistant",
+        "asisten AI",
+        "AI assistant",
+        "Google Assistant",
+        "Siri"
+      ],
+      "responses": [
+        "AI personal assistant: membantu jadwal, tugas, dan informasi. Contoh: Google Assistant, Siri, Alexa.",
+        "Dengan AI, asisten bisa lebih proaktif dan personalized."
+      ]
+    },
+    {
+      "tag": "ai_browser",
+      "patterns": [
+        "AI browser",
+        "AI di browser",
+        "browser AI",
+        "AI web extension"
+      ],
+      "responses": [
+        "AI di browser: web extension untuk summarization, translation, dan writing assistant. Contoh: ChatGPT extension.",
+        "Juga browser AI seperti Arc atau Opera dengan AI built-in."
+      ]
+    },
+    {
+      "tag": "ai_smartphone",
+      "patterns": [
+        "AI smartphone",
+        "AI di HP",
+        "chip AI HP",
+        "AI camera",
+        "on-device AI"
+      ],
+      "responses": [
+        "AI di smartphone: camera AI, voice assistant, dan on-device AI. Google Pixel, iPhone, dan Samsung memiliki chip AI.",
+        "Apple Neural Engine, Google TPU, dan NPU Qualcomm."
+      ]
+    },
+    {
+      "tag": "ai_television",
+      "patterns": [
+        "AI TV",
+        "AI smart TV",
+        "AI di TV",
+        "AI upscaling"
+      ],
+      "responses": [
+        "AI di TV: upscaling gambar, rekomendasi konten, dan voice control. Contoh: Samsung Neo QLED, LG OLED dengan AI.",
+        "AI meningkatkan pengalaman menonton."
+      ]
+    },
+    {
+      "tag": "ai_gadget",
+      "patterns": [
+        "AI gadget",
+        "gadget AI",
+        "AI device",
+        "AI wearable",
+        "smartwatch AI"
+      ],
+      "responses": [
+        "Gadget AI: smartwatch (deteksi jatuh, EKG), earbuds (active noise cancellation), dan home automation.",
+        "AI membuat gadget lebih cerdas dan adaptif."
+      ]
+    },
+    {
+      "tag": "ai_raspberry",
+      "patterns": [
+        "AI Raspberry Pi",
+        "Raspberry Pi AI",
+        "AI di Raspberry",
+        "edge AI Pi"
+      ],
+      "responses": [
+        "Raspberry Pi dapat menjalankan ML ringan dengan TensorFlow Lite, OpenCV, atau Coral TPU. Cocok untuk prototipe IoT dan edge AI.",
+        "Contoh: deteksi objek, smart home, dan robotika murah."
+      ]
+    },
+    {
+      "tag": "ai_arduino",
+      "patterns": [
+        "AI Arduino",
+        "Arduino AI",
+        "AI di Arduino",
+        "TinyML Arduino"
+      ],
+      "responses": [
+        "Arduino dengan AI (TinyML) dapat menjalankan model sederhana untuk sensor. TensorFlow Lite Micro dan Edge Impulse mendukung.",
+        "Contoh: pengenalan suara, gestur, atau prediksi."
+      ]
+    },
+    {
+      "tag": "ai_robot",
+      "patterns": [
+        "AI robot",
+        "robot AI",
+        "robot pintar",
+        "robot humanoid",
+        "robot Indonesia"
+      ],
+      "responses": [
+        "Robot AI menggunakan AI untuk navigasi, penglihatan, dan interaksi. Contoh: Boston Dynamics Atlas, ASIMO, dan robot Indonesia di ITS/ITB.",
+        "Robot dilengkapi sensor dan model AI untuk otonomi."
+      ]
+    },
+    {
+      "tag": "ai_drone",
+      "patterns": [
+        "AI drone",
+        "drone AI",
+        "AI drone Indonesia",
+        "drone otonom"
+      ],
+      "responses": [
+        "AI drone: navigasi otonom, obstacle avoidance, dan object tracking. Digunakan untuk survei, pertanian, dan pengiriman.",
+        "Contoh: DJI dengan AI, atau drone custom dengan OpenCV."
+      ]
+    },
+    {
+      "tag": "ai_vehicle",
+      "patterns": [
+        "AI vehicle",
+        "kendaraan AI",
+        "AI mobil",
+        "AI transportasi",
+        "autonomous vehicle"
+      ],
+      "responses": [
+        "AI di kendaraan: autonomous driving, adaptive cruise control, dan lane keeping. Mobil listrik juga menggunakan AI untuk manajemen baterai.",
+        "Tesla, Waymo, dan Toyota adalah pemimpin."
+      ]
+    },
+    {
+      "tag": "ai_satellite",
+      "patterns": [
+        "AI satelit",
+        "satellite AI",
+        "AI citra satelit",
+        "AI penginderaan jauh"
+      ],
+      "responses": [
+        "AI di satelit: analisis citra untuk pertanian, deforestasi, urban planning, dan bencana alam. Contoh: Planet Labs, Sentinel data.",
+        "Menggunakan computer vision dan deep learning."
+      ]
+    },
+    {
+      "tag": "ai_agriculture_indonesia",
+      "patterns": [
+        "AI pertanian Indonesia",
+        "AI tani Indonesia",
+        "AI sawah",
+        "AI pertanian presisi",
+        "smart farming Indonesia"
+      ],
+      "responses": [
+        "AI pertanian Indonesia: drone untuk monitoring sawah, prediksi hama dengan CV, dan sistem irigasi cerdas. Ada startup seperti Erajaya, juga riset dari ITB dan UGM.",
+        "Membantu petani meningkatkan produktivitas dan mengurangi kerugian."
+      ]
+    },
+    {
+      "tag": "ai_fishery_indonesia",
+      "patterns": [
+        "AI perikanan Indonesia",
+        "AI nelayan",
+        "AI laut Indonesia",
+        "AI prediksi ikan",
+        "smart fishing"
+      ],
+      "responses": [
+        "AI perikanan Indonesia: prediksi lokasi ikan, monitoring kualitas air, dan deteksi penyakit ikan. KKP juga menggunakan AI untuk pemetaan laut.",
+        "Meningkatkan hasil tangkapan dan keberlanjutan."
+      ]
+    },
+    {
+      "tag": "ai_disaster_indonesia",
+      "patterns": [
+        "AI bencana Indonesia",
+        "AI gempa Indonesia",
+        "AI banjir",
+        "AI prediksi bencana",
+        "AI mitigasi bencana"
+      ],
+      "responses": [
+        "AI di Indonesia untuk mitigasi bencana: prediksi banjir, gempa, dan analisis citra satelit untuk kebakaran. Ada sistem peringatan dini berbasis AI.",
+        "BMKG dan BNPB mulai mengintegrasikan AI."
+      ]
+    },
+    {
+      "tag": "ai_traffic_indonesia",
+      "patterns": [
+        "AI lalu lintas",
+        "AI macet Indonesia",
+        "AI traffic Jakarta",
+        "AI transportasi Indonesia"
+      ],
+      "responses": [
+        "AI untuk lalu lintas: analisis CCTV, prediksi kemacetan, dan optimasi lampu lalu lintas. Di Jakarta, ada sistem berbasis AI untuk traffic management.",
+        "Membantu mengurangi kemacetan dan polusi."
+      ]
+    },
+    {
+      "tag": "ai_smes_indonesia",
+      "patterns": [
+        "AI UMKM",
+        "AI UKM Indonesia",
+        "AI bisnis kecil",
+        "AI untuk UMKM"
+      ],
+      "responses": [
+        "AI untuk UMKM: chatbot customer service, analisis pasar, dan optimasi pemasaran. Bisa menggunakan tools murah atau no-code.",
+        "Platform seperti Tokopedia dan Shopee membantu UMKM dengan AI."
+      ]
+    },
+    {
+      "tag": "ai_startup_indonesia",
+      "patterns": [
+        "startup AI Indonesia",
+        "AI startup",
+        "AI unicorn Indonesia",
+        "AI company Indonesia"
+      ],
+      "responses": [
+        "Startup AI Indonesia: Kata.ai (NLP), Nodeflux (vision), Danabijak (fintech), dan masih banyak. GoTo dan Bukalapak juga pakai AI.",
+        "Ekosistem AI Indonesia berkembang pesat dengan banyak event dan komunitas."
+      ]
+    },
+    {
+      "tag": "ai_community_indonesia",
+      "patterns": [
+        "komunitas AI Indonesia",
+        "AI Indonesia",
+        "komunitas ML Indonesia",
+        "AI meetup Indonesia"
+      ],
+      "responses": [
+        "Komunitas AI Indonesia: Indonesia AI, ML Indonesia, Data Science Indonesia. Ada banyak meetup, webinar, dan hackathon.",
+        "Ikut di Telegram dan LinkedIn untuk update."
+      ]
+    },
+    {
+      "tag": "ai_education_indonesia",
+      "patterns": [
+        "AI pendidikan Indonesia",
+        "AI sekolah Indonesia",
+        "AI belajar Indonesia",
+        "AI untuk guru Indonesia"
+      ],
+      "responses": [
+        "AI di pendidikan Indonesia: tutor AI, personalisasi belajar, dan deteksi plagiarisme. Beberapa universitas seperti UI, ITB, UGM memiliki pusat AI.",
+        "Platform seperti Ruangguru dan Zenius mulai menggunakan AI."
+      ]
+    },
+    {
+      "tag": "ai_kominfo",
+      "patterns": [
+        "Kominfo AI",
+        "regulasi AI Kominfo",
+        "AI pemerintah Indonesia",
+        "Kominfo AI roadmap"
+      ],
+      "responses": [
+        "Kominfo sedang menyusun regulasi dan roadmap AI Indonesia. Ada juga program AI untuk Smart City dan transformasi digital.",
+        "Indonesia bergerak menuju ekonomi berbasis AI."
+      ]
+    },
+    {
+      "tag": "ai_gov_indonesia",
+      "patterns": [
+        "AI pemerintah",
+        "AI birokrasi",
+        "AI pelayanan publik",
+        "AI Indonesia government"
+      ],
+      "responses": [
+        "AI di pemerintah Indonesia: e-government, analisis data publik, dan pelayanan publik seperti chatbot layanan.",
+        "Meningkatkan efisiensi dan transparansi."
+      ]
+    },
+    {
+      "tag": "ai_digital_indonesia",
+      "patterns": [
+        "AI digital Indonesia",
+        "transformasi digital AI",
+        "Indonesia 4.0",
+        "AI industri Indonesia"
+      ],
+      "responses": [
+        "Indonesia 4.0 adalah roadmap transformasi digital yang mencakup AI. Sektor manufaktur, logistik, dan pertanian menjadi target.",
+        "AI menjadi pilar penting dalam visi Indonesia 2045."
+      ]
+    },
+    {
+      "tag": "ai_skill_indonesia",
+      "patterns": [
+        "skill AI Indonesia",
+        "belajar AI di Indonesia",
+        "bootcamp AI Indonesia",
+        "kursus AI Indonesia"
+      ],
+      "responses": [
+        "Belajar AI di Indonesia: bootcamp seperti Hacktiv8, Purwadhika, dan online courses. Juga ada beasiswa dari Kominfo dan DICT.",
+        "Komunitas dan meetup membantu networking dan belajar."
+      ]
+    },
+    {
+      "tag": "ai_bahasa_daerah",
+      "patterns": [
+        "AI bahasa daerah",
+        "AI Jawa",
+        "AI Sunda",
+        "AI Bali",
+        "AI bahasa Indonesia daerah"
+      ],
+      "responses": [
+        "Pengembangan AI untuk bahasa daerah Indonesia seperti Jawa, Sunda, Bali. Ada dataset dan model yang mulai dikembangkan.",
+        "Contoh: IndoBERT untuk bahasa Indonesia, dan beberapa proyek untuk bahasa daerah."
+      ]
+    },
+    {
+      "tag": "ai_culture_indonesia",
+      "patterns": [
+        "AI budaya Indonesia",
+        "AI wayang",
+        "AI batik",
+        "AI seni Indonesia",
+        "AI warisan budaya"
+      ],
+      "responses": [
+        "AI untuk budaya Indonesia: digitalisasi wayang, batik pattern generation, dan preservation budaya. Bisa menggunakan CV dan generative AI.",
+        "Proyek seperti ini masih jarang tapi potensial."
+      ]
+    },
+    {
+      "tag": "ai_culinary_indonesia",
+      "patterns": [
+        "AI kuliner Indonesia",
+        "AI makanan Indonesia",
+        "AI resep Indonesia",
+        "AI rasa"
+      ],
+      "responses": [
+        "AI di kuliner Indonesia: rekomendasi resep, analisis rasa, dan prediksi tren makanan. Ada platform yang menggunakan AI untuk match rasa.",
+        "Contoh: FoodAI atau aplikasi resep."
+      ]
+    },
+    {
+      "tag": "ai_tourism_indonesia",
+      "patterns": [
+        "AI pariwisata Indonesia",
+        "AI wisata Indonesia",
+        "AI rekomendasi wisata",
+        "AI travel Indonesia"
+      ],
+      "responses": [
+        "AI untuk pariwisata Indonesia: rekomendasi destinasi, prediksi okupansi hotel, dan chatbot untuk wisatawan. Kemenparekraf mulai menggunakan AI.",
+        "Membantu promosi dan pengalaman wisata."
+      ]
+    },
+    {
+      "tag": "ai_smart_city_indonesia",
+      "patterns": [
+        "smart city Indonesia AI",
+        "AI kota Indonesia",
+        "AI Jakarta",
+        "AI Surabaya",
+        "AI Bandung"
+      ],
+      "responses": [
+        "Smart city di Indonesia: Jakarta, Surabaya, Bandung. Menggunakan AI untuk transportasi, keamanan, dan pelayanan publik.",
+        "Contoh: Jakarta Smart City dengan pusat kontrol berbasis AI."
+      ]
+    },
+    {
+      "tag": "ai_disaster_indonesia",
+      "patterns": [
+        "AI bencana",
+        "AI tanggap darurat",
+        "AI bencana alam",
+        "AI prediksi"
+      ],
+      "responses": [
+        "AI untuk tanggap darurat: analisis citra satelit untuk mapping, prediksi jalur bencana, dan koordinasi bantuan.",
+        "Contoh: sistem peringatan tsunami berbasis AI di BMKG."
+      ]
+    },
+    {
+      "tag": "ai_health_indonesia",
+      "patterns": [
+        "AI kesehatan Indonesia",
+        "AI RS Indonesia",
+        "AI deteksi penyakit",
+        "AI medis Indonesia"
+      ],
+      "responses": [
+        "AI di Indonesia untuk kesehatan: deteksi dini penyakit, analisis citra medis, dan sistem rujukan. Contoh: rumah sakit besar menggunakan AI untuk radiologi.",
+        "Ada juga aplikasi seperti Halodoc yang mulai integrasi AI."
+      ]
+    },
+    {
+      "tag": "ai_finance_indonesia",
+      "patterns": [
+        "AI fintech Indonesia",
+        "AI bank Indonesia",
+        "AI kredit",
+        "AI investasi Indonesia"
+      ],
+      "responses": [
+        "AI di fintech Indonesia: deteksi fraud, credit scoring, dan analisis pasar. Startup seperti Amartha, Investree, dan fintech lainnya menggunakan AI.",
+        "OJK juga mulai mengatur penggunaan AI di sektor keuangan."
+      ]
+    },
+    {
+      "tag": "ai_hukum_indonesia",
+      "patterns": [
+        "AI hukum Indonesia",
+        "AI peradilan",
+        "AI advokat",
+        "AI legal Indonesia"
+      ],
+      "responses": [
+        "AI di Indonesia untuk hukum: analisis putusan, contract review, dan riset hukum. Ada beberapa inisiatif dari firma hukum dan universitas.",
+        "Mahkamah Agung juga mulai digitalisasi."
+      ]
+    },
+    {
+      "tag": "ai_pilkada",
+      "patterns": [
+        "AI pilkada",
+        "AI pemilu",
+        "AI politik Indonesia",
+        "AI analisis politik"
+      ],
+      "responses": [
+        "AI untuk politik: analisis sentimen publik, prediksi hasil pemilu, dan sosial media monitoring. Digunakan oleh tim kampanye dan surveyor.",
+        "Harus digunakan secara etis dan transparan."
+      ]
+    },
+    {
+      "tag": "ai_food_security",
+      "patterns": [
+        "AI ketahanan pangan",
+        "AI food security",
+        "AI pangan Indonesia",
+        "AI pertanian pangan"
+      ],
+      "responses": [
+        "AI untuk ketahanan pangan: prediksi produksi, monitoring hama, dan optimasi rantai pasok. Indonesia menggunakan AI untuk swasembada pangan.",
+        "Data dari BPS, Kementan, dan satelit."
+      ]
+    },
+    {
+      "tag": "ai_energy_indonesia",
+      "patterns": [
+        "AI energi Indonesia",
+        "AI listrik",
+        "AI solar",
+        "AI renewable"
+      ],
+      "responses": [
+        "AI di energi Indonesia: prediksi beban listrik, optimasi panel surya, dan efisiensi energi. PLN dan perusahaan swasta mulai menggunakan AI.",
+        "Energi terbarukan juga dibantu AI untuk prediksi cuaca."
+      ]
+    },
+    {
+      "tag": "ai_mining_indonesia",
+      "patterns": [
+        "AI tambang Indonesia",
+        "AI pertambangan Indonesia",
+        "AI mineral",
+        "AI batubara"
+      ],
+      "responses": [
+        "AI di pertambangan Indonesia: eksplorasi mineral, keselamatan kerja, dan optimasi produksi. Freeport dan PTBA menggunakan AI.",
+        "Membantu efisiensi dan mengurangi risiko."
+      ]
+    },
+    {
+      "tag": "ai_airport_indonesia",
+      "patterns": [
+        "AI bandara Indonesia",
+        "AI airport",
+        "AI penerbangan",
+        "AI aeropolis"
+      ],
+      "responses": [
+        "AI di bandara: face recognition, optimasi jadwal, dan deteksi keamanan. Soekarno-Hatta mulai menggunakan AI untuk layanan.",
+        "Meningkatkan pengalaman penumpang dan keamanan."
+      ]
+    },
+    {
+      "tag": "ai_hotel_indonesia",
+      "patterns": [
+        "AI hotel Indonesia",
+        "AI perhotelan",
+        "AI hospitality",
+        "AI hotelier"
+      ],
+      "responses": [
+        "AI di perhotelan Indonesia: chatbot reservasi, personalisasi layanan, dan prediksi okupansi. Hotel bintang 5 mulai mengadopsi.",
+        "Meningkatkan loyalitas pelanggan."
+      ]
+    },
+    {
+      "tag": "ai_retail_indonesia",
+      "patterns": [
+        "AI retail Indonesia",
+        "AI toko",
+        "AI supermarket",
+        "AI ritel"
+      ],
+      "responses": [
+        "AI di retail Indonesia: optimasi stok, personalisasi promosi, dan analisis perilaku pelanggan. Supermarket seperti Alfamart, Indomaret mulai menggunakan AI.",
+        "E-commerce juga banyak menggunakan AI."
+      ]
+    },
+    {
+      "tag": "ai_logistics_indonesia",
+      "patterns": [
+        "AI logistik Indonesia",
+        "AI kurir",
+        "AI pengiriman",
+        "AI supply chain Indonesia"
+      ],
+      "responses": [
+        "AI di logistik Indonesia: optimasi rute pengiriman, prediksi permintaan, dan tracking. JNE, J&T, dan Gojek menggunakan AI.",
+        "Meningkatkan kecepatan dan akurasi pengiriman."
+      ]
+    },
+    {
+      "tag": "ai_construction_indonesia",
+      "patterns": [
+        "AI konstruksi Indonesia",
+        "AI bangunan",
+        "AI proyek Indonesia",
+        "AI infrastruktur"
+      ],
+      "responses": [
+        "AI di konstruksi Indonesia: monitoring proyek, keselamatan, dan estimasi biaya. Proyek infrastruktur seperti IKN mulai menggunakan AI.",
+        "Meningkatkan efisiensi dan kualitas."
+      ]
+    },
+    {
+      "tag": "ai_real_estate_indonesia",
+      "patterns": [
+        "AI properti Indonesia",
+        "AI real estate",
+        "AI harga rumah",
+        "AI jual beli properti"
+      ],
+      "responses": [
+        "AI di properti Indonesia: prediksi harga, rekomendasi properti, dan virtual tour. Platform seperti 99.co dan Rumah123 mulai menggunakan AI.",
+        "Membantu pembeli dan penjual."
+      ]
+    },
+    {
+      "tag": "ai_agriculture_tech",
+      "patterns": [
+        "Agritech AI",
+        "AI pertanian teknologi",
+        "AI drone pertanian",
+        "AI smart farming"
+      ],
+      "responses": [
+        "Agritech AI: drone, sensor, dan AI untuk pertanian presisi. Contoh: pemantauan tanaman dengan NDVI, deteksi penyakit dengan CV.",
+        "Meningkatkan hasil panen dan efisiensi air."
+      ]
+    },
+    {
+      "tag": "ai_marine_indonesia",
+      "patterns": [
+        "AI kelautan Indonesia",
+        "AI laut Indonesia",
+        "AI perikanan",
+        "AI konservasi laut"
+      ],
+      "responses": [
+        "AI di kelautan Indonesia: monitoring terumbu karang, deteksi ikan, dan perlindungan ekosistem. KKP dan WWF Indonesia mulai menggunakan.",
+        "Membantu pelestarian laut."
+      ]
+    }
+  ]
+}
