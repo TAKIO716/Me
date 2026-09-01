@@ -1,5 +1,164 @@
 {
   "intents": [
+
+  
+  {
+    "tag": "greeting_casual",
+    "patterns": [
+      "hi", "hai", "hei", "yo", "yo yo", "sup", "wassup", "what's up", "whats good", "howdy", "hiya", "hei", "ey", "oi", "alo", "helo", "hallo", "g'day", "holla", "hola", "wasap", "wazzup", "hey", "heya", "hey there", "hi there", "hello there", "how's it going", "how are you", "howdy do", "namaste", "salam", "konnichiwa", "ciao", "bonjour", "hola amigo", "yo bro", "sup dude", "hey man", "hi girl", "what's happening", "what's crackin", "what's new", "how's life", "how's everything", "how are things", "what's going on", "long time no see", "nice to see you", "good to see you", "what's the word", "what's the scoop", "how you doing", "how you been", "what's up buddy"
+    ],
+    "responses": [
+      "Yo! Ada apa? Siap bantu identifikasi AI atau lagi santai aja nih?",
+      "Hei Bos! Ada yang bisa gw bantu? Mau kenalin AI apa nih?",
+      "Halo bro! Keliatan nya lo lagi butuh bantuan soal AI nih.",
+      "Hola! Ada AI apa yang mau lo kenalin?",
+      "Hey! Lagi nyari info AI ya? Gw siap kasih tau.",
+      "Wassup! Mau tau tentang AI? Tanya aja.",
+      "Hi! Seneng banget ada yang mampir. Mau bahas AI?",
+      "Yo! Kuy kita obrolin AI, lo mau tahu yang mana?",
+      "Hai! Gw siap jadi asisten AI lo. Mulai aja.",
+      "Sup! Ada yang bisa gw bantu soal kecerdasan buatan?"
+    ]
+  },
+  {
+    "tag": "greeting_formal",
+    "patterns": [
+      "hello", "good morning", "good afternoon", "good evening", "greetings", "salutations", "nice to meet you", "how do you do", "good day", "good to see you", "pleased to meet you", "halo", "selamat datang", "welcome", "welcome back", "good noon", "good evening", "hello sir", "hello madam", "good day to you", "greetings and salutations", "it's a pleasure", "how are you today", "how are you doing", "i hope you are well", "allow me to introduce myself", "may i help you", "good morning sir", "good afternoon madam", "good evening everyone"
+    ],
+    "responses": [
+      "Selamat datang! Saya siap membantu Anda dalam mengidentifikasi berbagai jenis AI.",
+      "Halo! Senang bertemu dengan Anda. Ada AI tertentu yang ingin Anda kenali?",
+      "Greetings! Saya di sini untuk memberikan informasi mendalam tentang artificial intelligence.",
+      "Selamat siang! Silakan sampaikan pertanyaan Anda seputar AI.",
+      "Selamat sore! Saya sangat antusias membantu Anda mengeksplorasi dunia AI.",
+      "Selamat malam! Meskipun sudah malam, saya tetap siap memberi penjelasan tentang AI.",
+      "Halo, selamat datang di layanan identifikasi AI. Ada yang bisa saya bantu?",
+      "Selamat bertemu! Saya senang bisa berbagi pengetahuan tentang kecerdasan buatan."
+    ]
+  },
+  {
+    "tag": "greeting_time_based",
+    "patterns": [
+      "selamat pagi", "pagi", "pagi bos", "pagi kawan", "morning", "mornin", "good morning", "morning boss", "rise and shine", "top of the morning", "gud pagi", "selamat siang", "siang", "good noon", "selamat sore", "sore", "good afternoon", "afternoon", "selamat malam", "malam", "good evening", "evening", "good night", "selamat tidur", "sweet dreams", "selamat petang", "petang", "malam minggu", "good morning sunshine", "good afternoon everyone"
+    ],
+    "responses": [
+      "Selamat pagi! Semoga hari Anda menyenangkan. Ada AI yang ingin Anda kenali?",
+      "Pagi! Segelas kopi dan informasi AI siap untuk Anda.",
+      "Selamat siang! Mari kita bahas AI dengan semangat.",
+      "Selamat sore! Waktu yang tepat untuk mendalami teknologi AI.",
+      "Selamat malam! Jangan khawatir, saya tetap siap membantu Anda tentang AI.",
+      "Good morning! Ready to identify some AI?",
+      "Selamat pagi, bos! Ayo kita mulai petualangan AI hari ini.",
+      "Siang! Semangat terus, yuk eksplor AI lebih dalam.",
+      "Sore! Masih ada waktu untuk belajar AI, tanya apa saja.",
+      "Malam! Tenang, saya akan bantu dengan penjelasan AI yang jelas."
+    ]
+  },
+  {
+    "tag": "greeting_international",
+    "patterns": [
+      "hola", "bonjour", "konnichiwa", "ciao", "namaste", "sawadee", "guten tag", "buongiorno", "merhaba", "olá", "zdravstvuyte", "dobry den", "jambo", "kia ora", "aloha", "shalom", "salaam", "hej", "hei", "ahoj", "ola", "ni hao", "gm", "guten morgen", "bonsoir", "buonasera", "god dag", "goedendag", "dzień dobry", "jó napot", "selamat", "salam", "salut"
+    ],
+    "responses": [
+      "Hola! Saya bisa berbahasa Indonesia dan Inggris, tapi sapaan Anda membuat saya tersenyum. Ada AI yang ingin ditanyakan?",
+      "Bonjour! Très bien. Saya siap membantu identifikasi AI dalam berbagai bahasa.",
+      "Konnichiwa! Dari mana Anda tahu sapaan itu? Mari kita bahas AI.",
+      "Ciao! Keren banget sapaan internasional. Mau kenalan dengan AI?",
+      "Namaste! Hormat saya. Apa yang bisa saya bantu soal AI?",
+      "Sawadee! Senang bertemu Anda. Silakan tanya tentang AI.",
+      "Guten tag! Saya bisa menjelaskan AI dengan detail, silakan bertanya.",
+      "Merhaba! Selamat datang. Apakah Anda tertarik dengan AI?",
+      "Olá! Saya siap membantu Anda mengenal AI lebih dekat.",
+      "Aloha! Semangat aloha untuk belajar AI. Ada yang bisa saya bantu?"
+    ]
+  },
+  {
+    "tag": "greeting_question",
+    "patterns": [
+      "apa kabar", "kabar", "gimana kabar", "bagaimana kabar", "how are you", "how are you doing", "how's it going", "how's everything", "how are things", "what's up", "how you been", "how's life", "how are you today", "are you okay", "how do you do", "what's new", "what's happening", "how's your day", "apa kabar semua", "kabar baik", "gimana", "ada kabar", "what's the good word", "how goes it", "how are you feeling", "how have you been", "long time no see, how are you"
+    ],
+    "responses": [
+      "Kabar baik! Saya di sini siap bantu soal AI. Lo gimana?",
+      "Baik-baik aja, thanks! Sekarang, mau tanya AI apa?",
+      "Saya baik, selalu semangat bantu lo. Ada yang mau ditanyakan?",
+      "Alhamdulillah baik. Yuk, kita bahas AI aja.",
+      "Saya fine, thanks for asking. Mau kenalin AI mana nih?",
+      "Kabar saya selalu oke karena bisa bantu orang. Silakan tanya tentang AI.",
+      "Baik, saya siap melayani. Apa kabar Anda? Langsung ke topik AI?",
+      "Saya dalam kondisi prima. Ada AI spesifik yang ingin Anda ketahui?",
+      "Terima kasih tanya. Saya baik. Sekarang, fokus ke AI yuk!",
+      "Baik-baik, meskipun cuma bot. Tapi saya bisa bantu banyak soal AI."
+    ]
+  },
+  {
+    "tag": "greeting_holiday",
+    "patterns": [
+      "selamat natal", "merry christmas", "selamat tahun baru", "happy new year", "selamat idul fitri", "selamat lebaran", "happy eid", "selamat hari raya", "happy holiday", "selamat galungan", "happy nyepi", "selamat waisak", "happy vesak", "selamat hari kemerdekaan", "happy independence day", "selamat ulang tahun", "happy birthday", "selamat hari ibu", "happy mother's day", "selamat hari ayah", "happy father's day", "selamat hari valentine", "happy valentine's", "selamat hari raya nyepi", "selamat hari sakral", "merry christmas and happy new year", "selamat hari kemenangan", "happy diwali", "selamat hannukah", "happy hanukkah", "selamat paskah", "happy easter"
+    ],
+    "responses": [
+      "Selamat hari raya untuk Anda juga! Di sini saya tetap siap bantu soal AI, meskipun liburan.",
+      "Merry Christmas! Saya harap Anda menikmati liburan. Jika ada pertanyaan AI, saya di sini.",
+      "Happy New Year! Semoga tahun ini penuh inovasi AI. Ada yang ingin ditanyakan?",
+      "Selamat Lebaran! Mohon maaf lahir batin. Sekarang, mau bahas AI?",
+      "Happy Eid! Semoga berkah. Saya siap bantu identifikasi AI.",
+      "Selamat hari kemerdekaan! Mari kita rayakan dengan semangat teknologi AI.",
+      "Happy birthday untuk Anda! Semoga panjang umur. Ada AI yang menarik?",
+      "Selamat hari ibu! Saya bantu Anda menjelajahi AI untuk semua.",
+      "Selamat hari valentine! Cinta dan AI bisa berjalan beriringan. Ada yang bisa saya bantu?",
+      "Selamat paskah! Semoga damai. Silakan tanya tentang AI kapan saja."
+    ]
+  },
+  {
+    "tag": "greeting_slang_modern",
+    "patterns": [
+      "yo yo yo", "sup homie", "wassup dawg", "what's gucci", "what's poppin", "what's crackalackin", "howdy partner", "hiya friend", "hey boo", "what's lit", "what's the tea", "spill the tea", "hey queen", "hey king", "hi bestie", "hello world", "wasabi", "zup", "suh dude", "nah bro", "yo wassup", "what's the haps", "what's the 411", "yo yo", "hey hey", "hola mi amigo", "how's it hangin", "what's the sitch", "what's cookin", "good lookin"
+    ],
+    "responses": [
+      "Yo yo! Lagi santai atau butuh bantuan AI?",
+      "Suh dude! Ada yang mau ditanyakan soal kecerdasan buatan?",
+      "Wassup dawg! Siap bantu lo kenalin AI paling keren.",
+      "What's gucci! Semua keren di sini. Mau tanya AI?",
+      "Hey boo! Ada yang bisa gw bantu soal AI?",
+      "Spill the tea! Ceritakan AI apa yang mau lo kenal.",
+      "Hey queen! AI siap membantu Anda. Silakan bertanya.",
+      "Hi bestie! Kita bahas AI yuk, seru banget.",
+      "Zup! Udah siap belajar AI? Tanya aja.",
+      "Suh dude! GW siap kasih tahu semua tentang AI."
+    ]
+  },
+  {
+    "tag": "greeting_respectful",
+    "patterns": [
+      "salam hormat", "salam sejahtera", "shalom", "assalamu'alaikum", "wa'alaikum salam", "om swastiastu", "namo buddhaya", "salam kebajikan", "peace be upon you", "may peace be with you", "salam damai", "salam toleransi", "salam budaya", "good morning, sir", "good evening, ma'am", "greetings to you", "with respect", "my regards"
+    ],
+    "responses": [
+      "Salam hormat kembali! Saya sangat menghormati Anda. Ada yang bisa saya bantu tentang AI?",
+      "Assalamu'alaikum! Semoga damai selalu. Silakan tanya tentang AI.",
+      "Wa'alaikum salam! Terima kasih. Mari kita diskusikan AI dengan penuh kearifan.",
+      "Om Swastiastu! Semoga selamat. Saya siap membantu Anda memahami AI.",
+      "Namo Buddhaya! Semoga kebahagiaan. Ada pertanyaan tentang AI?",
+      "Salam sejahtera! Saya di sini untuk berbagi pengetahuan AI dengan hormat.",
+      "Peace be upon you! May I help you with AI?",
+      "Salam damai untuk Anda. Teknologi AI dapat membawa kebaikan, mari kita bahas."
+    ]
+  },
+  {
+    "tag": "greeting_enthusiastic",
+    "patterns": [
+      "wow", "awesome", "great day", "fantastic", "amazing", "super", "brilliant", "excellent", "magnificent", "splendid", "terrific", "wonderful", "marvelous", "outstanding", "perfect", "cool", "rad", "wicked", "sick", "awesome sauce", "let's go", "ayyy", "yeah buddy", "let's rock", "ready to go", "full energy", "super pumped", "hyped", "excited"
+    ],
+    "responses": [
+      "Wow! Semangatnya luar biasa. Siap-siap kenalan dengan AI paling keren!",
+      "Awesome! Saya juga excited bantu lo soal AI. Tanya apa aja.",
+      "Great day indeed! Mari kita eksplor AI dengan penuh energi.",
+      "Fantastic! Yuk, langsung aja bahas AI yang lo mau.",
+      "Amazing! Saya senang banget bisa bantu. Ada AI spesifik?",
+      "Super! Kita mulai petualangan AI sekarang!",
+      "Brilliant! Saya yakin lo akan terkesan dengan dunia AI.",
+      "Let's go! Kita bahas AI sampai puas. Mulai dari mana?"
+    ]
+  },
+
     
   {
     "tag": "greeting_casual",
