@@ -1,1349 +1,1305 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local CoreGui = game:GetService("CoreGui")
-local HttpService = game:GetService("HttpService")
-local UserInputService = game:GetService("UserInputService")
-local VirtualInputManager = game:GetService("VirtualInputManager")
+--[[
+    ██╗      █████╗ ███╗   ██╗███████╗    ██████╗ ██████╗      ██╗   ██╗██╗  ██╗ ██████╗
+    ██║     ██╔══██╗████╗  ██║╚══███╔╝    ██╔══██╗██╔══██╗     ██║   ██║██║  ██║██╔═══██╗
+    ██║     ███████║██╔██╗ ██║  ███╔╝     ██║  ██║██████╔╝     ██║   ██║███████║██║   ██║
+    ██║     ██╔══██║██║╚██╗██║ ███╔╝      ██║  ██║██╔══██╗     ╚██╗ ██╔╝╚════██║██║   ██║
+    ███████╗██║  ██║██║ ╚████║███████╗    ██████╔╝██████╔╝      ╚████╔╝      ██║╚██████╔╝
+    ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝    ╚═════╝ ╚═════╝        ╚═══╝       ╚═╝ ╚═════╝
+    Death Ball Bot v4.0 — Clean Architecture Rewrite
+    Author: Lanz | Architecture: PRD v4.0
+    Zero globals · Single heartbeat · FSM movement · Error boundaries
+--]]
 
-local player = Players.LocalPlayer
-local env = getgenv()
-
-local DEFAULT_CONFIG = {
-    _version = "4.0",
-    _savedAt = "",
-    _game = tostring(game.GameId),
-    _player = player and player.Name or "",
-    AutoParry = true,
-    SpamDistance = 6,
-    ParryDistance = 10,
-    ShowParryVisualizer = true,
-    CurveMode = "NONE",
-    AutoAbility = false,
-    GodMode = false,
-    AutoJoin = false,
-    AutoFollow = false,
-    WanderMode = false,
-    WanderRadius = 60,
-    WanderInterval = 3,
-    DashChance = 0.35,
-    JumpChance = 0.20,
-    InMatchCheck = true,
-    TeleportThreshold = 80,
-    SuddenMoveThreshold = 50,
-    RequireBallCheck = true,
-    WebhookURL = "",
-    WebhookInterval = 3600,
-    DebugMode = false,
-}
-
-local ALLOWED_KEYS = {}
-for key in pairs(DEFAULT_CONFIG) do
-    ALLOWED_KEYS[key] = true
+-- ══════════════════════════════════════════════════════════════════════
+-- GUARD: Kill previous instance cleanly before re-executing
+-- ══════════════════════════════════════════════════════════════════════
+if getgenv().LanzDB and type(getgenv().LanzDB.Shutdown) == "function" then
+    pcall(getgenv().LanzDB.Shutdown)
+    task.wait(0.1)
 end
 
+-- ══════════════════════════════════════════════════════════════════════
+-- SERVICES
+-- ══════════════════════════════════════════════════════════════════════
+local RunService     = game:GetService("RunService")
+local Players        = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService   = game:GetService("TweenService")
+local HttpService    = game:GetService("HttpService")
+
+local Player   = Players.LocalPlayer
+local Mouse    = Player:GetMouse()
+
+-- ══════════════════════════════════════════════════════════════════════
+-- MODULE SCOPE (all state lives here, nothing leaks to getgenv)
+-- ══════════════════════════════════════════════════════════════════════
+local LanzDB = {}  -- public API handle (only thing exposed to getgenv)
+
+-- ══════════════════════════════════════════════════════════════════════
+-- KERNEL — REGISTRY
+-- ══════════════════════════════════════════════════════════════════════
 local Registry = {
     connections = {},
-    instances = {},
-    threads = {},
+    instances   = {},
+    threads     = {},
 }
 
 function Registry:Track(category, handle)
-    if not self[category] then
-        self[category] = {}
-    end
     table.insert(self[category], handle)
     return handle
 end
 
 function Registry:DisconnectAll()
     for _, conn in ipairs(self.connections) do
-        pcall(function()
-            if conn and typeof(conn.Disconnect) == "function" then
-                conn:Disconnect()
-            end
-        end)
+        pcall(function() conn:Disconnect() end)
     end
     self.connections = {}
 end
 
 function Registry:DestroyAll()
     for _, inst in ipairs(self.instances) do
-        pcall(function()
-            if inst and inst.Destroy then
-                inst:Destroy()
-            end
-        end)
+        pcall(function() inst:Destroy() end)
     end
     self.instances = {}
 end
 
 function Registry:StopAll()
-    for _, th in ipairs(self.threads) do
-        pcall(function()
-            if th and task.cancel then
-                task.cancel(th)
-            end
-        end)
+    for _, thr in ipairs(self.threads) do
+        pcall(function() task.cancel(thr) end)
     end
     self.threads = {}
 end
 
-function Registry:Reset()
+function Registry:CleanupAll()
     self:DisconnectAll()
     self:DestroyAll()
     self:StopAll()
 end
 
+-- ══════════════════════════════════════════════════════════════════════
+-- KERNEL — LOGGER
+-- ══════════════════════════════════════════════════════════════════════
+local Logger = {
+    _prefix  = "[Lanz v4.0]",
+    _debugOn = false,
+}
+
+function Logger:SetDebug(on) self._debugOn = on end
+
+function Logger:Debug(msg)
+    if self._debugOn then print(self._prefix .. " [DEBUG] " .. tostring(msg)) end
+end
+
+function Logger:Info(msg)  print(self._prefix .. " [INFO]  " .. tostring(msg)) end
+function Logger:Warn(msg)  warn(self._prefix  .. " [WARN]  " .. tostring(msg)) end
+function Logger:Error(msg) warn(self._prefix  .. " [ERROR] " .. tostring(msg)) end
+
+-- ══════════════════════════════════════════════════════════════════════
+-- KERNEL — CONFIG (defaults + whitelist)
+-- ══════════════════════════════════════════════════════════════════════
+local CONFIG_VERSION = "4.0"
+
+local ConfigDefaults = {
+    _version             = CONFIG_VERSION,
+    AutoParry            = true,
+    SpamDistance         = 6,
+    ParryDistance        = 10,
+    ShowParryVisualizer  = true,
+    CurveMode            = "NONE",   -- NONE | LEFT | RIGHT | SPIN
+    AutoAbility          = false,
+    GodMode              = false,
+    AutoJoin             = false,
+    AutoFollow           = false,
+    WanderMode           = false,
+    WanderRadius         = 60,
+    WanderInterval       = 3,
+    DashChance           = 0.35,
+    JumpChance           = 0.20,
+    InMatchCheck         = true,
+    TeleportThreshold    = 80,
+    SuddenMoveThreshold  = 50,
+    RequireBallCheck     = true,
+    WebhookURL           = "",
+    WebhookInterval      = 3600,
+    DebugMode            = false,
+}
+
+-- Keys allowed to be saved/loaded (excludes function-valued fields)
+local CONFIG_WHITELIST = {
+    "AutoParry", "SpamDistance", "ParryDistance", "ShowParryVisualizer",
+    "CurveMode", "AutoAbility", "GodMode", "AutoJoin", "AutoFollow",
+    "WanderMode", "WanderRadius", "WanderInterval", "DashChance", "JumpChance",
+    "InMatchCheck", "TeleportThreshold", "SuddenMoveThreshold", "RequireBallCheck",
+    "WebhookURL", "WebhookInterval", "DebugMode",
+}
+
+-- Live config table (copy of defaults; mutated at runtime)
+local Config = {}
+for k, v in pairs(ConfigDefaults) do Config[k] = v end
+
+-- ══════════════════════════════════════════════════════════════════════
+-- KERNEL — STATE
+-- ══════════════════════════════════════════════════════════════════════
 local State = {
     Match = {
-        InMatch = false,
-        ConfirmedAt = 0,
-        ReadyZonePos = nil,
-        LastHRPPos = nil,
-        LastTransition = 0,
+        InMatch       = false,
+        ConfirmedAt   = 0,
+        ReadyZonePos  = nil,
+        LastHRPPos    = nil,
     },
     Movement = {
-        Current = "IDLE",
-        TargetPos = nil,
-        LastTarget = 0,
-        LastMoveTick = tick(),
-        LastPos = nil,
-        StuckCounter = 0,
+        Current       = "IDLE",  -- IDLE | JOIN | FOLLOW | WANDER
+        TargetPos     = nil,
+        LastTarget    = 0,
+        LastMoveTick  = tick(),
+        LastPos       = nil,
+        StuckCounter  = 0,
+        WanderTimer   = 0,
     },
     Combat = {
-        LastParry = 0,
-        CurrentBall = nil,
+        LastParry     = 0,
+        CurrentBall   = nil,
         LastBallCheck = 0,
+        LastAbility   = 0,
+    },
+    Watchdog = {
+        LastHeartbeat = tick(),
+        LastUICheck   = 0,
+        LastBallScan  = 0,
+    },
+    Boot = {
+        Time          = 0,
+        Ready         = false,
     },
 }
 
-local Logger = {}
-
-function Logger:Format(level, message)
-    return "[Lanz v4.0] [" .. tostring(level) .. "] " .. tostring(message)
-end
-
-function Logger:Log(level, message)
-    if level == "DEBUG" and not Config.Data.DebugMode then
-        return
-    end
-
-    local text = self:Format(level, message)
-    if level == "ERROR" then
-        warn(text)
-    elseif level == "WARN" then
-        warn(text)
-    else
-        print(text)
-    end
-end
-
-function Logger:Debug(message)
-    self:Log("DEBUG", message)
-end
-
-function Logger:Info(message)
-    self:Log("INFO", message)
-end
-
-function Logger:Warn(message)
-    self:Log("WARN", message)
-end
-
-function Logger:Error(message)
-    self:Log("ERROR", message)
-end
-
-local Config = {
-    Data = {},
-    SavePath = nil,
-    DebounceHandle = nil,
+-- ══════════════════════════════════════════════════════════════════════
+-- SERVICES — FILE IO
+-- ══════════════════════════════════════════════════════════════════════
+local FileIO = {
+    _path       = nil,
+    _saveTimer  = nil,
+    _saveDelay  = 0.15,  -- 150ms debounce
 }
 
-function Config:CloneDefaults()
-    local copy = {}
-    for key, value in pairs(DEFAULT_CONFIG) do
-        copy[key] = value
-    end
-    return copy
-end
-
-function Config:ValidateTable(raw)
-    if type(raw) ~= "table" then
-        return self:CloneDefaults()
-    end
-
-    local merged = self:CloneDefaults()
-    for key, value in pairs(raw) do
-        if ALLOWED_KEYS[key] then
-            local defaultValue = DEFAULT_CONFIG[key]
-            if type(defaultValue) == type(value) then
-                merged[key] = value
-            elseif defaultValue ~= nil then
-                merged[key] = defaultValue
-            end
-        end
-    end
-
-    merged._version = DEFAULT_CONFIG._version
-    merged._game = tostring(game.GameId)
-    merged._player = player and player.Name or ""
-    return merged
-end
-
-function Config:Load()
-    local path = self:GetPath()
-    self.SavePath = path
-
-    if not path then
-        self.Data = self:CloneDefaults()
-        return self.Data
-    end
-
-    local ok, raw = pcall(function()
-        if not isfile(path) then
-            return nil
-        end
-        return HttpService:JSONDecode(readfile(path))
-    end)
-
-    if not ok or type(raw) ~= "table" then
-        Logger:Warn("Config file missing or corrupted; using defaults.")
-        self.Data = self:CloneDefaults()
-        return self.Data
-    end
-
-    self.Data = self:ValidateTable(raw)
-    self.Data._savedAt = os.date("%Y-%m-%d %H:%M:%S")
-    return self.Data
-end
-
-function Config:Save(silent)
-    local data = self.Data or self:CloneDefaults()
-    if not data then
-        return false
-    end
-
-    if not self.SavePath then
-        self.SavePath = self:GetPath()
-    end
-
-    local payload = {}
-    for key, _ in pairs(ALLOWED_KEYS) do
-        payload[key] = data[key]
-    end
-    payload._version = DEFAULT_CONFIG._version
-    payload._savedAt = os.date("%Y-%m-%d %H:%M:%S")
-    payload._game = tostring(game.GameId)
-    payload._player = player and player.Name or ""
-
-    local json = HttpService:JSONEncode(payload)
-    local path = self.SavePath
-    if not path then
-        return false
-    end
-
-    local ok, err = pcall(function()
-        writefile(path, json)
-    end)
-
-    if not ok then
-        Logger:Warn("Config save failed: " .. tostring(err))
-        return false
-    end
-
-    if not silent then
-        Logger:Info("Config saved to " .. tostring(path))
-    end
-    return true
-end
-
-function Config:RequestSave()
-    if self.DebounceHandle then
-        task.cancel(self.DebounceHandle)
-    end
-
-    self.DebounceHandle = task.delay(0.15, function()
-        self:Save(true)
-    end)
-    Registry:Track("threads", self.DebounceHandle)
-end
-
-function Config:GetPath()
-    local paths = {
-        "LanzConfig/save.json",
-        "Configs/Lanz/save.json",
-        "Lanz_DB_save.json",
-    }
-
-    for _, path in ipairs(paths) do
-        local dir = path:match("(.+)/[^/]+$")
-        if dir and not isfolder(dir) then
-            local ok = pcall(function()
-                makefolder(dir)
-            end)
-            if not ok then
-                continue
-            end
-        end
-
-        if not isfile(path) then
-            local ok, err = pcall(function()
-                writefile(path, "{}")
-            end)
-            if ok then
-                local status, _ = pcall(function()
-                    delfile(path)
-                end)
-                if status then
-                    return path
-                end
-            end
-        else
-            return path
-        end
-    end
-
-    return "Lanz_DB_save.json"
-end
-
-function Config:Reset()
-    local path = self:GetPath()
-    if isfile(path) then
-        pcall(function()
-            delfile(path)
-        end)
-    end
-    self.Data = self:CloneDefaults()
-    self:Save(true)
-    Logger:Info("Config reset to defaults.")
-end
-
-local FileIO = {}
+local FILE_PATHS = {
+    "LanzConfig/save.json",
+    "Configs/Lanz/save.json",
+    "Lanz_DB_save.json",
+}
 
 function FileIO:GetPath()
-    return Config:GetPath()
+    if self._path then return self._path end
+    -- Try paths; use first writable one
+    for _, p in ipairs(FILE_PATHS) do
+        local ok = pcall(function()
+            local folder = p:match("^(.+)/[^/]+$")
+            if folder and isfolder and not isfolder(folder) then
+                if makefolder then makefolder(folder) end
+            end
+        end)
+        if ok then
+            self._path = p
+            return p
+        end
+    end
+    self._path = FILE_PATHS[#FILE_PATHS]
+    return self._path
+end
+
+function FileIO:Save(cfg, silent)
+    if self._saveTimer then
+        pcall(function() task.cancel(self._saveTimer) end)
+    end
+    self._saveTimer = Registry:Track("threads", task.delay(self._saveDelay, function()
+        local function doSave()
+            local data = {
+                _version  = CONFIG_VERSION,
+                _savedAt  = os.date("%Y-%m-%d %H:%M:%S"),
+                _game     = game.PlaceId,
+                _player   = Player.Name,
+            }
+            for _, k in ipairs(CONFIG_WHITELIST) do
+                data[k] = cfg[k]
+            end
+            local encoded = HttpService:JSONEncode(data)
+            local path = self:GetPath()
+            writefile(path, encoded)
+            if not silent then Logger:Info("Config saved → " .. path) end
+        end
+
+        local ok, err = pcall(doSave)
+        if not ok then
+            -- Retry once after 0.2s
+            task.wait(0.2)
+            local ok2, err2 = pcall(doSave)
+            if not ok2 then
+                Logger:Warn("Save failed: " .. tostring(err2))
+            end
+        end
+    end))
 end
 
 function FileIO:Load()
-    return Config:Load()
-end
+    local path = self:GetPath()
+    local ok, raw = pcall(function()
+        if isfile and isfile(path) then
+            return readfile(path)
+        end
+        return nil
+    end)
+    if not ok or not raw or raw == "" then return nil end
 
-function FileIO:Save(silent)
-    return Config:Save(silent)
+    local ok2, data = pcall(function() return HttpService:JSONDecode(raw) end)
+    if not ok2 or type(data) ~= "table" then
+        Logger:Warn("Config file corrupt — resetting to default")
+        self:_BackupCorrupt(path)
+        return nil
+    end
+
+    -- Validate types against defaults
+    local out = {}
+    for _, k in ipairs(CONFIG_WHITELIST) do
+        if data[k] ~= nil and type(data[k]) == type(ConfigDefaults[k]) then
+            out[k] = data[k]
+        else
+            out[k] = ConfigDefaults[k]
+        end
+    end
+    return out
 end
 
 function FileIO:Reset()
-    return Config:Reset()
-end
-
-local function clamp(value, minValue, maxValue)
-    if value < minValue then
-        return minValue
-    elseif value > maxValue then
-        return maxValue
-    end
-    return value
-end
-
-local function getCharacter()
-    if not player then
-        return nil
-    end
-    return player.Character
-end
-
-local function getHumanoid()
-    local character = getCharacter()
-    if not character then
-        return nil
-    end
-    return character:FindFirstChildOfClass("Humanoid")
-end
-
-local function getRootPart()
-    local character = getCharacter()
-    if not character then
-        return nil
-    end
-    return character:FindFirstChild("HumanoidRootPart")
-end
-
-local function getBall()
-    local workspace = game:GetService("Workspace")
-    local nearest = nil
-    local nearestDistance = math.huge
-    local root = getRootPart()
-    local rootPos = root and root.Position or Vector3.new()
-
-    for _, descendant in ipairs(workspace:GetDescendants()) do
-        if descendant:IsA("BasePart") then
-            local name = descendant.Name:lower()
-            if name == "ball" or name:find("ball") then
-                local distance = (descendant.Position - rootPos).Magnitude
-                if distance < nearestDistance then
-                    nearest = descendant
-                    nearestDistance = distance
-                end
-            end
+    local path = self:GetPath()
+    pcall(function()
+        if isfile and isfile(path) then
+            if delfile then delfile(path) end
         end
-    end
-
-    return nearest
+    end)
+    Logger:Info("Config reset — file deleted")
 end
 
-local TargetScanner = {
-    lastScan = 0,
-    ball = nil,
+function FileIO:_BackupCorrupt(path)
+    pcall(function()
+        if isfile and isfile(path) then
+            local raw = readfile(path)
+            writefile(path .. ".bak", raw)
+            if delfile then delfile(path) end
+        end
+    end)
+end
+
+-- ══════════════════════════════════════════════════════════════════════
+-- SERVICES — NOTIFIER (Discord webhook)
+-- ══════════════════════════════════════════════════════════════════════
+local Notifier = {
+    _lastSent = 0,
+    _rateLimit = 5,  -- seconds
 }
 
-function TargetScanner:RefreshBall()
-    local now = os.clock()
-    if now - self.lastScan >= 0.5 or self.ball == nil then
-        self.ball = getBall()
-        self.lastScan = now
-    end
-    return self.ball
+function Notifier:Send(message)
+    if Config.WebhookURL == "" then return end
+    local now = tick()
+    if now - self._lastSent < self._rateLimit then return end
+    self._lastSent = now
+
+    Registry:Track("threads", task.spawn(function()
+        local function doSend()
+            local payload = HttpService:JSONEncode({
+                embeds = {{
+                    title       = "Lanz DB v4.0",
+                    description = message,
+                    color       = 6614015,
+                    footer      = { text = Player.Name .. " | " .. os.date() },
+                    fields = {
+                        { name = "Match", value = tostring(State.Match.InMatch), inline = true },
+                        { name = "Mode",  value = State.Movement.Current,        inline = true },
+                    },
+                }}
+            })
+            local ok = pcall(function()
+                -- request() is executor-provided
+                request({
+                    Url    = Config.WebhookURL,
+                    Method = "POST",
+                    Headers = { ["Content-Type"] = "application/json" },
+                    Body   = payload,
+                })
+            end)
+            if not ok then
+                task.wait(2)
+                pcall(function()
+                    request({ Url = Config.WebhookURL, Method = "POST",
+                        Headers = { ["Content-Type"] = "application/json" }, Body = payload })
+                end)
+            end
+        end
+
+        -- Timeout guard: cancel if > 10s
+        local done = false
+        local thr = task.spawn(function() doSend(); done = true end)
+        task.delay(10, function()
+            if not done then pcall(function() task.cancel(thr) end) end
+        end)
+    end))
 end
 
-function TargetScanner:GetBall()
-    return self:RefreshBall()
+-- ══════════════════════════════════════════════════════════════════════
+-- SERVICES — INPUT SIM
+-- ══════════════════════════════════════════════════════════════════════
+local InputSim = {
+    _lastInput = 0,
+    _rateLimit = 1/30,   -- max 30 inputs/sec
+    _vim       = nil,
+}
+
+function InputSim:_GetVIM()
+    if self._vim then return self._vim end
+    local ok, vim = pcall(function()
+        return game:GetService("VirtualInputManager")
+    end)
+    if ok then self._vim = vim end
+    return self._vim
 end
 
-function TargetScanner:IsTarget()
-    local character = getCharacter()
-    if not character then
-        return false
-    end
-
-    local highlight = character:FindFirstChild("Highlight")
-    if not highlight then
-        return false
-    end
-
-    local fillTransparency = highlight.FillTransparency
-    if typeof(fillTransparency) == "number" then
-        return fillTransparency < 1
-    end
-
-    return false
-end
-
-local InputSim = {}
-
-function InputSim:Guard()
-    local humanoid = getHumanoid()
-    if not humanoid then
-        return false
-    end
-    if humanoid.Health <= 0 then
-        return false
-    end
+function InputSim:_CanSend()
+    local char = Player.Character
+    if not char then return false end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum or hum.Health <= 0 then return false end
+    local now = tick()
+    if now - self._lastInput < self._rateLimit then return false end
+    self._lastInput = now
     return true
 end
 
 function InputSim:KeyDown(key)
-    if not self:Guard() then
-        return
+    if not self:_CanSend() then return end
+    local vim = self:_GetVIM()
+    if vim then
+        pcall(function() vim:SendKeyEvent(true, key, false, game) end)
     end
-    local keyCode = typeof(key) == "EnumItem" and key or Enum.KeyCode[key]
-    if not keyCode then
-        return
-    end
-    pcall(function()
-        VirtualInputManager:SendKeyEvent(true, keyCode, false, game)
-    end)
 end
 
 function InputSim:KeyUp(key)
-    if not self:Guard() then
-        return
+    if not self:_CanSend() then return end
+    local vim = self:_GetVIM()
+    if vim then
+        pcall(function() vim:SendKeyEvent(false, key, false, game) end)
     end
-    local keyCode = typeof(key) == "EnumItem" and key or Enum.KeyCode[key]
-    if not keyCode then
-        return
-    end
-    pcall(function()
-        VirtualInputManager:SendKeyEvent(false, keyCode, false, game)
-    end)
 end
 
 function InputSim:Tap(key, duration)
-    local actualKey = typeof(key) == "EnumItem" and key or Enum.KeyCode[key]
-    if not actualKey then
-        return
+    duration = duration or 0.01
+    self:KeyDown(key)
+    task.delay(duration, function() self:KeyUp(key) end)
+end
+
+function InputSim:Click(x, y)
+    local vim = self:_GetVIM()
+    if vim then
+        pcall(function()
+            vim:SendMouseButtonEvent(x or 0, y or 0, 0, true,  game, 1)
+            vim:SendMouseButtonEvent(x or 0, y or 0, 0, false, game, 1)
+        end)
     end
-    self:KeyDown(actualKey)
-    task.delay(duration or 0.01, function()
-        self:KeyUp(actualKey)
-    end)
 end
 
-function InputSim:MoveMouse(x, y)
-    if not self:Guard() then
-        return
-    end
-    pcall(function()
-        VirtualInputManager:SendMouseMoveEvent(x, y, x, y)
-    end)
-end
-
-local function createSingletonPart(name, color, size, cframe)
-    local part = Instance.new("Part")
-    part.Name = name
-    part.Anchored = true
-    part.CanCollide = false
-    part.CanTouch = false
-    part.Transparency = 0.3
-    part.Color = color
-    part.Material = Enum.Material.Neon
-    part.Size = size or Vector3.new(1, 1, 1)
-    part.CFrame = cframe or CFrame.new()
-    part.Parent = workspace
-    Registry:Track("instances", part)
-    return part
-end
-
-local CombatEngine = {
-    visualizer = nil,
+-- ══════════════════════════════════════════════════════════════════════
+-- SERVICES — TARGET SCANNER
+-- ══════════════════════════════════════════════════════════════════════
+local TargetScanner = {
+    _cachedBall    = nil,
+    _cacheTime     = 0,
+    _cacheInterval = 0.5,
+    _ballConn      = nil,
 }
 
-function CombatEngine:FlashVisualizer()
-    if not Config.Data.ShowParryVisualizer then
-        return
-    end
-    local root = getRootPart()
-    if not root then
-        return
+function TargetScanner:IsTarget()
+    local char = Player.Character
+    if not char then return false end
+    local h = char:FindFirstChildOfClass("Highlight")
+    if not h then return false end
+    return h.FillTransparency < 1
+end
+
+function TargetScanner:FindBall()
+    local now = tick()
+    if self._cachedBall and self._cachedBall.Parent and (now - self._cacheTime) < self._cacheInterval then
+        return self._cachedBall
     end
 
-    if self.visualizer and self.visualizer.Parent then
-        self.visualizer:Destroy()
-    end
+    local best, bestDist = nil, math.huge
+    local hrp = self:_GetHRP()
+    local origin = hrp and hrp.Position or Vector3.new(0,0,0)
 
-    local part = createSingletonPart("LanzDB_ParryVisualizer", Color3.fromRGB(80, 255, 120), Vector3.new(6, 6, 6), CFrame.new(root.Position))
-    part.Shape = Enum.PartType.Cylinder
-    part.Orientation = Vector3.new(90, 0, 0)
-    part.Transparency = 0.35
-    self.visualizer = part
-
-    task.delay(0.1, function()
-        if self.visualizer and self.visualizer.Parent then
-            self.visualizer:Destroy()
+    local function scanPart(p)
+        if p:IsA("Part") and p.Parent then
+            local n = p.Name:lower()
+            if n:find("ball") or n:find("deathball") then
+                local d = (p.Position - origin).Magnitude
+                if d < bestDist then best = p; bestDist = d end
+            end
         end
-        self.visualizer = nil
+    end
+
+    -- Check known containers first
+    local spawns = workspace:FindFirstChild("BallSpawns")
+    if spawns then
+        for _, v in ipairs(spawns:GetDescendants()) do scanPart(v) end
+    end
+
+    -- Fallback: workspace scan (cached, not per-frame)
+    if not best then
+        for _, v in ipairs(workspace:GetChildren()) do
+            if v:IsA("Part") then scanPart(v) end
+        end
+    end
+
+    self._cachedBall = best
+    self._cacheTime  = now
+    State.Combat.CurrentBall = best
+
+    return best
+end
+
+function TargetScanner:GetBallVelocity()
+    local ball = State.Combat.CurrentBall
+    if not ball then return Vector3.new(0,0,0) end
+    local a = ball:FindFirstChildOfClass("BodyVelocity")
+    if a then return a.Velocity end
+    return ball.AssemblyLinearVelocity or Vector3.new(0,0,0)
+end
+
+function TargetScanner:GetBallDistance()
+    local hrp  = self:_GetHRP()
+    local ball = State.Combat.CurrentBall
+    if not hrp or not ball or not ball.Parent then return math.huge end
+    return (ball.Position - hrp.Position).Magnitude
+end
+
+function TargetScanner:IsApproaching()
+    local hrp  = self:_GetHRP()
+    local ball = State.Combat.CurrentBall
+    if not hrp or not ball or not ball.Parent then return false end
+    local vel = self:GetBallVelocity()
+    if vel.Magnitude > 100 then return false end  -- network spike
+    local dir = (hrp.Position - ball.Position).Unit
+    return vel:Dot(dir) > 0
+end
+
+function TargetScanner:_GetHRP()
+    local char = Player.Character
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+function TargetScanner:Update()
+    local now = tick()
+    if now - self._cacheTime >= self._cacheInterval then
+        self:FindBall()
+    end
+end
+
+-- ══════════════════════════════════════════════════════════════════════
+-- LOGIC — COMBAT ENGINE
+-- ══════════════════════════════════════════════════════════════════════
+local CombatEngine = {
+    _dome       = nil,
+    _domeFlash  = nil,
+}
+
+function CombatEngine:_GetHRP()
+    local char = Player.Character
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+function CombatEngine:_GetHum()
+    local char = Player.Character
+    if not char then return nil end
+    return char:FindFirstChildOfClass("Humanoid")
+end
+
+function CombatEngine:_GetCamera()
+    return game.Workspace.CurrentCamera
+end
+
+function CombatEngine:_ApplyCurve()
+    local mode = Config.CurveMode
+    if mode == "NONE" then return nil end
+    local cam = self:_GetCamera()
+    if not cam then return nil end
+    local saved = cam.CFrame
+    if mode == "LEFT" then
+        cam.CFrame = cam.CFrame * CFrame.Angles(0, math.rad(15), 0)
+    elseif mode == "RIGHT" then
+        cam.CFrame = cam.CFrame * CFrame.Angles(0, math.rad(-15), 0)
+    elseif mode == "SPIN" then
+        cam.CFrame = cam.CFrame * CFrame.Angles(0, math.rad(45), 0)
+    end
+    return saved
+end
+
+function CombatEngine:_RestoreCurve(saved)
+    if not saved then return end
+    local cam = self:_GetCamera()
+    if cam then cam.CFrame = saved end
+end
+
+function CombatEngine:_ExecuteParry()
+    local saved = self:_ApplyCurve()
+    InputSim:Tap(Enum.KeyCode.F, 0.01)
+    self:_RestoreCurve(saved)
+    self:_FlashVisualizer()
+    Logger:Debug("Parry executed")
+end
+
+function CombatEngine:_FlashVisualizer()
+    if not Config.ShowParryVisualizer then return end
+    if not self._dome then return end
+    local dome = self._dome
+    local ok, _ = pcall(function()
+        local orig = dome.Color3
+        dome.Color3 = Color3.fromRGB(80, 255, 120)
+        task.delay(0.1, function()
+            pcall(function() dome.Color3 = orig end)
+        end)
     end)
 end
 
-function CombatEngine:IsApproaching(ball)
-    local root = getRootPart()
-    if not root or not ball then
-        return false
+function CombatEngine:RebuildDome()
+    -- Clean old
+    if self._dome then
+        pcall(function() self._dome:Destroy() end)
+        self._dome = nil
     end
+    if not Config.ShowParryVisualizer then return end
+    local hrp = self:_GetHRP()
+    if not hrp then return end
 
-    local directionToBall = (ball.Position - root.Position)
-    local velocity = ball.Velocity
-    local speed = velocity.Magnitude
-    if speed <= 0 then
-        return false
-    end
+    local sphere = Instance.new("SelectionSphere")
+    sphere.SurfaceTransparency = 0.85
+    sphere.SurfaceColor3      = Color3.fromRGB(100, 150, 255)
+    sphere.Color3              = Color3.fromRGB(100, 150, 255)
+    sphere.Adornee             = hrp
+    sphere.Parent              = game:GetService("CoreGui"):FindFirstChild("RobloxGui") or game:GetService("CoreGui")
 
-    return directionToBall.Unit:Dot(velocity.Unit) < 0
+    Registry:Track("instances", sphere)
+    self._dome = sphere
+    self:_UpdateDomeSize()
 end
 
-function CombatEngine:CanExecParry()
-    local cfg = Config.Data
-    if not cfg.AutoParry then
-        return false
-    end
-
-    local hero = getCharacter()
-    if not hero then
-        return false
-    end
-
-    local humanoid = getHumanoid()
-    if not humanoid or humanoid.Health <= 0 then
-        return false
-    end
-
-    if not TargetScanner:IsTarget() then
-        return false
-    end
-
-    local ball = TargetScanner:GetBall()
-    if not ball then
-        return false
-    end
-
-    local root = getRootPart()
-    if not root then
-        return false
-    end
-
-    local distance = (root.Position - ball.Position).Magnitude
-    local speed = ball.Velocity.Magnitude
-    if speed > 100 then
-        return false
-    end
-
-    if not self:IsApproaching(ball) then
-        return false
-    end
-
-    local ratio = speed == 0 and 0 or (distance / speed)
-    local shouldParry = false
-
-    if distance <= cfg.SpamDistance then
-        shouldParry = true
-    elseif distance <= 55 and ratio <= cfg.ParryDistance then
-        shouldParry = true
-    end
-
-    return shouldParry
+function CombatEngine:_UpdateDomeSize()
+    if not self._dome then return end
+    pcall(function()
+        self._dome.SizeRelativeOffset = Vector3.new(Config.ParryDistance, Config.ParryDistance, Config.ParryDistance)
+    end)
 end
 
-function CombatEngine:ExecuteParry()
-    local now = os.clock()
-    if now - State.Combat.LastParry < 0.01 then
-        return
+function CombatEngine:Update(dt)
+    if not Config.AutoParry then return end
+    if not TargetScanner:IsTarget() then return end
+
+    local dist = TargetScanner:GetBallDistance()
+    local vel  = TargetScanner:GetBallVelocity()
+
+    -- Network spike guard
+    if vel.Magnitude > 100 then return end
+    if not TargetScanner:IsApproaching() then return end
+
+    local now  = tick()
+    local hrp  = self:_GetHRP()
+    if not hrp then return end
+
+    if dist <= Config.SpamDistance then
+        -- Spam parry
+        if now - State.Combat.LastParry >= 0.01 then
+            State.Combat.LastParry = now
+            self:_ExecuteParry()
+        end
+    elseif dist > Config.SpamDistance and dist <= Config.ParryDistance and dist <= 55 then
+        -- Ratio-based parry
+        local ratio = dist / Config.ParryDistance
+        if ratio <= 1.0 and now - State.Combat.LastParry >= 0.05 then
+            State.Combat.LastParry = now
+            self:_ExecuteParry()
+        end
     end
 
-    State.Combat.LastParry = now
-    local camera = workspace.CurrentCamera
-    local oldCFrame = camera and camera.CFrame
-
-    if camera then
-        camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(8), 0)
+    -- Auto ability Q
+    if Config.AutoAbility and dist <= Config.SpamDistance then
+        local ratio = dist / Config.ParryDistance
+        if ratio < 1.0 and now - State.Combat.LastAbility >= 0.5 then
+            State.Combat.LastAbility = now
+            InputSim:Tap(Enum.KeyCode.Q, 0.01)
+            Logger:Debug("Ability Q triggered")
+        end
     end
 
-    InputSim:Tap("F", 0.01)
-
-    if camera and oldCFrame then
-        camera.CFrame = oldCFrame
-    end
-
-    self:FlashVisualizer()
-
-    if Config.Data.AutoAbility then
-        local ball = TargetScanner:GetBall()
-        if ball then
-            local distance = (getRootPart().Position - ball.Position).Magnitude
-            local speed = ball.Velocity.Magnitude
-            local ratio = speed == 0 and 0 or (distance / speed)
-            if distance <= 6 and ratio < 1 then
-                InputSim:Tap("Q", 0.02)
+    -- God mode: strip touch transmitters
+    if Config.GodMode then
+        local char = Player.Character
+        if char then
+            for _, v in ipairs(char:GetDescendants()) do
+                if v:IsA("TouchTransmitter") then v:Destroy() end
             end
         end
     end
 end
 
-function CombatEngine:Update()
-    if not self:CanExecParry() then
-        return
-    end
-
-    self:ExecuteParry()
-end
-
-local MovementFSM = {
-    current = "IDLE",
-    nextWanderAt = 0,
-    lastForceIdle = 0,
+-- ══════════════════════════════════════════════════════════════════════
+-- LOGIC — MATCH DETECTOR
+-- ══════════════════════════════════════════════════════════════════════
+local MatchDetector = {
+    _lastTransition = 0,
+    _ballAbsent     = 0,
+    _ballAbsentSince = 0,
 }
 
-function MovementFSM:GetPriority(name)
-    local weights = {
-        JOIN = 3,
-        FOLLOW = 2,
-        WANDER = 1,
-        IDLE = 0,
+function MatchDetector:_GetHRP()
+    local char = Player.Character
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+function MatchDetector:_FindReadyZone()
+    local candidates = {
+        workspace:FindFirstChild("ReadyZone"),
+        workspace:FindFirstChild("Lobby"),
+        workspace:FindFirstChild("Spawn"),
     }
-    return weights[name] or 0
+    for _, c in ipairs(candidates) do
+        if c then return c end
+    end
+    return nil
+end
+
+function MatchDetector:Update()
+    local now = tick()
+    -- Debounce: min 2s between transitions
+    if now - self._lastTransition < 2 then return end
+
+    local hrp = self:_GetHRP()
+    if not hrp then return end
+    local pos = hrp.Position
+
+    -- Cache ready zone position
+    if not State.Match.ReadyZonePos then
+        local rz = self:_FindReadyZone()
+        if rz then
+            State.Match.ReadyZonePos = rz:IsA("BasePart") and rz.Position
+                or (rz:FindFirstChildOfClass("BasePart") and rz:FindFirstChildOfClass("BasePart").Position)
+        end
+    end
+
+    local ballExists = State.Combat.CurrentBall and State.Combat.CurrentBall.Parent ~= nil
+
+    if not ballExists then
+        if self._ballAbsentSince == 0 then
+            self._ballAbsentSince = now
+        elseif now - self._ballAbsentSince > 10 and State.Match.InMatch then
+            -- Ball gone > 10s → left match
+            self:_SetMatch(false)
+        end
+    else
+        self._ballAbsentSince = 0
+    end
+
+    if not State.Match.InMatch then
+        -- Check entry conditions
+        local teleported = false
+        if State.Match.LastHRPPos then
+            local delta = (pos - State.Match.LastHRPPos).Magnitude
+            teleported = delta > Config.TeleportThreshold
+        end
+
+        local farFromReady = true
+        if State.Match.ReadyZonePos then
+            farFromReady = (pos - State.Match.ReadyZonePos).Magnitude > Config.SuddenMoveThreshold
+        end
+
+        local trigger = teleported or farFromReady
+        if trigger and (not Config.RequireBallCheck or ballExists) then
+            self:_SetMatch(true)
+        end
+    else
+        -- Check exit conditions
+        local nearReady = false
+        if State.Match.ReadyZonePos then
+            nearReady = (pos - State.Match.ReadyZonePos).Magnitude < 15
+        end
+        if nearReady then
+            self:_SetMatch(false)
+        end
+    end
+
+    State.Match.LastHRPPos = pos
+end
+
+function MatchDetector:_SetMatch(val)
+    if State.Match.InMatch == val then return end
+    State.Match.InMatch     = val
+    State.Match.ConfirmedAt = tick()
+    self._lastTransition    = tick()
+    Logger:Info("Match state → " .. (val and "IN MATCH" or "LOBBY"))
+    if val then
+        Notifier:Send("🎮 Entered match!")
+    else
+        Notifier:Send("🏠 Returned to lobby")
+    end
+end
+
+-- ══════════════════════════════════════════════════════════════════════
+-- LOGIC — MOVEMENT FSM
+-- ══════════════════════════════════════════════════════════════════════
+local MovementFSM = {
+    _priority = { JOIN = 3, FOLLOW = 2, WANDER = 1, IDLE = 0 },
+}
+
+function MovementFSM:_GetHRP()
+    local char = Player.Character
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+function MovementFSM:_GetHum()
+    local char = Player.Character
+    if not char then return nil end
+    return char:FindFirstChildOfClass("Humanoid")
 end
 
 function MovementFSM:Resolve()
     local candidates = {}
-    local cfg = Config.Data
-
-    if cfg.AutoJoin and not State.Match.InMatch then
+    if Config.AutoJoin and not State.Match.InMatch then
         table.insert(candidates, "JOIN")
     end
-
-    if cfg.AutoFollow and State.Match.InMatch then
+    if Config.AutoFollow and State.Match.InMatch then
         table.insert(candidates, "FOLLOW")
     end
-
-    if cfg.WanderMode and State.Match.InMatch then
+    if Config.WanderMode and State.Match.InMatch then
+        -- FOLLOW wins over WANDER (priority system handles it)
         table.insert(candidates, "WANDER")
     end
 
-    if #candidates == 0 then
-        self.current = "IDLE"
-        return self.current
-    end
-
     table.sort(candidates, function(a, b)
-        return self:GetPriority(a) > self:GetPriority(b)
+        return self._priority[a] > self._priority[b]
     end)
 
-    self.current = candidates[1]
-    return self.current
-end
-
-function MovementFSM:Idle()
-    local humanoid = getHumanoid()
-    if not humanoid then
-        return
-    end
-
-    humanoid:Move(Vector3.zero, false)
-    State.Movement.TargetPos = nil
-end
-
-function MovementFSM:MoveTo(position)
-    local humanoid = getHumanoid()
-    if not humanoid or not position then
-        return
-    end
-
-    humanoid:Move(Vector3.zero, false)
-    State.Movement.TargetPos = position
-    humanoid:MoveTo(position)
-end
-
-function MovementFSM:MoveToReadyZone()
-    local root = getRootPart()
-    local readyZone = State.Match.ReadyZonePos
-    if not root or not readyZone then
-        return
-    end
-
-    local distance = (root.Position - readyZone).Magnitude
-    if distance > 5 then
-        self:MoveTo(readyZone)
-    else
-        self:Idle()
-    end
-end
-
-function MovementFSM:FollowBall()
-    local ball = TargetScanner:GetBall()
-    local humanoid = getHumanoid()
-    if not ball or not humanoid then
-        return
-    end
-
-    local targetPos = ball.Position + Vector3.new(0, 3, 0)
-    self:MoveTo(targetPos)
-end
-
-function MovementFSM:Wander()
-    local root = getRootPart()
-    if not root then
-        return
-    end
-
-    local radius = Config.Data.WanderRadius
-    local offsetX = (math.random() - 0.5) * radius * 2
-    local offsetZ = (math.random() - 0.5) * radius * 2
-    local targetPos = Vector3.new(
-        root.Position.X + offsetX,
-        root.Position.Y,
-        root.Position.Z + offsetZ
-    )
-
-    if math.random() < Config.Data.DashChance then
-        local humanoid = getHumanoid()
-        if humanoid then
-            humanoid.Jump = true
-        end
-    end
-
-    self:MoveTo(targetPos)
-    self.nextWanderAt = os.clock() + (Config.Data.WanderInterval or 3)
-end
-
-function MovementFSM:CheckStuck()
-    local humanoid = getHumanoid()
-    if not humanoid then
-        return
-    end
-
-    local root = getRootPart()
-    if not root then
-        return
-    end
-
-    local now = tick()
-    if not State.Movement.LastPos then
-        State.Movement.LastPos = root.Position
-        State.Movement.LastMoveTick = now
-        return
-    end
-
-    local distanceMoved = (root.Position - State.Movement.LastPos).Magnitude
-    if distanceMoved > 0.5 then
-        State.Movement.LastPos = root.Position
-        State.Movement.LastMoveTick = now
+    local next = candidates[1] or "IDLE"
+    if next ~= State.Movement.Current then
+        Logger:Debug("FSM: " .. State.Movement.Current .. " → " .. next)
+        State.Movement.Current    = next
+        State.Movement.TargetPos  = nil  -- reset target on transition
         State.Movement.StuckCounter = 0
-        return
     end
+end
 
-    if now - State.Movement.LastMoveTick > 2 then
-        State.Movement.StuckCounter = State.Movement.StuckCounter + 1
-        humanoid:Move(Vector3.zero, false)
-        State.Movement.TargetPos = nil
-        State.Movement.Current = "IDLE"
-        State.Movement.LastMoveTick = now
+function MovementFSM:_AntiStuck(hum, hrp)
+    local now = tick()
+    local pos = hrp.Position
 
-        if State.Movement.StuckCounter >= 3 then
-            Logger:Warn("Movement stuck detected; resetting target.")
+    if State.Movement.LastPos then
+        local moved = (pos - State.Movement.LastPos).Magnitude
+        if moved < 1 and now - State.Movement.LastMoveTick > 2 then
+            State.Movement.StuckCounter = State.Movement.StuckCounter + 1
+            if State.Movement.StuckCounter >= 3 then
+                Logger:Warn("Stuck x3 — forcing IDLE reset")
+            end
+            -- Force idle 1 frame to cancel stuck MoveTo
+            hum:Move(Vector3.new(0, 0, 0), false)
+            State.Movement.TargetPos  = nil
+            State.Movement.LastMoveTick = now
+            return true  -- was stuck
+        else
             State.Movement.StuckCounter = 0
         end
     end
+
+    if State.Movement.LastPos == nil or (pos - State.Movement.LastPos).Magnitude > 0.1 then
+        State.Movement.LastMoveTick = now
+    end
+    State.Movement.LastPos = pos
+    return false
 end
 
-function MovementFSM:Update()
-    local humanoid = getHumanoid()
-    if not humanoid or humanoid.Health <= 0 then
+function MovementFSM:Update(dt)
+    local hum = self:_GetHum()
+    local hrp = self:_GetHRP()
+    if not hum or not hrp or hum.Health <= 0 then return end
+
+    self:Resolve()
+
+    local stuck = self:_AntiStuck(hum, hrp)
+    if stuck then return end
+
+    local mode = State.Movement.Current
+
+    if mode == "IDLE" then
+        hum:Move(Vector3.new(0, 0, 0), false)
+
+    elseif mode == "JOIN" then
+        self:_DoJoin(hum, hrp)
+
+    elseif mode == "FOLLOW" then
+        self:_DoFollow(hum, hrp)
+
+    elseif mode == "WANDER" then
+        self:_DoWander(hum, hrp, dt)
+    end
+end
+
+function MovementFSM:_DoJoin(hum, hrp)
+    -- Move toward ready zone / join button
+    local target = State.Match.ReadyZonePos
+    if not target then
+        -- Heuristic: find ReadyZone button in workspace
+        local btn = workspace:FindFirstChild("JoinButton") or workspace:FindFirstChild("PlayButton")
+        if btn and btn:IsA("BasePart") then target = btn.Position end
+    end
+    if not target then return end
+
+    if not State.Movement.TargetPos or (target - State.Movement.TargetPos).Magnitude > 1 then
+        hum:Move(Vector3.new(0, 0, 0), false)
+        State.Movement.TargetPos = target
+    end
+    hum:MoveTo(target)
+end
+
+function MovementFSM:_DoFollow(hum, hrp)
+    local ball = State.Combat.CurrentBall
+    if not ball or not ball.Parent then return end
+
+    local target = ball.Position
+    if State.Movement.TargetPos and (target - State.Movement.TargetPos).Magnitude < 2 then
+        return  -- no need to re-issue MoveTo
+    end
+
+    hum:Move(Vector3.new(0, 0, 0), false)
+    State.Movement.TargetPos = target
+    hum:MoveTo(target)
+end
+
+function MovementFSM:_DoWander(hum, hrp, dt)
+    State.Movement.WanderTimer = (State.Movement.WanderTimer or 0) + dt
+    if State.Movement.WanderTimer < Config.WanderInterval then
         return
     end
+    State.Movement.WanderTimer = 0
 
-    local stateName = self:Resolve()
-    State.Movement.Current = stateName
+    -- Pick random point within radius
+    local angle  = math.random() * math.pi * 2
+    local radius = math.random() * Config.WanderRadius
+    local pos    = hrp.Position + Vector3.new(math.cos(angle) * radius, 0, math.sin(angle) * radius)
 
-    if stateName == "JOIN" then
-        self:MoveToReadyZone()
-    elseif stateName == "FOLLOW" then
-        self:FollowBall()
-    elseif stateName == "WANDER" then
-        if os.clock() >= self.nextWanderAt then
-            self:Wander()
-        end
-    else
-        self:Idle()
+    hum:Move(Vector3.new(0, 0, 0), false)
+    State.Movement.TargetPos = pos
+    hum:MoveTo(pos)
+
+    -- Random dash
+    if math.random() < Config.DashChance then
+        task.delay(0.1, function()
+            InputSim:Tap(Enum.KeyCode.LeftShift, 0.05)
+        end)
     end
 
-    self:CheckStuck()
-end
-
-local MatchDetector = {}
-
-function MatchDetector:CaptureReadyZone()
-    local root = getRootPart()
-    if root then
-        State.Match.ReadyZonePos = root.Position
+    -- Random jump
+    if math.random() < Config.JumpChance then
+        task.delay(0.15, function()
+            InputSim:Tap(Enum.KeyCode.Space, 0.05)
+        end)
     end
 end
 
-function MatchDetector:EnterMatch()
-    local now = os.clock()
-    if now - State.Match.LastTransition < 2 then
-        return
-    end
-    State.Match.LastTransition = now
-    State.Match.InMatch = true
-    State.Match.ConfirmedAt = now
-    Logger:Info("Match entered.")
-end
-
-function MatchDetector:ExitMatch()
-    local now = os.clock()
-    if now - State.Match.LastTransition < 2 then
-        return
-    end
-    State.Match.LastTransition = now
-    State.Match.InMatch = false
-    Logger:Info("Match exited.")
-end
-
-function MatchDetector:Update()
-    local root = getRootPart()
-    if not root then
-        return
-    end
-
-    local now = os.clock()
-    local prevPos = State.Match.LastHRPPos or root.Position
-    local delta = (root.Position - prevPos).Magnitude
-    local readyZone = State.Match.ReadyZonePos or root.Position
-    local farFromReady = (root.Position - readyZone).Magnitude > (Config.Data.TeleportThreshold or 80)
-    local ballExists = TargetScanner:GetBall() ~= nil
-
-    if not State.Match.ReadyZonePos then
-        self:CaptureReadyZone()
-    end
-
-    if delta > (Config.Data.SuddenMoveThreshold or 50) or farFromReady then
-        if Config.Data.RequireBallCheck then
-            if ballExists then
-                self:EnterMatch()
-            end
-        else
-            self:EnterMatch()
-        end
-    end
-
-    if State.Match.InMatch then
-        if (root.Position - readyZone).Magnitude < 15 then
-            self:ExitMatch()
-        elseif not ballExists and now - State.Match.ConfirmedAt > 10 then
-            self:ExitMatch()
-        end
-    end
-
-    State.Match.LastHRPPos = root.Position
-end
-
+-- ══════════════════════════════════════════════════════════════════════
+-- LOGIC — ANTI IDLE
+-- ══════════════════════════════════════════════════════════════════════
 local AntiIdle = {}
 
 function AntiIdle:Start()
-    local thread = task.spawn(function()
+    -- Periodic mouse click every 180s
+    Registry:Track("threads", task.spawn(function()
         while true do
             task.wait(180)
-            local humanoid = getHumanoid()
-            if humanoid and humanoid.Health > 0 then
-                InputSim:MoveMouse(0, 0)
-                InputSim:KeyDown("Space")
-                task.delay(0.05, function()
-                    InputSim:KeyUp("Space")
-                end)
-            end
+            InputSim:Click(0, 0)
+            Logger:Debug("Anti-AFK click sent")
         end
-    end)
+    end))
 
-    Registry:Track("threads", thread)
+    -- React to Idled event
+    Registry:Track("connections", Player.Idled:Connect(function()
+        InputSim:Tap(Enum.KeyCode.Space, 0.05)
+        Logger:Debug("Anti-AFK: Idled event → Space")
+    end))
 end
 
-local Notifier = {
-    lastRequestAt = 0,
-}
-
-function Notifier:Request(payload)
-    local config = Config.Data
-    if type(config.WebhookURL) ~= "string" or config.WebhookURL == "" then
-        return
-    end
-
-    local now = os.clock()
-    if now - self.lastRequestAt < 5 then
-        return
-    end
-
-    self.lastRequestAt = now
-
-    local http = (syn and syn.request) or (http and http.request) or (http_request and http_request)
-    if not http then
-        return
-    end
-
-    local ok, response = pcall(function()
-        return http({
-            Url = config.WebhookURL,
-            Method = "POST",
-            Headers = {
-                ["Content-Type"] = "application/json",
-            },
-            Body = HttpService:JSONEncode(payload),
-            Timeout = 10,
-        })
-    end)
-
-    if not ok then
-        Logger:Warn("Webhook request failed: " .. tostring(response))
-    end
-end
-
-function Notifier:SendStatus()
-    local root = getRootPart()
-    local payload = {
-        embeds = {
-            {
-                title = "Death Ball Bot",
-                description = "Status update",
-                color = 3066993,
-                fields = {
-                    { name = "Player", value = player and player.Name or "Unknown", inline = true },
-                    { name = "Match", value = tostring(State.Match.InMatch), inline = true },
-                    { name = "Position", value = root and tostring(root.Position) or "N/A", inline = false },
-                    { name = "Config Path", value = tostring(Config.SavePath or "n/a"), inline = false },
-                },
-                footer = { text = "Lanz v4.0" },
-            },
-        },
-    }
-    self:Request(payload)
-end
-
-function Notifier:Start()
-    local interval = Config.Data.WebhookInterval or 3600
-    local thread = task.spawn(function()
-        while true do
-            task.wait(interval)
-            local ok, err = pcall(function()
-                self:SendStatus()
-            end)
-            if not ok then
-                Logger:Warn("Webhook thread error: " .. tostring(err))
-            end
-        end
-    end)
-
-    Registry:Track("threads", thread)
-end
-
+-- ══════════════════════════════════════════════════════════════════════
+-- UI — THEME
+-- ══════════════════════════════════════════════════════════════════════
 local Theme = {
-    bg = Color3.fromRGB(20, 20, 30),
-    card = Color3.fromRGB(25, 25, 40),
-    accent = Color3.fromRGB(100, 150, 255),
-    success = Color3.fromRGB(80, 255, 120),
-    danger = Color3.fromRGB(255, 60, 60),
-    text = Color3.fromRGB(255, 255, 255),
-    textDim = Color3.fromRGB(150, 150, 200),
-    font = Enum.Font.GothamMedium,
-    fontBold = Enum.Font.GothamBold,
-    corner = UDim.new(0, 10),
+    bg        = Color3.fromRGB(20,  20,  30),
+    card      = Color3.fromRGB(25,  25,  40),
+    accent    = Color3.fromRGB(100, 150, 255),
+    success   = Color3.fromRGB(80,  255, 120),
+    danger    = Color3.fromRGB(255, 60,  60),
+    text      = Color3.fromRGB(255, 255, 255),
+    textDim   = Color3.fromRGB(150, 150, 200),
+    font      = Enum.Font.GothamMedium,
+    fontBold  = Enum.Font.GothamBold,
+    corner    = UDim.new(0, 10),
+    size      = {
+        title  = 14,
+        body   = 12,
+        small  = 10,
+    },
 }
 
-local UI = {
-    ScreenGui = nil,
-    ToggleButton = nil,
-    MainFrame = nil,
-    StatusLabel = nil,
-    ConfigPathLabel = nil,
-    Body = nil,
+-- ══════════════════════════════════════════════════════════════════════
+-- UI — SCREEN
+-- ══════════════════════════════════════════════════════════════════════
+local Screen = {
+    _gui        = nil,
+    _mainFrame  = nil,
+    _visible    = true,
+    _toggleBtn  = nil,
+    _statusLabels = {},
 }
 
-local function createCorner(instance)
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = Theme.corner
-    corner.Parent = instance
-    Registry:Track("instances", corner)
-    return corner
+function Screen:_GetCoreGui()
+    local ok, cg = pcall(function() return game:GetService("CoreGui") end)
+    if ok then return cg end
+    local ok2, hg = pcall(function() return gethui() end)
+    if ok2 then return hg end
+    return nil
 end
 
-local function createTextLabel(parent, text, size, position, font, textSize, color)
-    local label = Instance.new("TextLabel")
-    label.Parent = parent
-    label.BackgroundTransparency = 1
-    label.Text = text
-    label.Size = size
-    label.Position = position
-    label.Font = font or Theme.font
-    label.TextSize = textSize or 14
-    label.TextColor3 = color or Theme.text
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.TextYAlignment = Enum.TextYAlignment.Center
-    label.TextWrapped = true
-    label.RichText = true
-    Registry:Track("instances", label)
-    return label
+function Screen:_MakeCorner(parent, radius)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = radius or Theme.corner
+    c.Parent = parent
+    return c
 end
 
-function UI:Build()
-    if self.ScreenGui and self.ScreenGui.Parent then
-        return
+function Screen:_MakePadding(parent, px)
+    local p = Instance.new("UIPadding")
+    local u = UDim.new(0, px or 8)
+    p.PaddingTop = u; p.PaddingBottom = u
+    p.PaddingLeft = u; p.PaddingRight = u
+    p.Parent = parent
+end
+
+function Screen:_MakeLabel(parent, text, size, color, bold)
+    local l = Instance.new("TextLabel")
+    l.Text              = text
+    l.TextSize          = size or Theme.size.body
+    l.TextColor3        = color or Theme.text
+    l.Font              = bold and Theme.fontBold or Theme.font
+    l.BackgroundTransparency = 1
+    l.TextXAlignment    = Enum.TextXAlignment.Left
+    l.Size              = UDim2.new(1, 0, 0, size and size + 4 or 20)
+    l.Parent            = parent
+    return l
+end
+
+function Screen:_MakeSeparator(parent)
+    local f = Instance.new("Frame")
+    f.Size              = UDim2.new(1, 0, 0, 1)
+    f.BackgroundColor3  = Theme.accent
+    f.BackgroundTransparency = 0.7
+    f.BorderSizePixel   = 0
+    f.Parent            = parent
+    return f
+end
+
+function Screen:_MakeCard(parent, title)
+    local card = Instance.new("Frame")
+    card.BackgroundColor3 = Theme.card
+    card.BorderSizePixel  = 0
+    card.Size             = UDim2.new(1, -16, 0, 0)
+    card.AutomaticSize    = Enum.AutomaticSize.Y
+    card.Parent           = parent
+    self:_MakeCorner(card)
+    self:_MakePadding(card, 10)
+
+    local layout = Instance.new("UIListLayout")
+    layout.FillDirection     = Enum.FillDirection.Vertical
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+    layout.Padding            = UDim.new(0, 6)
+    layout.Parent             = card
+
+    if title then
+        self:_MakeLabel(card, title, Theme.size.title, Theme.accent, true)
+        self:_MakeSeparator(card)
     end
 
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "LanzDB_UI"
-    screenGui.ResetOnSpawn = false
-    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    screenGui.Parent = CoreGui
-    Registry:Track("instances", screenGui)
-    self.ScreenGui = screenGui
+    return card
+end
 
-    local toggle = Instance.new("TextButton")
-    toggle.Name = "ToggleButton"
-    toggle.Size = UDim2.new(0, 60, 0, 45)
-    toggle.Position = UDim2.new(0, 20, 0, 20)
-    toggle.BackgroundColor3 = Theme.accent
-    toggle.Text = "DB"
-    toggle.TextColor3 = Theme.text
-    toggle.Font = Theme.fontBold
-    toggle.TextSize = 20
-    toggle.Parent = screenGui
-    Registry:Track("instances", toggle)
-    self.ToggleButton = toggle
+function Screen:_MakeToggle(parent, label, key, callback)
+    local row = Instance.new("Frame")
+    row.BackgroundTransparency = 1
+    row.Size                   = UDim2.new(1, 0, 0, 28)
+    row.Parent                 = parent
 
-    createCorner(toggle)
+    local lbl = Instance.new("TextLabel")
+    lbl.Text              = label
+    lbl.TextSize          = Theme.size.body
+    lbl.TextColor3        = Theme.text
+    lbl.Font              = Theme.font
+    lbl.BackgroundTransparency = 1
+    lbl.TextXAlignment    = Enum.TextXAlignment.Left
+    lbl.Size              = UDim2.new(1, -50, 1, 0)
+    lbl.Parent            = row
 
+    local btn = Instance.new("TextButton")
+    btn.Size              = UDim2.new(0, 44, 0, 22)
+    btn.Position          = UDim2.new(1, -44, 0.5, -11)
+    btn.BorderSizePixel   = 0
+    btn.Font              = Theme.fontBold
+    btn.TextSize          = Theme.size.small
+    btn.Parent            = row
+    self:_MakeCorner(btn, UDim.new(0, 11))
+
+    local function refresh()
+        local val = Config[key]
+        btn.Text             = val and "ON" or "OFF"
+        btn.BackgroundColor3 = val and Theme.success or Theme.danger
+        btn.TextColor3       = Theme.bg
+    end
+    refresh()
+
+    btn.MouseButton1Click:Connect(function()
+        Config[key] = not Config[key]
+        if key == "DebugMode" then Logger:SetDebug(Config[key]) end
+        if key == "ShowParryVisualizer" then
+            if Config[key] then CombatEngine:RebuildDome()
+            else
+                if CombatEngine._dome then
+                    pcall(function() CombatEngine._dome:Destroy() end)
+                    CombatEngine._dome = nil
+                end
+            end
+        end
+        refresh()
+        FileIO:Save(Config)
+        if callback then callback(Config[key]) end
+    end)
+
+    return row, refresh
+end
+
+function Screen:_MakeSlider(parent, label, key, min, max)
+    local col = Instance.new("Frame")
+    col.BackgroundTransparency = 1
+    col.Size                   = UDim2.new(1, 0, 0, 48)
+    col.Parent                 = parent
+
+    local layout = Instance.new("UIListLayout")
+    layout.FillDirection = Enum.FillDirection.Vertical
+    layout.Padding       = UDim.new(0, 2)
+    layout.Parent        = col
+
+    local topRow = Instance.new("Frame")
+    topRow.BackgroundTransparency = 1
+    topRow.Size                   = UDim2.new(1, 0, 0, 20)
+    topRow.Parent                 = col
+
+    local lbl = self:_MakeLabel(topRow, label, Theme.size.body, Theme.text)
+    lbl.Size = UDim2.new(0.7, 0, 1, 0)
+
+    local valLbl = Instance.new("TextLabel")
+    valLbl.TextSize   = Theme.size.body
+    valLbl.TextColor3 = Theme.accent
+    valLbl.Font       = Theme.fontBold
+    valLbl.BackgroundTransparency = 1
+    valLbl.Size       = UDim2.new(0.3, 0, 1, 0)
+    valLbl.Position   = UDim2.new(0.7, 0, 0, 0)
+    valLbl.TextXAlignment = Enum.TextXAlignment.Right
+    valLbl.Parent     = topRow
+
+    local track = Instance.new("Frame")
+    track.Size              = UDim2.new(1, 0, 0, 8)
+    track.BackgroundColor3  = Color3.fromRGB(40, 40, 60)
+    track.BorderSizePixel   = 0
+    track.Parent            = col
+    self:_MakeCorner(track, UDim.new(0, 4))
+
+    local fill = Instance.new("Frame")
+    fill.BackgroundColor3 = Theme.accent
+    fill.BorderSizePixel  = 0
+    fill.Size             = UDim2.new(0, 0, 1, 0)
+    fill.Parent           = track
+    self:_MakeCorner(fill, UDim.new(0, 4))
+
+    local function refresh()
+        local val   = math.clamp(Config[key] or min, min, max)
+        local pct   = (val - min) / (max - min)
+        fill.Size   = UDim2.new(pct, 0, 1, 0)
+        valLbl.Text = tostring(val)
+    end
+    refresh()
+
+    -- Drag
+    local dragging = false
+    track.InputBegan:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1 or
+           inp.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+        end
+    end)
+    game:GetService("UserInputService").InputEnded:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1 or
+           inp.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+    game:GetService("UserInputService").InputChanged:Connect(function(inp)
+        if not dragging then return end
+        if inp.UserInputType ~= Enum.UserInputType.MouseMovement and
+           inp.UserInputType ~= Enum.UserInputType.Touch then return end
+        local abs = track.AbsolutePosition
+        local sz  = track.AbsoluteSize
+        local pct = math.clamp((inp.Position.X - abs.X) / sz.X, 0, 1)
+        local val = math.floor(min + pct * (max - min) + 0.5)
+        Config[key] = val
+        refresh()
+        FileIO:Save(Config)
+    end)
+
+    return col, refresh
+end
+
+function Screen:Build()
+    -- Clean old
+    if self._gui then
+        pcall(function() self._gui:Destroy() end)
+        self._gui = nil
+    end
+
+    local cg = self:_GetCoreGui()
+    if not cg then Logger:Warn("No CoreGui — UI skipped"); return end
+
+    -- Root ScreenGui
+    local sg = Instance.new("ScreenGui")
+    sg.Name               = "LanzDB_v4"
+    sg.ResetOnSpawn       = false
+    sg.ZIndexBehavior     = Enum.ZIndexBehavior.Sibling
+    sg.IgnoreGuiInset     = true
+    sg.Parent             = cg
+    Registry:Track("instances", sg)
+    self._gui = sg
+
+    -- Toggle button (top-left)
+    local tBtn = Instance.new("TextButton")
+    tBtn.Name             = "ToggleBtn"
+    tBtn.Size             = UDim2.new(0, 60, 0, 45)
+    tBtn.Position         = UDim2.new(0, 10, 0, 10)
+    tBtn.BackgroundColor3 = Theme.accent
+    tBtn.TextColor3       = Theme.bg
+    tBtn.Text             = "DB\nv4.0"
+    tBtn.TextSize         = 11
+    tBtn.Font             = Theme.fontBold
+    tBtn.BorderSizePixel  = 0
+    tBtn.ZIndex           = 10
+    tBtn.Parent           = sg
+    self:_MakeCorner(tBtn)
+    self._toggleBtn = tBtn
+
+    -- Main frame
     local main = Instance.new("Frame")
-    main.Name = "MainFrame"
-    main.Size = UDim2.new(0, 300, 0, 540)
-    main.Position = UDim2.new(0.5, -150, 0.5, -270)
-    main.BackgroundColor3 = Theme.card
-    main.BorderSizePixel = 0
-    main.Parent = screenGui
-    Registry:Track("instances", main)
-    self.MainFrame = main
-    createCorner(main)
+    main.Name             = "MainFrame"
+    main.Size             = UDim2.new(0, 300, 0, 0)
+    main.Position         = UDim2.new(0, 10, 0, 60)
+    main.BackgroundColor3 = Theme.bg
+    main.BorderSizePixel  = 0
+    main.AutomaticSize    = Enum.AutomaticSize.Y
+    main.ClipsDescendants = true
+    main.Parent           = sg
+    self:_MakeCorner(main)
+    self._mainFrame = main
 
-    local header = Instance.new("Frame")
-    header.Size = UDim2.new(1, 0, 0, 40)
-    header.BackgroundColor3 = Theme.bg
-    header.BorderSizePixel = 0
-    header.Parent = main
-    Registry:Track("instances", header)
+    -- Outline
+    local stroke = Instance.new("UIStroke")
+    stroke.Color     = Theme.accent
+    stroke.Thickness = 1
+    stroke.Transparency = 0.5
+    stroke.Parent    = main
 
-    createCorner(header)
+    -- Content layout
+    local content = Instance.new("Frame")
+    content.Name            = "Content"
+    content.BackgroundTransparency = 1
+    content.Size            = UDim2.new(1, 0, 0, 0)
+    content.AutomaticSize   = Enum.AutomaticSize.Y
+    content.Parent          = main
+    self:_MakePadding(content, 8)
 
-    local title = createTextLabel(header, "Death Ball Bot v4.0", UDim2.new(1, -20, 1, 0), UDim2.new(0, 10, 0, 0), Theme.fontBold, 18, Theme.text)
-    title.TextXAlignment = Enum.TextXAlignment.Left
+    local cl = Instance.new("UIListLayout")
+    cl.FillDirection        = Enum.FillDirection.Vertical
+    cl.HorizontalAlignment  = Enum.HorizontalAlignment.Center
+    cl.Padding              = UDim.new(0, 6)
+    cl.Parent               = content
 
-    local scroller = Instance.new("ScrollingFrame")
-    scroller.Size = UDim2.new(1, -12, 1, -52)
-    scroller.Position = UDim2.new(0, 6, 0, 46)
-    scroller.BackgroundTransparency = 1
-    scroller.BorderSizePixel = 0
-    scroller.CanvasSize = UDim2.new(0, 0, 0, 800)
-    scroller.ScrollBarThickness = 6
-    scroller.Parent = main
-    Registry:Track("instances", scroller)
-    self.Body = scroller
+    -- Title bar
+    local titleBar = Instance.new("Frame")
+    titleBar.BackgroundColor3 = Theme.accent
+    titleBar.BorderSizePixel  = 0
+    titleBar.Size             = UDim2.new(1, 0, 0, 32)
+    titleBar.Parent           = content
+    self:_MakeCorner(titleBar)
 
-    local list = Instance.new("UIListLayout")
-    list.Padding = UDim.new(0, 8)
-    list.Parent = scroller
-    Registry:Track("instances", list)
+    local titleLbl = self:_MakeLabel(titleBar, "  💀 Death Ball Bot  v4.0", Theme.size.title, Theme.bg, true)
+    titleLbl.Size        = UDim2.new(1, 0, 1, 0)
+    titleLbl.TextXAlignment = Enum.TextXAlignment.Center
 
-    local statusCard = Instance.new("Frame")
-    statusCard.Size = UDim2.new(1, -10, 0, 110)
-    statusCard.BackgroundColor3 = Theme.bg
-    statusCard.Parent = scroller
-    createCorner(statusCard)
-    Registry:Track("instances", statusCard)
+    -- ── STATUS MONITOR ──────────────────────────────────
+    local statusCard = self:_MakeCard(content, "📊 Status Monitor")
+    local statusMatch  = self:_MakeLabel(statusCard, "Match: —", Theme.size.body, Theme.textDim)
+    local statusMode   = self:_MakeLabel(statusCard, "Mode:  —", Theme.size.body, Theme.textDim)
+    local statusBall   = self:_MakeLabel(statusCard, "Ball:  —", Theme.size.body, Theme.textDim)
+    local statusPath   = self:_MakeLabel(statusCard, "Path:  " .. FileIO:GetPath(), Theme.size.small, Theme.textDim)
+    self._statusLabels = { match = statusMatch, mode = statusMode, ball = statusBall }
 
-    local statusTitle = createTextLabel(statusCard, "Status Monitor", UDim2.new(1, -20, 0, 22), UDim2.new(0, 10, 0, 0), Theme.fontBold, 15, Theme.accent)
-    statusTitle.TextYAlignment = Enum.TextYAlignment.Top
+    -- ── CURVE MODE ───────────────────────────────────────
+    local curveCard = self:_MakeCard(content, "🌀 Curve Mode")
+    local curveModes = { "NONE", "LEFT", "RIGHT", "SPIN" }
+    local curveLbl   = self:_MakeLabel(curveCard, "Current: " .. Config.CurveMode, Theme.size.body, Theme.accent)
 
-    self.StatusLabel = createTextLabel(statusCard, "State: IDLE\nMatch: false\nPath: Loading...", UDim2.new(1, -20, 1, -28), UDim2.new(0, 10, 0, 24), Theme.font, 13, Theme.textDim)
-    self.StatusLabel.TextYAlignment = Enum.TextYAlignment.Top
-    self.StatusLabel.TextWrapped = true
+    local curveBtn = Instance.new("TextButton")
+    curveBtn.Size             = UDim2.new(1, 0, 0, 26)
+    curveBtn.BackgroundColor3 = Theme.card
+    curveBtn.TextColor3       = Theme.text
+    curveBtn.Text             = "Cycle Mode →"
+    curveBtn.Font             = Theme.font
+    curveBtn.TextSize         = Theme.size.body
+    curveBtn.BorderSizePixel  = 0
+    curveBtn.Parent           = curveCard
+    self:_MakeCorner(curveBtn)
 
-    local configCard = Instance.new("Frame")
-    configCard.Size = UDim2.new(1, -10, 0, 120)
-    configCard.BackgroundColor3 = Theme.bg
-    configCard.Parent = scroller
-    createCorner(configCard)
-    Registry:Track("instances", configCard)
-
-    local configTitle = createTextLabel(configCard, "Config", UDim2.new(1, -20, 0, 22), UDim2.new(0, 10, 0, 0), Theme.fontBold, 15, Theme.accent)
-    configTitle.TextYAlignment = Enum.TextYAlignment.Top
-
-    self.ConfigPathLabel = createTextLabel(configCard, "Path: " .. tostring(Config.SavePath or "unknown"), UDim2.new(1, -20, 1, -30), UDim2.new(0, 10, 0, 24), Theme.font, 12, Theme.textDim)
-    self.ConfigPathLabel.TextYAlignment = Enum.TextYAlignment.Top
-    self.ConfigPathLabel.TextWrapped = true
-
-    local saveBtn = Instance.new("TextButton")
-    saveBtn.Size = UDim2.new(0.45, 0, 0, 28)
-    saveBtn.Position = UDim2.new(0.05, 0, 1, -36)
-    saveBtn.Text = "Save"
-    saveBtn.BackgroundColor3 = Theme.success
-    saveBtn.TextColor3 = Theme.text
-    saveBtn.Font = Theme.fontBold
-    saveBtn.TextSize = 14
-    saveBtn.Parent = configCard
-    createCorner(saveBtn)
-    Registry:Track("instances", saveBtn)
-
-    local resetBtn = Instance.new("TextButton")
-    resetBtn.Size = UDim2.new(0.45, 0, 0, 28)
-    resetBtn.Position = UDim2.new(0.52, 0, 1, -36)
-    resetBtn.Text = "Reset"
-    resetBtn.BackgroundColor3 = Theme.danger
-    resetBtn.TextColor3 = Theme.text
-    resetBtn.Font = Theme.fontBold
-    resetBtn.TextSize = 14
-    resetBtn.Parent = configCard
-    createCorner(resetBtn)
-    Registry:Track("instances", resetBtn)
-
-    saveBtn.MouseButton1Click:Connect(function()
-        pcall(function()
-            Config:Save(false)
-        end)
+    curveBtn.MouseButton1Click:Connect(function()
+        local idx = table.find(curveModes, Config.CurveMode) or 1
+        Config.CurveMode = curveModes[(idx % #curveModes) + 1]
+        curveLbl.Text    = "Current: " .. Config.CurveMode
+        FileIO:Save(Config)
     end)
 
-    resetBtn.MouseButton1Click:Connect(function()
-        pcall(function()
-            Config:Reset()
-        end)
-    end)
+    -- ── FARM SETTINGS ────────────────────────────────────
+    local farmCard = self:_MakeCard(content, "🌾 Farm Settings")
+    self:_MakeToggle(farmCard, "Auto Join Match", "AutoJoin")
+    self:_MakeToggle(farmCard, "Auto Follow Ball", "AutoFollow")
 
-    toggle.MouseButton1Click:Connect(function()
-        local isVisible = main.Visible
-        main.Visible = not isVisible
-    end)
+    -- ── COMBAT ───────────────────────────────────────────
+    local combatCard = self:_MakeCard(content, "⚔️ Combat")
+    self:_MakeToggle(combatCard, "Auto Parry", "AutoParry")
+    self:_MakeToggle(combatCard, "Parry Visualizer Dome", "ShowParryVisualizer")
+    self:_MakeToggle(combatCard, "Auto Ability (Q)", "AutoAbility")
+    self:_MakeToggle(combatCard, "God Mode", "GodMode")
 
-    self:RefreshStatus()
-end
+    -- ── WANDER ───────────────────────────────────────────
+    local wanderCard = self:_MakeCard(content, "🚶 Wander")
+    self:_MakeToggle(wanderCard, "Wander Mode", "WanderMode")
+    self:_MakeToggle(wanderCard, "In-Match Check", "InMatchCheck")
+    self:_MakeLabel(wanderCard, "ℹ️  FOLLOW > WANDER (priority)", Theme.size.small, Theme.textDim)
 
-function UI:RefreshStatus()
-    if not self.StatusLabel or not self.MainFrame then
-        return
-    end
-
-    local pathText = Config.SavePath or "unknown"
-    self.StatusLabel.Text = string.format(
-        "State: %s\nMatch: %s\nPath: %s",
-        State.Movement.Current,
-        tostring(State.Match.InMatch),
-        pathText
-    )
-
-    if self.ConfigPathLabel then
-        self.ConfigPathLabel.Text = "Path: " .. tostring(pathText)
-    end
-end
-
-local function bootHeartbeat()
-    local heartbeat = RunService.Heartbeat:Connect(function()
-        local ok, err = pcall(function()
-            if not player or not getCharacter() then
-                return
-            end
-
-            TargetScanner:GetBall()
-            MatchDetector:Update()
-            CombatEngine:Update()
-            MovementFSM:Update()
-            UI:RefreshStatus()
-        end)
-
-        if not ok then
-            Logger:Warn("Heartbeat error: " .. tostring(err))
-        end
-    end)
-
-    Registry:Track("connections", heartbeat)
-end
-
-local function startWatchdog()
-    task.spawn(function()
-        while true do
-            task.wait(1)
-            local ok, err = pcall(function()
-                local ball = TargetScanner:GetBall()
-                if not ball then
-                    State.Combat.CurrentBall = nil
-                else
-                    State.Combat.CurrentBall = ball
-                end
-
-                if not UI.ScreenGui or not UI.ScreenGui.Parent then
-                    UI:Build()
-                end
-
-                if not player or not getCharacter() then
-                    State.Match.InMatch = false
-                end
-            end)
-
-            if not ok then
-                Logger:Warn("Watchdog error: " .. tostring(err))
-            end
-        end
-    end)
-end
-
-local Boot = {}
-
-function Boot:Init()
-    self:CleanupLegacy()
-    Registry:Reset()
-
-    Config.Data = Config:Load()
-    Config.SavePath = Config:GetPath()
-    State.Match.ReadyZonePos = getRootPart() and getRootPart().Position or nil
-
-    UI:Build()
-    bootHeartbeat()
-    AntiIdle:Start()
-    Notifier:Start()
-    startWatchdog()
-    Logger:Info("Boot complete. LanzDB ready.")
-end
-
-function Boot:CleanupLegacy()
-    if env.LanzDB then
-        pcall(function()
-            if env.LanzDB.Shutdown then
-                env.LanzDB.Shutdown()
-            end
-        end)
-    end
-end
-
-function Boot:Shutdown()
-    Registry:Reset()
-    if UI.ScreenGui and UI.ScreenGui.Parent then
-        UI.ScreenGui:Destroy()
-    end
-    if env.LanzDB == LanzDB then
-        env.LanzDB = nil
-    end
-    Logger:Info("LanzDB shutdown complete.")
-end
-
-local LanzDB = {
-    Save = function()
-        return FileIO:Save(false)
-    end,
-    Load = function()
-        return FileIO:Load()
-    end,
-    Reset = function()
-        return FileIO:Reset()
-    end,
-    ShowConfig = function()
-        return Config.Data
-    end,
-    ShowPath = function()
-        return Config.SavePath or FileIO:GetPath()
-    end,
-    GetState = function()
-        return {
-            match = State.Match,
-            movement = State.Movement,
-            combat = State.Combat,
-        }
-    end,
-    SetDebug = function(value)
-        Config.Data.DebugMode = value == true
-        return Config.Data.DebugMode
-    end,
-    Shutdown = function()
-        return Boot:Shutdown()
-    end,
-    Reload = function()
-        Boot:Shutdown()
-        task.delay(0.1, function()
-            Boot:Init()
-        end)
-    end,
-}
-
-env.LanzDB = LanzDB
-
-local function onCharacterAdded(character)
-    if character then
-        task.delay(0.5, function()
-            if not State.Match.ReadyZonePos then
-                MatchDetector:CaptureReadyZone()
-            end
-        end)
-    end
-end
-
-if player then
-    if player.Character then
-        onCharacterAdded(player.Character)
-    end
-    player.CharacterAdded:Connect(function(character)
-        onCharacterAdded(character)
-    end)
-end
-
-Boot:Init()
+    -- ── PARRY RANGE ──────────────────────────────────────
+    local rangeCa... (12 KB left)
