@@ -14,7 +14,7 @@ local LocalPlayer = Players.LocalPlayer
 -- ============================================================
 -- UI: Rayfield
 -- ============================================================
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/Footagesus/Rayfield/main/source.lua'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Moon",
