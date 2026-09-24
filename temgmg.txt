@@ -1,0 +1,231 @@
+// ==UserScript==
+// @name         PlatRelay Auto-Forward (Copy Button)
+// @namespace    local.platorelay.tgbtn
+// @version      2.0
+// @description  Auto-click Continue/Copy → FREE_ code masuk Telegram sebagai button yang bisa diklik buat copy
+// @match        https://auth.platorelay.com/*
+// @match        https://*.platorelay.com/*
+// @grant        GM_xmlhttpRequest
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @connect      api.telegram.org
+// @run-at       document-start
+// ==/UserScript==
+
+(function () {
+    'use strict';
+
+    // ============================================================
+    // CONFIG
+    // ============================================================
+    const TG_BOT_TOKEN = '8242245230:AAGVCrXRAoluppyxExrlS5U226H_a1hsDCs';
+    const TG_CHAT_ID   = '6105537437';
+
+    const CONFIG = {
+        CLICK_TEXTS: ['continue', 'copy', 'get link', 'getlink', 'proceed', 'next', 'lanjut'],
+        CLICK_DELAY_MIN: 800,
+        CLICK_DELAY_MAX: 1500,
+        POLL_INTERVAL: 400,
+        CODE_PATTERN: /^FREE_[a-f0-9]{32}$/i,
+        DEBUG: true,
+    };
+
+    const log = (...a) => {
+        if (CONFIG.DEBUG) console.log('%c[ptg]', 'color:#7c5cff;font-weight:bold', ...a);
+    };
+
+    function esc(s) {
+        return String(s || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .slice(0, 800);
+    }
+
+    // ============================================================
+    // TELEGRAM
+    // ============================================================
+    function sendTelegram(text, replyMarkup) {
+        const params = {
+            chat_id: TG_CHAT_ID,
+            text: text,
+            parse_mode: 'HTML',
+            disable_web_page_preview: 'true',
+        };
+        if (replyMarkup) {
+            params.reply_markup = JSON.stringify(replyMarkup);
+        }
+
+        return new Promise((resolve, reject) => {
+            const body = JSON.stringify(params);
+            // sendMessage pakai POST biar reply_markup ga kepotong
+            GM_xmlhttpRequest({
+                method: 'POST',
+                url: `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`,
+                headers: { 'Content-Type': 'application/json' },
+                data: body,
+                onload: (res) => {
+                    try {
+                        const d = JSON.parse(res.responseText);
+                        if (d.ok) {
+                            log('✓ tg sent', d.result.message_id);
+                            resolve(d.result);
+                        } else {
+                            log('✗ tg err:', d.description);
+                            reject(new Error(d.description));
+                        }
+                    } catch (e) {
+                        reject(e);
+                    }
+                },
+                onerror: reject,
+            });
+        });
+    }
+
+    // ============================================================
+    // STATE
+    // ============================================================
+    const clickedThisPage = new WeakSet();
+    const sentCodes = new Set();
+    let lastClickAt = 0;
+
+    // ============================================================
+    // AUTO-CLICK
+    // ============================================================
+    function findClickable() {
+        const found = [];
+        const buttons = document.querySelectorAll(
+            'button, a[role="button"], [role="button"], input[type="submit"], input[type="button"]'
+        );
+        for (const btn of buttons) {
+            if (clickedThisPage.has(btn)) continue;
+            if (btn.disabled) continue;
+            if (btn.offsetParent === null) continue;
+            const style = window.getComputedStyle(btn);
+            if (style.opacity === '0' || style.visibility === 'hidden' || style.display === 'none') continue;
+            const text = (btn.innerText || btn.value || btn.getAttribute('aria-label') || '').trim();
+            if (CONFIG.CLICK_TEXTS.includes(text.toLowerCase())) {
+                found.push({ btn, text });
+            }
+        }
+        return found;
+    }
+
+    function tryClick() {
+        const now = Date.now();
+        if (now - lastClickAt < CONFIG.CLICK_DELAY_MIN) return false;
+        const candidates = findClickable();
+        if (!candidates.length) return false;
+        const { btn, text } = candidates[0];
+        clickedThisPage.add(btn);
+        lastClickAt = now + Math.random() * (CONFIG.CLICK_DELAY_MAX - CONFIG.CLICK_DELAY_MIN);
+        log('🤖 click:', text);
+        try {
+            btn.focus();
+            btn.click();
+        } catch (e) {
+            log('click err:', e.message);
+            return false;
+        }
+        return true;
+    }
+
+    // ============================================================
+    // CODE CAPTURE — kirim dengan Copy Button
+    // ============================================================
+    function handleCode(code, source) {
+        if (!code) return;
+        const trimmed = String(code).trim();
+        if (!CONFIG.CODE_PATTERN.test(trimmed)) return;
+        if (sentCodes.has(trimmed)) return;
+        sentCodes.add(trimmed);
+
+        log('🎯 captured:', trimmed, 'source:', source);
+
+        // ========================================================
+        // Kirim dengan inline_keyboard: tombol Copy & Open
+        // ========================================================
+        const replyMarkup = {
+            inline_keyboard: [
+                [
+                    {
+                        text: '📋 Copy Code',
+                        copy_text: { text: trimmed },   // Bot API 7.11+
+                    },
+                ],
+                [
+                    {
+                        text: '🔍 Source URL',
+                        url: location.href,
+                    },
+                ],
+            ],
+        };
+
+        sendTelegram(
+            `<b>🎯 FREE CODE CAPTURED</b>\n\n` +
+            `<b>Code:</b>\n<code>${esc(trimmed)}</code>\n\n` +
+            `<b>Source:</b> ${esc(source)}\n` +
+            `<b>Time:</b> ${new Date().toLocaleString()}`,
+            replyMarkup
+        ).catch(err => log('send err:', err.message));
+    }
+
+    // Hook clipboard.writeText
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        const orig = navigator.clipboard.writeText.bind(navigator.clipboard);
+        navigator.clipboard.writeText = function (text) {
+            try {
+                if (typeof text === 'string' && CONFIG.CODE_PATTERN.test(text.trim())) {
+                    handleCode(text.trim(), 'clipboard.writeText');
+                }
+            } catch (e) {}
+            return orig(text);
+        };
+    }
+
+    // Hook copy event
+    document.addEventListener('copy', (e) => {
+        const sel = window.getSelection().toString();
+        if (CONFIG.CODE_PATTERN.test(sel.trim())) {
+            handleCode(sel.trim(), 'copy event');
+        }
+    }, true);
+
+    // Scan DOM
+    function scanForCode() {
+        const fields = document.querySelectorAll('textarea, input[type="text"], [contenteditable]');
+        for (const f of fields) {
+            const val = f.value || f.innerText || f.textContent || '';
+            const m = val.match(/FREE_[a-f0-9]{32}/i);
+            if (m) handleCode(m[0], 'DOM scan');
+        }
+    }
+
+    // ============================================================
+    // MAIN LOOP
+    // ============================================================
+    log('loaded on', location.href);
+
+    setInterval(() => {
+        try { tryClick(); scanForCode(); } catch (e) {}
+    }, CONFIG.POLL_INTERVAL);
+
+    const observer = new MutationObserver(() => {
+        try { tryClick(); scanForCode(); } catch (e) {}
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+
+    // Manual
+    window.__ptg = {
+        test: () => sendTelegram('<b>Test</b>', {
+            inline_keyboard: [[
+                { text: '📋 Copy "HELLO"', copy_text: { text: 'HELLO' } },
+            ]],
+        }),
+        status: () => ({ sent: Array.from(sentCodes) }),
+        reset: () => { sentCodes.clear(); log('reset'); },
+    };
+    log('manual: __ptg.test() | __ptg.status() | __ptg.reset()');
+})();
