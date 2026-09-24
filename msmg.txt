@@ -1,0 +1,351 @@
+// ==UserScript==
+// @name         izen.lol Bypass Userscript (Auto)
+// @namespace    http://tampermonkey.net/
+// @version      1.1.0
+// @description  Auto-continue version. Skips timer, auto-clicks Continue.
+// @author       Gabriel (modified)
+// @match        *://pandadevelopment.net/*
+// @match        *://new.pandadevelopment.net/*
+// @match        *://trigonevo.com/*
+// @match        *://violated.lol/*
+// @match        *://blox-script.com/*
+// @match        *://boblox-script.com/*
+// @match        *://hydrogen.lat/*
+// @match        *://linkvertise.com/*
+// @match        *://link-to.net/*
+// @match        *://link-hub.net/*
+// @match        *://link-target.org/*
+// @match        *://link-target.net/*
+// @match        *://link-center.net/*
+// @match        *://direct-link.net/*
+// @match        *://loot-link.com/*
+// @match        *://lootdest.org/*
+// @match        *://free-content.pro/*
+// @match        *://lootdest.com/*
+// @match        *://bleleadersto.com/*
+// @match        *://daughablelea.com/*
+// @match        *://fast-links.org/*
+// @match        *://best-links.org/*
+// @match        *://free-leaks.com/*
+// @match        *://discordlink.cc/*
+// @match        *://rapid-links.net/*
+// @match        *://onlylinksmegas.xyz/*
+// @match        *://lootlinks.co/*
+// @match        *://redeem-nitro.com/*
+// @match        *://lootdest.net/*
+// @match        *://tonordersitye.com/*
+// @match        *://mega-redirect.com/*
+// @match        *://butthedshookh.org/*
+// @match        *://certainlywhenev.org/*
+// @match        *://aywithmehesa.org/*
+// @match        *://loot-links.com/*
+// @match        *://onlyshare.info/*
+// @match        *://mega-guy.com/*
+// @match        *://megadropz.com/*
+// @match        *://depravityweb.co/*
+// @match        *://missleakz.com/*
+// @match        *://godxnationds.com/*
+// @match        *://direct-links.net/*
+// @match        *://of-leaks.xyz/*
+// @match        *://direct-links.org/*
+// @match        *://ofhub-leaks.com/*
+// @match        *://linksloot.net/*
+// @match        *://worldpacks.co/*
+// @match        *://links.lootlabs.gg/*
+// @match        *://links-loot.com/*
+// @match        *://lootdest.info/*
+// @match        *://lootlink.org/*
+// @match        *://pkofs.com/*
+// @match        *://mdlinkshub.com/*
+// @match        *://nswfbox.com/*
+// @match        *://thhaven.net/*
+// @match        *://onlymega.co/*
+// @match        *://goldmega.online/*
+// @match        *://onlyfunlink.com/*
+// @match        *://rbxdrops.org/*
+// @match        *://leaksmix.com/*
+// @match        *://darkmodz-links.com/*
+// @match        *://megaplugleaks.com/*
+// @match        *://best-leaks.com/*
+// @match        *://risquemega.com/*
+// @match        *://of-area.com/*
+// @match        *://gateway-links.com/*
+// @match        *://tbv-hub.com/*
+// @match        *://attiktok22.com/*
+// @match        *://megalinks.one/*
+// @match        *://cemendemons.com/*
+// @match        *://content-hub.club/*
+// @match        *://oui-chu.com/*
+// @match        *://thotshaven.online/*
+// @match        *://nsfw-paradise.club/*
+// @match        *://megadumpz.com/*
+// @match        *://allbestonlyfans.com/*
+// @match        *://megaspremium.com/*
+// @match        *://hotstars-leaks.com/*
+// @match        *://secret-packs.com/*
+// @match        *://crip-hub.com/*
+// @match        *://holedonly.store/*
+// @match        *://luvsquad-links.com/*
+// @match        *://of4lm-links.com/*
+// @match        *://rapid-links.com/*
+// @match        *://nitroclaim.com/*
+// @match        *://op-packs.com/*
+// @match        *://streamergirls.org/*
+// @match        *://bizzarestorage.com/*
+// @match        *://onlyfriends.club/*
+// @match        *://milky-center.com/*
+// @match        *://leaksfreeday.com/*
+// @match        *://bigassleak.com/*
+// @match        *://mega-leaked.com/*
+// @match        *://watchnsfw.co/*
+// @match        *://leaks-heaven.com/*
+// @match        *://folderscontent.com/*
+// @match        *://onlyfanscloud.com/*
+// @match        *://megazinnex.club/*
+// @match        *://nsfwparadise.com/*
+// @match        *://lewd-leaks.com/*
+// @match        *://dailyofleaks.com/*
+// @match        *://oflinkshub.com/*
+// @match        *://herplace.online/*
+// @match        *://free-leaks.online/*
+// @match        *://work.ink/*
+// @match        *://workink.net/*
+// @match        *://rinku.pro/*
+// @match        *://7mb.io/*
+// @match        *://mobile.codex.lol/*
+// @match        *://stfly.vip/*
+// @match        *://shrtslug.biz/*
+// @match        *://lockr.so/*
+// @match        *://lockr.net/*
+// @match        *://linkunlocker.com/*
+// @match        *://link-unlock.com/*
+// @match        *://arolinks.com/*
+// @match        *://tpi.li/*
+// @match        *://socialwolvez.com/*
+// @match        *://go.linkify.ru/*
+// @match        *://mboost.me/*
+// @match        *://social-unlock.com/*
+// @match        *://rekonise.com/*
+// @match        *://rekonise.org/*
+// @match        *://rkns.link/*
+// @match        *://pastebin.com/*
+// @match        *://paste-drop.com/*
+// @match        *://pastefy.app/*
+// @match        *://sub2unlock.com/*
+// @match        *://sub2unlock.me/*
+// @match        *://sub2unlock.io/*
+// @match        *://sub4unlock.com/*
+// @match        *://sub4unlock.me/*
+// @match        *://sub4unlock.io/*
+// @match        *://sub4unlock.pro/*
+// @match        *://bstlar.com/*
+// @match        *://scriptpastebins.com/*
+// @match        *://paster.so/*
+// @match        *://sfl.gl/*
+// @match        *://go.yorurl.com/*
+// @match        *://yorurl.com/*
+// @match        *://www.robloxscripts.gg/*
+// @match        *://lnbz.la/*
+// @match        *://linkzy.space/*
+// @match        *://ez4short.com/*
+// @grant        none
+// @run-at       document-start
+// ==/UserScript==
+
+(function () {
+    'use strict';
+    if (window.top !== window.self) return;
+
+    const CONFIG = {
+        apikey: "",                 // <-- taruh API key izen.lol di sini kalo punya
+        time: 0,                    // 0 = no wait
+        wait_before_redirect: false,
+        auto_redirect_delay_ms: 300, // delay kecil biar UI kelihatan sebentar
+        show_ui: true,              // set false kalo mau full stealth, skip UI sama sekali
+    };
+
+    try {
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", bypassLink);
+        } else {
+            bypassLink();
+        }
+
+        function bypassLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rawRedirect = urlParams.get("redirect");
+
+            // Redirect ke izen.lol kalo belum lewat sana
+            if (
+                (!rawRedirect && !document.referrer.startsWith("https://izen.lol/")) ||
+                (rawRedirect && !document.referrer.includes("izen.lol"))
+            ) {
+                const targetUrl = `https://izen.lol/userscript?url=${encodeURIComponent(window.location.href)}&apikey=${CONFIG.apikey}&time=${CONFIG.time}`;
+                window.location.replace(targetUrl);
+                return;
+            }
+
+            const redirectUrl = rawRedirect;
+
+            // ============================================================
+            // FULL STEALTH MODE — skip UI, langsung redirect
+            // ============================================================
+            if (!CONFIG.show_ui) {
+                if (!redirectUrl) {
+                    // Kalo redirect URL ga ada, fallback ke izen.lol
+                    window.location.replace(
+                        `https://izen.lol/userscript?url=${encodeURIComponent(window.location.href)}&apikey=${CONFIG.apikey}&time=0`
+                    );
+                    return;
+                }
+                // Langsung pindah
+                setTimeout(() => {
+                    try { window.location.assign(redirectUrl); }
+                    catch (e) { window.location.href = redirectUrl; }
+                }, CONFIG.auto_redirect_delay_ms);
+                return;
+            }
+
+            // ============================================================
+            // UI MODE — tampilin UI, tapi auto-continue tanpa klik
+            // ============================================================
+            const container = document.createElement("div");
+            container.id = "us-container";
+            container.style.cssText = `
+                position: fixed; inset: 0; width: 100%; height: 100%;
+                background:
+                    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255,255,255,0.08), transparent 65%),
+                    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(255,255,255,0.04), transparent 60%),
+                    linear-gradient(180deg, #050507 0%, #08090c 55%, #04050a 100%);
+                color: #ededed; display: flex; align-items: center; justify-content: center;
+                padding: 16px; z-index: 2147483647;
+                font-family: 'Roboto','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+                overflow: auto; pointer-events: auto;
+            `;
+            container.innerHTML = `
+                <style>
+                    @keyframes izenSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                    @keyframes izenFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+                    @keyframes izenPulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+                    .izen-card {
+                        position: relative; width: 100%; max-width: 28rem;
+                        border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);
+                        background: rgba(0,0,0,0.4); padding: 2rem;
+                        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+                        box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+                        animation: izenFadeIn 0.4s ease-out;
+                        overflow: hidden; text-align: center; box-sizing: border-box;
+                    }
+                    .izen-glow-em, .izen-glow-cy {
+                        position: absolute; border-radius: 9999px;
+                        pointer-events: none; filter: blur(48px);
+                    }
+                    .izen-glow-em { right: -3rem; top: -3rem; width: 10rem; height: 10rem; background: rgba(16,185,129,0.10); }
+                    .izen-glow-cy { left: -2rem; bottom: -2rem; width: 8rem; height: 8rem; background: rgba(6,182,212,0.10); }
+                    .izen-header { position: relative; margin-bottom: 1.5rem; }
+                    .izen-title { margin: 0 0 4px; color: #fff; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+                    .izen-subtitle { margin: 0; color: rgba(255,255,255,0.4); font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                    .izen-content { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+                    .izen-timer { position: relative; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; }
+                    .izen-timer svg { position: absolute; width: 80px; height: 80px; }
+                    .izen-timer-track { stroke: rgba(255,255,255,0.10); }
+                    .izen-ring-outer { stroke: url(#izen-grad-outer); stroke-width: 3; fill: none; stroke-linecap: round; transform-origin: 40px 40px; animation: izenSpin 1.2s linear infinite; }
+                    .izen-timer-num { color: #fff; font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+                    #countdown { margin: 0; font-size: 0.875rem; color: rgba(255,255,255,0.5); animation: izenPulse 1.4s ease-in-out infinite; }
+                    #nextBtn {
+                        margin-top: 4px; padding: 10px 24px; font-family: inherit;
+                        font-size: 0.875rem; font-weight: 600; color: #04241c;
+                        background: linear-gradient(135deg, #34d399, #22d3ee);
+                        border: none; border-radius: 12px; cursor: default;
+                        position: relative; z-index: 2147483647;
+                    }
+                    #errorMsg {
+                        display: none; width: 100%; box-sizing: border-box;
+                        padding: 10px 14px; border-radius: 10px;
+                        border: 1px solid rgba(248,113,113,0.25);
+                        background: rgba(248,113,113,0.10);
+                        color: #fca5a5; font-size: 0.8125rem;
+                        text-align: left; word-break: break-all;
+                    }
+                </style>
+                <div class="izen-card">
+                    <div class="izen-glow-em"></div>
+                    <div class="izen-glow-cy"></div>
+                    <div class="izen-header">
+                        <h1 class="izen-title">Zen Bypass</h1>
+                        <p class="izen-subtitle" id="izen-target">Preparing redirect...</p>
+                    </div>
+                    <div class="izen-content">
+                        <div class="izen-timer">
+                            <svg viewBox="0 0 80 80" aria-hidden="true">
+                                <defs>
+                                    <linearGradient id="izen-grad-outer" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#34d399"/>
+                                        <stop offset="1" stop-color="#22d3ee"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle class="izen-timer-track" cx="40" cy="40" r="34" fill="none" stroke-width="3"/>
+                                <circle class="izen-ring-outer" cx="40" cy="40" r="34"/>
+                            </svg>
+                            <span id="izen-timer-num" class="izen-timer-num">→</span>
+                        </div>
+                        <p id="countdown">Redirecting...</p>
+                        <button id="nextBtn" type="button" disabled>Redirecting...</button>
+                        <div id="errorMsg"></div>
+                    </div>
+                </div>
+            `;
+
+            (document.body || document.documentElement).appendChild(container);
+
+            const nextBtn = document.getElementById("nextBtn");
+            const errorMsg = document.getElementById("errorMsg");
+            const targetEl = document.getElementById("izen-target");
+
+            if (targetEl) {
+                const display = redirectUrl || window.location.hostname;
+                targetEl.textContent = display;
+                targetEl.title = display;
+            }
+
+            const performRedirect = () => {
+                if (!redirectUrl) {
+                    errorMsg.textContent = "No redirect URL found. Please refresh and try again.";
+                    errorMsg.style.display = "block";
+                    return;
+                }
+                try {
+                    nextBtn.textContent = "Redirecting...";
+                    setTimeout(() => {
+                        try { window.location.assign(redirectUrl); }
+                        catch (e) { window.location.href = redirectUrl; }
+                    }, 60);
+                } catch (err) {
+                    errorMsg.textContent = "Redirect failed: " + redirectUrl;
+                    errorMsg.style.display = "block";
+                }
+            };
+
+            // === AUTO-CONTINUE, NO CLICK NEEDED ===
+            setTimeout(performRedirect, CONFIG.auto_redirect_delay_ms);
+
+            // Fallback: kalo ada yang klik sebelum auto-fire
+            nextBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                performRedirect();
+            }, { passive: false });
+        }
+    } catch (error) {
+        console.error("An error occurred:", error);
+        const safeMsg = String(error?.message || error)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        document.body.innerHTML = `
+            <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(180deg,#050507 0%,#08090c 55%,#04050a 100%);color:#ededed;font-family:'Roboto','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;">
+                <div style="width:100%;max-width:28rem;border-radius:16px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.4);padding:2rem;text-align:center;box-sizing:border-box;">
+                    <h1 style="margin:0 0 8px;color:#fff;font-size:1.25rem;font-weight:700;">Bypass failed</h1>
+                    <div style="padding:10px 14px;border-radius:10px;border:1px solid rgba(248,113,113,0.25);background:rgba(248,113,113,0.10);color:#fca5a5;font-size:0.8125rem;text-align:left;word-break:break-all;">${safeMsg}</div>
+                </div>
+            </div>`;
+    }
+})();
