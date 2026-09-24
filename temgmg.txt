@@ -1,14 +1,16 @@
 // ==UserScript==
-// @name         PlatRelay Auto-Forward (Copy Button)
+// @name         PlatRelay Auto-Forward (Copy Button + Auto-Close)
 // @namespace    local.platorelay.tgbtn
-// @version      2.0
-// @description  Auto-click Continue/Copy → FREE_ code masuk Telegram sebagai button yang bisa diklik buat copy
+// @version      3.0
+// @description  Auto-click Continue/Copy → FREE_ code ke Telegram dengan tombol copy → auto-close tab
 // @match        https://auth.platorelay.com/*
 // @match        https://*.platorelay.com/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @connect      api.telegram.org
+// @connect      127.0.0.1
+// @connect      localhost
 // @run-at       document-start
 // ==/UserScript==
 
@@ -27,6 +29,12 @@
         CLICK_DELAY_MAX: 1500,
         POLL_INTERVAL: 400,
         CODE_PATTERN: /^FREE_[a-f0-9]{32}$/i,
+
+        // Auto-close tab setelah code ke-kirim
+        AUTO_CLOSE: true,
+        CLOSE_DELAY: 2000,  // ms — kasih waktu notif Telegram muncul
+        CLOSE_SERVER_URL: 'http://127.0.0.1:5555/close-tab',
+
         DEBUG: true,
     };
 
@@ -57,13 +65,11 @@
         }
 
         return new Promise((resolve, reject) => {
-            const body = JSON.stringify(params);
-            // sendMessage pakai POST biar reply_markup ga kepotong
             GM_xmlhttpRequest({
                 method: 'POST',
                 url: `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`,
                 headers: { 'Content-Type': 'application/json' },
-                data: body,
+                data: JSON.stringify(params),
                 onload: (res) => {
                     try {
                         const d = JSON.parse(res.responseText);
@@ -84,11 +90,48 @@
     }
 
     // ============================================================
+    // CLOSE TAB — kirim signal ke Node bot (localhost:5555)
+    // ============================================================
+    function requestCloseTab() {
+        return new Promise((resolve) => {
+            const payload = {
+                title: document.title,
+                url: location.href,
+            };
+
+            log('📩 sending close signal...');
+
+            GM_xmlhttpRequest({
+                method: 'POST',
+                url: CONFIG.CLOSE_SERVER_URL,
+                headers: { 'Content-Type': 'application/json' },
+                data: JSON.stringify(payload),
+                onload: (res) => {
+                    log('close signal response:', res.status);
+                    resolve();
+                },
+                onerror: (e) => {
+                    log('close signal err:', e && e.error ? e.error : e);
+                    // Fallback: native close (kadang works di Chromium)
+                    try {
+                        window.close();
+                        setTimeout(() => {
+                            try { location.href = 'about:blank'; } catch (err) {}
+                        }, 300);
+                    } catch (err) {}
+                    resolve();
+                },
+            });
+        });
+    }
+
+    // ============================================================
     // STATE
     // ============================================================
     const clickedThisPage = new WeakSet();
     const sentCodes = new Set();
     let lastClickAt = 0;
+    let closing = false;
 
     // ============================================================
     // AUTO-CLICK
@@ -113,6 +156,7 @@
     }
 
     function tryClick() {
+        if (closing) return false;
         const now = Date.now();
         if (now - lastClickAt < CONFIG.CLICK_DELAY_MIN) return false;
         const candidates = findClickable();
@@ -132,26 +176,27 @@
     }
 
     // ============================================================
-    // CODE CAPTURE — kirim dengan Copy Button
+    // CODE CAPTURE — kirim dengan Copy Button + auto-close
     // ============================================================
-    function handleCode(code, source) {
+    async function handleCode(code, source) {
         if (!code) return;
+        if (closing) return;
+
         const trimmed = String(code).trim();
         if (!CONFIG.CODE_PATTERN.test(trimmed)) return;
         if (sentCodes.has(trimmed)) return;
+
         sentCodes.add(trimmed);
+        closing = true;
 
         log('🎯 captured:', trimmed, 'source:', source);
 
-        // ========================================================
-        // Kirim dengan inline_keyboard: tombol Copy & Open
-        // ========================================================
         const replyMarkup = {
             inline_keyboard: [
                 [
                     {
                         text: '📋 Copy Code',
-                        copy_text: { text: trimmed },   // Bot API 7.11+
+                        copy_text: { text: trimmed },
                     },
                 ],
                 [
@@ -163,13 +208,26 @@
             ],
         };
 
-        sendTelegram(
-            `<b>🎯 FREE CODE CAPTURED</b>\n\n` +
-            `<b>Code:</b>\n<code>${esc(trimmed)}</code>\n\n` +
-            `<b>Source:</b> ${esc(source)}\n` +
-            `<b>Time:</b> ${new Date().toLocaleString()}`,
-            replyMarkup
-        ).catch(err => log('send err:', err.message));
+        try {
+            await sendTelegram(
+                `<b>🎯 FREE CODE CAPTURED</b>\n\n` +
+                `<b>Code:</b>\n<code>${esc(trimmed)}</code>\n\n` +
+                `<b>Source:</b> ${esc(source)}\n` +
+                `<b>Time:</b> ${new Date().toLocaleString()}`,
+                replyMarkup
+            );
+            log('✓ sent to telegram');
+        } catch (e) {
+            log('send err:', e.message);
+        }
+
+        // Auto-close tab
+        if (CONFIG.AUTO_CLOSE) {
+            setTimeout(() => {
+                log('closing tab...');
+                requestCloseTab();
+            }, CONFIG.CLOSE_DELAY);
+        }
     }
 
     // Hook clipboard.writeText
@@ -195,6 +253,7 @@
 
     // Scan DOM
     function scanForCode() {
+        if (closing) return;
         const fields = document.querySelectorAll('textarea, input[type="text"], [contenteditable]');
         for (const f of fields) {
             const val = f.value || f.innerText || f.textContent || '';
@@ -207,25 +266,33 @@
     // MAIN LOOP
     // ============================================================
     log('loaded on', location.href);
+    log('auto-close:', CONFIG.AUTO_CLOSE ? 'ON' : 'OFF');
 
     setInterval(() => {
         try { tryClick(); scanForCode(); } catch (e) {}
     }, CONFIG.POLL_INTERVAL);
 
     const observer = new MutationObserver(() => {
-        try { tryClick(); scanForCode(); } catch (e) {}
+        try {
+            if (closing) return;
+            tryClick();
+            scanForCode();
+        } catch (e) {}
     });
     observer.observe(document.documentElement, { childList: true, subtree: true });
 
-    // Manual
+    // ============================================================
+    // MANUAL TRIGGER
+    // ============================================================
     window.__ptg = {
         test: () => sendTelegram('<b>Test</b>', {
             inline_keyboard: [[
                 { text: '📋 Copy "HELLO"', copy_text: { text: 'HELLO' } },
             ]],
         }),
-        status: () => ({ sent: Array.from(sentCodes) }),
-        reset: () => { sentCodes.clear(); log('reset'); },
+        close: requestCloseTab,
+        status: () => ({ sent: Array.from(sentCodes), closing }),
+        reset: () => { sentCodes.clear(); closing = false; log('reset'); },
     };
-    log('manual: __ptg.test() | __ptg.status() | __ptg.reset()');
+    log('manual: __ptg.test() | __ptg.close() | __ptg.status() | __ptg.reset()');
 })();
