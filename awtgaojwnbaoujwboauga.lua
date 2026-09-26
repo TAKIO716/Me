@@ -15,7 +15,7 @@
 -- ==================================================
 local CONFIG = {
     -- Discord Webhook
-    WEBHOOK_URL      = "https://discord.com/api/webhooks/xxx/yyy",  -- ← GANTI
+    WEBHOOK_URL      = "https://discord.com/api/webhooks/1553017895511134208/Pl8ixXWJAWrot4mDKdYrzBQ5IHC8kjrQN58GJLuPaPCsmvebQzsh59lKe9q4m6cV79UC",  -- ← GANTI
     WEBHOOK_USERNAME = "Roblox Logger",
     WEBHOOK_AVATAR   = "",  -- optional, URL image
     
