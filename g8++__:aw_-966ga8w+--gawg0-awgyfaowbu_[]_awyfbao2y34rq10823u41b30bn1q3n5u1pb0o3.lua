@@ -1,15 +1,6 @@
 --[[
     ═══════════════════════════════════════════════════════════
-    DEATH BALL AUTO — Full Script v1.1 (Fixed)
-    ═══════════════════════════════════════════════════════════
-    Fitur:
-    - Auto Ready (jalan ke ReadyZone pas intermission)
-    - Follow Ball (track via getnilinstances + delta velocity)
-    - Auto Parry (time-to-impact)
-    - UI Console (COPY / CLEAR / SCAN / MINIMIZE)
-    - Unified Movement (no conflict)
-    
-    Keybind: RightShift = toggle UI visible
+    DEATH BALL AUTO — Full Script v1.2 (Force Control)
     ═══════════════════════════════════════════════════════════
 ]]
 
@@ -19,13 +10,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
-local HttpService = game:GetService("HttpService")
 
 local LocalPlayer = Players.LocalPlayer
 
--- ============================================
 -- CONFIG
--- ============================================
 local Config = {
     AutoReady = true,
     FollowBall = false,
@@ -33,11 +21,11 @@ local Config = {
     WalkSpeed = 1.0,
     ParryDistance = 15,
     ParryTimeToImpact = 0.15,
+    ForceWalkSpeed = 16,
+    ForceMoveThreshold = 2,
 }
 
--- ============================================
 -- STATE
--- ============================================
 local State = {
     autoMoveDir = Vector3.zero,
     walkTarget = nil,
@@ -57,26 +45,16 @@ local State = {
     stats = {
         ballFound = 0,
         parryFired = 0,
+        forceApplied = 0,
     },
 }
 
--- ============================================
--- LOG CONSOLE
--- ============================================
-local LogConsole = {
-    lines = {},
-    maxLines = 400,
-    logText = "",
-    label = nil,
-    scroll = nil,
-}
+-- LOG
+local LogConsole = { lines = {}, maxLines = 400, logText = "", label = nil, scroll = nil }
 
 function LogConsole:append(text)
-    local ts = os.date("%H:%M:%S")
-    table.insert(self.lines, "[" .. ts .. "] " .. tostring(text))
-    while #self.lines > self.maxLines do
-        table.remove(self.lines, 1)
-    end
+    table.insert(self.lines, "[" .. os.date("%H:%M:%S") .. "] " .. tostring(text))
+    while #self.lines > self.maxLines do table.remove(self.lines, 1) end
     self.logText = table.concat(self.lines, "\n")
     if self.label then
         self.label.Text = self.logText
@@ -92,7 +70,6 @@ function LogConsole:clear()
     self.lines = {}
     self.logText = ""
     if self.label then self.label.Text = "" end
-    if self.scroll then self.scroll.CanvasPosition = Vector2.new(0, 0) end
 end
 
 local function log(text)
@@ -100,9 +77,7 @@ local function log(text)
     print("[DB] " .. tostring(text))
 end
 
--- ============================================
--- UI SETUP
--- ============================================
+-- UI
 local parentGui
 if gethui then
     local ok, r = pcall(gethui)
@@ -120,7 +95,6 @@ screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screen.DisplayOrder = 99999
 screen.Parent = parentGui
 
--- Reopen Button (kecil, di kiri atas)
 local reopenBtn = Instance.new("TextButton")
 reopenBtn.Size = UDim2.new(0, 50, 0, 50)
 reopenBtn.Position = UDim2.new(0, 15, 0.3, 0)
@@ -132,11 +106,7 @@ reopenBtn.TextSize = 18
 reopenBtn.Visible = false
 reopenBtn.Parent = screen
 Instance.new("UICorner", reopenBtn).CornerRadius = UDim.new(0, 8)
-local reopenStroke = Instance.new("UIStroke", reopenBtn)
-reopenStroke.Color = Color3.fromRGB(100, 150, 255)
-reopenStroke.Thickness = 2
 
--- Main Frame
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0, 620, 0, 480)
 main.Position = UDim2.new(0.5, -310, 0, 20)
@@ -150,7 +120,6 @@ local stroke = Instance.new("UIStroke", main)
 stroke.Color = Color3.fromRGB(100, 120, 200)
 stroke.Thickness = 1.5
 
--- Title Bar
 local title = Instance.new("Frame")
 title.Size = UDim2.new(1, 0, 0, 30)
 title.BackgroundColor3 = Color3.fromRGB(22, 22, 32)
@@ -162,14 +131,13 @@ local titleLbl = Instance.new("TextLabel")
 titleLbl.Size = UDim2.new(1, -300, 1, 0)
 titleLbl.Position = UDim2.new(0, 12, 0, 0)
 titleLbl.BackgroundTransparency = 1
-titleLbl.Text = "Death Ball Auto"
+titleLbl.Text = "Death Ball Auto v1.2"
 titleLbl.TextColor3 = Color3.fromRGB(180, 200, 255)
 titleLbl.TextXAlignment = Enum.TextXAlignment.Left
 titleLbl.Font = Enum.Font.GothamBold
 titleLbl.TextSize = 13
 titleLbl.Parent = title
 
--- Title bar buttons
 local function makeTitleBtn(text, xPos, w, bg, cb)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0, w, 0, 22)
@@ -183,8 +151,7 @@ local function makeTitleBtn(text, xPos, w, bg, cb)
     btn.Parent = title
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
     btn.MouseButton1Click:Connect(function()
-        local ok, err = pcall(cb)
-        if not ok then log("ERR: " .. tostring(err)) end
+        pcall(cb)
     end)
     return btn
 end
@@ -193,7 +160,7 @@ makeTitleBtn("COPY", -230, 55, Color3.fromRGB(45, 90, 160), function()
     if setclipboard then setclipboard(LogConsole.logText)
     elseif syn and syn.write_clipboard then syn.write_clipboard(LogConsole.logText) end
     titleLbl.Text = "Copied!"
-    task.delay(1.2, function() titleLbl.Text = "Death Ball Auto" end)
+    task.delay(1.2, function() titleLbl.Text = "Death Ball Auto v1.2" end)
 end)
 
 makeTitleBtn("CLEAR", -170, 55, Color3.fromRGB(160, 70, 40), function()
@@ -201,28 +168,22 @@ makeTitleBtn("CLEAR", -170, 55, Color3.fromRGB(160, 70, 40), function()
     log("Cleared")
 end)
 
--- Minimize button
 makeTitleBtn("—", -110, 30, Color3.fromRGB(70, 70, 100), function()
     main.Visible = false
     reopenBtn.Visible = true
-    log("UI minimized")
 end)
 
--- Close button
 makeTitleBtn("X", -55, 30, Color3.fromRGB(170, 45, 45), function()
     main.Visible = false
     reopenBtn.Visible = false
-    log("UI hidden")
 end)
 
--- Reopen
 reopenBtn.MouseButton1Click:Connect(function()
     main.Visible = true
     reopenBtn.Visible = false
-    log("UI reopened")
 end)
 
--- Stats Bar
+-- Stats bar
 local statsBar = Instance.new("Frame")
 statsBar.Size = UDim2.new(1, -10, 0, 26)
 statsBar.Position = UDim2.new(0, 5, 0, 35)
@@ -242,7 +203,7 @@ statsLbl.Font = Enum.Font.Code
 statsLbl.TextSize = 11
 statsLbl.Parent = statsBar
 
--- Toggle Row
+-- Toggle row
 local toggleRow = Instance.new("Frame")
 toggleRow.Size = UDim2.new(1, -10, 0, 32)
 toggleRow.Position = UDim2.new(0, 5, 0, 66)
@@ -267,9 +228,7 @@ local function makeToggle(text, xPos, initState, callback)
 
     local function render()
         btn.Text = baseText .. ": " .. (state and "ON" or "OFF")
-        btn.BackgroundColor3 = state 
-            and Color3.fromRGB(50, 160, 60)
-            or Color3.fromRGB(60, 60, 80)
+        btn.BackgroundColor3 = state and Color3.fromRGB(50, 160, 60) or Color3.fromRGB(60, 60, 80)
     end
 
     btn.MouseButton1Click:Connect(function()
@@ -282,22 +241,11 @@ local function makeToggle(text, xPos, initState, callback)
     return btn
 end
 
-makeToggle("Auto Ready", 8, Config.AutoReady, function(v)
-    Config.AutoReady = v
-    log("AutoReady: " .. tostring(v))
-end)
+makeToggle("Auto Ready", 8, Config.AutoReady, function(v) Config.AutoReady = v; log("AutoReady: " .. tostring(v)) end)
+makeToggle("Follow Ball", 155, Config.FollowBall, function(v) Config.FollowBall = v; log("FollowBall: " .. tostring(v)) end)
+makeToggle("Parry", 302, Config.Parry, function(v) Config.Parry = v; log("Parry: " .. tostring(v)) end)
 
-makeToggle("Follow Ball", 155, Config.FollowBall, function(v)
-    Config.FollowBall = v
-    log("FollowBall: " .. tostring(v))
-end)
-
-makeToggle("Parry", 302, Config.Parry, function(v)
-    Config.Parry = v
-    log("Parry: " .. tostring(v))
-end)
-
--- Console Header
+-- Console header
 local consoleHeader = Instance.new("Frame")
 consoleHeader.Size = UDim2.new(1, -10, 0, 20)
 consoleHeader.Position = UDim2.new(0, 5, 0, 104)
@@ -315,7 +263,7 @@ consoleTitle.Font = Enum.Font.GothamBold
 consoleTitle.TextSize = 10
 consoleTitle.Parent = consoleHeader
 
--- Scroll Frame
+-- Scroll
 local scroll = Instance.new("ScrollingFrame")
 scroll.Size = UDim2.new(1, -10, 1, -160)
 scroll.Position = UDim2.new(0, 5, 0, 128)
@@ -351,7 +299,7 @@ logLbl.Parent = scroll
 LogConsole.label = logLbl
 LogConsole.scroll = scroll
 
--- Action Row
+-- Action row
 local actionRow = Instance.new("Frame")
 actionRow.Size = UDim2.new(1, -10, 0, 30)
 actionRow.Position = UDim2.new(0, 5, 1, -35)
@@ -370,10 +318,7 @@ local function makeActionBtn(text, xPos, w, bg, cb)
     btn.TextSize = 11
     btn.Parent = actionRow
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
-    btn.MouseButton1Click:Connect(function()
-        local ok, err = pcall(cb)
-        if not ok then log("ERR: " .. tostring(err)) end
-    end)
+    btn.MouseButton1Click:Connect(function() pcall(cb) end)
     return btn
 end
 
@@ -388,12 +333,12 @@ end)
 makeActionBtn("RESET STATS", 216, 100, Color3.fromRGB(120, 80, 40), function()
     State.stats.ballFound = 0
     State.stats.parryFired = 0
+    State.stats.forceApplied = 0
     log("Stats reset")
 end)
 
 makeActionBtn("UNLOAD", 324, 80, Color3.fromRGB(80, 80, 100), function()
     screen:Destroy()
-    print("[DB] Unloaded")
 end)
 
 -- Drag
@@ -422,18 +367,36 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ============================================
--- UNIFIED MOVEMENT (single source of truth)
+-- FORCE CONTROL RESTORE
 -- ============================================
-local function walkTo(pos)
-    State.walkTarget = pos
-end
+task.spawn(function()
+    while true do
+        task.wait(0.3)
+        if screen.Parent == nil then break end
+        
+        if Config.AutoReady or Config.FollowBall then
+            local char = LocalPlayer.Character
+            local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                -- Restore WalkSpeed kalau di-lock
+                if humanoid.WalkSpeed < 8 then
+                    humanoid.WalkSpeed = Config.ForceWalkSpeed
+                    State.stats.forceApplied = State.stats.forceApplied + 1
+                end
+            end
+        end
+    end
+end)
 
+-- ============================================
+-- MOVEMENT
+-- ============================================
+local function walkTo(pos) State.walkTarget = pos end
 local function stopPath()
     State.walkTarget = nil
     State.autoMoveDir = Vector3.zero
 end
 
--- Heartbeat: hitung direction dari walkTarget
 RunService.Heartbeat:Connect(function()
     if not State.walkTarget then
         State.autoMoveDir = Vector3.zero
@@ -454,13 +417,34 @@ RunService.Heartbeat:Connect(function()
     State.autoMoveDir = flat.Unit * Config.WalkSpeed
 end)
 
--- Heartbeat: eksekusi move
+-- Approach 1: humanoid:Move
 RunService.Heartbeat:Connect(function()
     if State.autoMoveDir.Magnitude > 0.1 then
         local char = LocalPlayer.Character
         local humanoid = char and char:FindFirstChildOfClass("Humanoid")
         if humanoid and humanoid.Health > 0 then
             humanoid:Move(State.autoMoveDir, false)
+        end
+    end
+end)
+
+-- Approach 2: Force velocity (backup kalau Move gak works)
+RunService.Heartbeat:Connect(function()
+    if State.autoMoveDir.Magnitude > 0.1 then
+        local char = LocalPlayer.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+        if hrp and humanoid and humanoid.Health > 0 then
+            local horizontalVel = Vector3.new(
+                hrp.AssemblyLinearVelocity.X, 0, hrp.AssemblyLinearVelocity.Z
+            )
+            if horizontalVel.Magnitude < Config.ForceMoveThreshold then
+                local dir = State.autoMoveDir.Unit
+                hrp.AssemblyLinearVelocity = Vector3.new(
+                    dir.X * 20, hrp.AssemblyLinearVelocity.Y, dir.Z * 20
+                )
+                State.stats.forceApplied = State.stats.forceApplied + 1
+            end
         end
     end
 end)
@@ -493,16 +477,8 @@ local function isInsideZone(pos, zone)
     return math.abs(rel.X) <= halfX and math.abs(rel.Z) <= halfZ
 end
 
-local function getRandomInZone(zone)
-    local limitX = math.max(1, zone.Size.X * 0.5)
-    local limitZ = math.max(1, zone.Size.Z * 0.5)
-    local rx = (math.random() - 0.5) * limitX
-    local rz = (math.random() - 0.5) * limitZ
-    return (zone.CFrame * CFrame.new(rx, 0, rz)).Position
-end
-
-local lastARDebug = 0
 local lastARState = false
+local lastARDebug = 0
 
 task.spawn(function()
     while true do
@@ -516,36 +492,23 @@ task.spawn(function()
                 local isInt = isIntermission()
                 local readyZone = getReadyZone()
 
-                -- Log state change
                 if isInt ~= lastARState then
                     lastARState = isInt
-                    if isInt then
-                        log("AR: INTERMISSION started")
-                    else
-                        log("AR: Intermission ended")
-                    end
+                    log(isInt and "AR: INTERMISSION started" or "AR: Intermission ended")
                 end
 
-                -- Debug tiap 3 detik
-                if os.clock() - lastARDebug > 3 and isInt then
+                if os.clock() - lastARDebug > 5 and isInt then
                     lastARDebug = os.clock()
-                    if readyZone then
-                        local inZone = isInsideZone(hrp.Position, readyZone)
-                        log("AR: Zone=" .. (inZone and "INSIDE" or "OUTSIDE")
-                            .. " | pos=(" .. string.format("%.1f,%.1f,%.1f",
-                                hrp.Position.X, hrp.Position.Y, hrp.Position.Z) .. ")")
-                    else
-                        log("AR: ReadyZone NOT FOUND")
-                    end
+                    local humanoid = char:FindFirstChildOfClass("Humanoid")
+                    log(string.format("AR: pos=(%.1f,%.1f,%.1f) WS=%.0f",
+                        hrp.Position.X, hrp.Position.Y, hrp.Position.Z,
+                        humanoid and humanoid.WalkSpeed or 0))
                 end
 
                 if isInt and readyZone then
                     if not isInsideZone(hrp.Position, readyZone) then
-                        if not State.currentLobbyTarget 
-                        or not isInsideZone(State.currentLobbyTarget, readyZone) then
-                            State.currentLobbyTarget = getRandomInZone(readyZone)
-                        end
-                        walkTo(State.currentLobbyTarget)
+                        -- Target ke CENTER zone
+                        walkTo(readyZone.Position)
                     else
                         State.currentLobbyTarget = nil
                         stopPath()
@@ -561,7 +524,6 @@ end)
 -- ============================================
 local function findRealBall()
     if not getnilinstances then return nil end
-
     local char = LocalPlayer.Character
     local hrp = char and char:FindFirstChild("HumanoidRootPart")
     if not hrp then return nil end
@@ -573,12 +535,9 @@ local function findRealBall()
         if obj:IsA("BasePart") then
             local n = obj.Name
             local isBall = false
-
             if n == "Ball" then isBall = true end
             if obj:IsA("MeshPart") and n:find("Ball") then isBall = true end
-            if n == "BallShadow" then isBall = false end
-            if n == "FakeBall" then isBall = false end
-
+            if n == "BallShadow" or n == "FakeBall" then isBall = false end
             local path = obj:GetFullName():lower()
             if path:find("/fx/") then isBall = false end
 
@@ -591,7 +550,6 @@ local function findRealBall()
             end
         end
     end
-
     return bestBall, bestDist
 end
 
@@ -599,11 +557,9 @@ local function updateBall()
     local now = os.clock()
     local B = State.ball
 
-    -- Rescan check
     if now - B.lastScan >= B.scanInterval or not B.obj then
         B.lastScan = now
         local ball, dist = findRealBall()
-
         if ball then
             if B.obj ~= ball then
                 State.stats.ballFound = State.stats.ballFound + 1
@@ -620,7 +576,6 @@ local function updateBall()
         end
     end
 
-    -- Update posisi + velocity via delta
     if B.obj then
         local ok, pos = pcall(function() return B.obj.Position end)
         if ok and pos then
@@ -628,7 +583,6 @@ local function updateBall()
                 local dt = now - B.lastUpdate
                 if dt >= 0.03 then
                     local rawVel = (pos - B.lastPos) / dt
-                    -- Smoothing
                     B.velocity = B.velocity:Lerp(rawVel, 0.4)
                     B.lastPos = pos
                     B.lastUpdate = now
@@ -637,18 +591,14 @@ local function updateBall()
                 B.lastPos = pos
                 B.lastUpdate = now
             end
-
             B.position = pos
-
             local char = LocalPlayer.Character
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
             if hrp then
-                local dist = (pos - hrp.Position).Magnitude
-                return B.obj, dist
+                return B.obj, (pos - hrp.Position).Magnitude
             end
         end
     end
-
     return nil
 end
 
@@ -677,7 +627,6 @@ end
 -- MAIN LOOP
 -- ============================================
 local lastStatsUpdate = 0
-local lastFollowLog = 0
 
 task.spawn(function()
     while true do
@@ -700,9 +649,6 @@ task.spawn(function()
                     stopPath()
                 end
             end
-        elseif Config.FollowBall and not ball then
-            -- Kalau FollowBall ON tapi bola gak ketemu, tetep coba scan
-            -- (jangan stop path, biar gak konflik sama AutoReady)
         end
 
         -- PARRY
@@ -712,13 +658,11 @@ task.spawn(function()
             if hrp then
                 local ballVel = State.ball.velocity
                 local ballSpeed = ballVel.Magnitude
-
                 if ballSpeed > 5 then
                     local playerVel = hrp.AssemblyLinearVelocity
                     local relPos = hrp.Position - ball.Position
                     local relVel = ballVel - playerVel
                     local relSpeedSq = relVel:Dot(relVel)
-
                     if relSpeedSq > 1e-4 then
                         local timeToCPA = relPos:Dot(relVel) / relSpeedSq
                         if timeToCPA > 0 and timeToCPA <= Config.ParryTimeToImpact then
@@ -732,21 +676,19 @@ task.spawn(function()
             end
         end
 
-        -- Stats update
+        -- STATS
         if now - lastStatsUpdate > 0.3 then
             lastStatsUpdate = now
             local char = LocalPlayer.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-
-            local matchTxt = isIntermission() and "INTERMISSION" or "IN-GAME"
-            local ballTxt = ball and string.format("%.1f", dist or 0) or "nil"
-            local velTxt = ball and string.format("%.1f", State.ball.velocity.Magnitude) or "0"
-            local targetTxt = isPlayerTargeted() and "TARGETED" or "safe"
-
+            local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+            local matchTxt = isIntermission() and "INTER" or "INGAME"
+            local ballTxt = ball and string.format("%.0f", dist or 0) or "-"
+            local wsTxt = humanoid and string.format("%.0f", humanoid.WalkSpeed) or "?"
+            local velTxt = ball and string.format("%.0f", State.ball.velocity.Magnitude) or "0"
             statsLbl.Text = string.format(
-                "%s | Ball: %s (%s vel) | Parry: %d | %s",
-                matchTxt, ballTxt, velTxt,
-                State.stats.parryFired, targetTxt
+                "%s | Ball:%s | WS:%s | V:%s | Parry:%d | Force:%d",
+                matchTxt, ballTxt, wsTxt, velTxt,
+                State.stats.parryFired, State.stats.forceApplied
             )
         end
     end
@@ -757,21 +699,11 @@ end)
 -- ============================================
 _G.__DBA_scanBall = function()
     log("=== SCAN BALL ===")
-    if not getnilinstances then
-        log("ERROR: getnilinstances not supported")
-        return
-    end
-
+    if not getnilinstances then log("getnilinstances not supported"); return end
     local char = LocalPlayer.Character
     local hrp = char and char:FindFirstChild("HumanoidRootPart")
-    if not hrp then
-        log("ERROR: No HRP")
-        return
-    end
-
-    local count = 0
-    local ballCount = 0
-
+    if not hrp then log("No HRP"); return end
+    local count, ballCount = 0, 0
     for _, obj in ipairs(getnilinstances()) do
         count = count + 1
         if obj:IsA("BasePart") then
@@ -779,75 +711,52 @@ _G.__DBA_scanBall = function()
             if n == "Ball" or (obj:IsA("MeshPart") and n:find("Ball") and n ~= "BallShadow") then
                 ballCount = ballCount + 1
                 local dist = (obj.Position - hrp.Position).Magnitude
-                log(string.format("BALL: %s | dist=%.1f | pos=(%.1f,%.1f,%.1f)",
-                    obj:GetFullName(), dist,
-                    obj.Position.X, obj.Position.Y, obj.Position.Z))
+                log(string.format("BALL: %s | dist=%.1f", obj:GetFullName(), dist))
             end
         end
     end
-
     log(string.format("Scanned: %d | Balls: %d", count, ballCount))
-    log("=== END ===")
 end
 
 _G.__DBA_scanZone = function()
     log("=== SCAN ZONE ===")
     local char = LocalPlayer.Character
     local hrp = char and char:FindFirstChild("HumanoidRootPart")
-    if not hrp then
-        log("ERROR: No HRP")
-        return
-    end
+    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+    if not hrp then log("No HRP"); return end
 
-    local iframe = getIntermissionFrame()
-    log("IntermissionFrame: " .. (iframe and tostring(iframe.Visible) or "NOT FOUND"))
+    log("Intermission: " .. tostring(isIntermission()))
+    log("WalkSpeed: " .. tostring(humanoid and humanoid.WalkSpeed or "?"))
 
     local readyZone = getReadyZone()
     if readyZone then
-        log("ReadyZone pos: (" .. string.format("%.1f,%.1f,%.1f",
+        log("Zone pos: (" .. string.format("%.1f,%.1f,%.1f",
             readyZone.Position.X, readyZone.Position.Y, readyZone.Position.Z) .. ")")
-        log("ReadyZone size: (" .. string.format("%.1f,%.1f,%.1f",
-            readyZone.Size.X, readyZone.Size.Y, readyZone.Size.Z) .. ")")
-
         local rel = readyZone.CFrame:PointToObjectSpace(hrp.Position)
         log(string.format("Player rel: (%.2f, %.2f, %.2f)", rel.X, rel.Y, rel.Z))
-
-        local inZone = isInsideZone(hrp.Position, readyZone)
-        log("Inside zone: " .. tostring(inZone))
-
-        local dist = (hrp.Position - readyZone.Position).Magnitude
-        log(string.format("Distance to zone center: %.1f stud", dist))
-    else
-        log("ReadyZone NOT FOUND")
+        log("Inside: " .. tostring(isInsideZone(hrp.Position, readyZone)))
+        log(string.format("Dist: %.1f stud", (hrp.Position - readyZone.Position).Magnitude))
     end
-    log("=== END ===")
 end
 
 -- ============================================
--- KEYBINDS
+-- KEYBIND
 -- ============================================
 UserInputService.InputBegan:Connect(function(input, gpe)
     if gpe then return end
     if input.KeyCode == Enum.KeyCode.RightShift then
         main.Visible = not main.Visible
-        if main.Visible then
-            reopenBtn.Visible = false
-        else
-            reopenBtn.Visible = true
-        end
+        reopenBtn.Visible = not main.Visible
     end
 end)
 
--- ============================================
 -- INIT
--- ============================================
 log("═══════════════════════════════════════")
-log("Death Ball Auto v1.1 loaded")
+log("Death Ball Auto v1.2 (Force Control)")
 log("═══════════════════════════════════════")
-log("Auto Ready: " .. tostring(Config.AutoReady))
-log("Follow Ball: " .. tostring(Config.FollowBall))
+log("AutoReady: " .. tostring(Config.AutoReady))
+log("FollowBall: " .. tostring(Config.FollowBall))
 log("Parry: " .. tostring(Config.Parry))
 log("")
+log("Fix: Force WalkSpeed + Force Velocity")
 log("Keybind: RightShift = toggle UI")
-log("MINIMIZE: klik tombol — di title bar")
-log("")
