@@ -258,40 +258,21 @@ local HttpService = game:GetService("HttpService")
 
 local LocalPlayer = Players.LocalPlayer
 
-local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
-local PlayerModule = require(PlayerScripts:WaitForChild("PlayerModule"))
-
--- Coba berbagai method untuk dapetin Controls
-local Controls
-if typeof(PlayerModule.GetControls) == "function" then
-    Controls = PlayerModule:GetControls()
-end
-
-if not Controls then
-    local ok, ControlModule = pcall(function()
-        return require(PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule"))
-    end)
-    if ok and ControlModule then
-        if typeof(ControlModule.new) == "function" then
-            Controls = ControlModule.new()
-        elseif type(ControlModule) == "table" then
-            Controls = ControlModule
-        end
-    end
-end
-
-if not Controls then
-    warn("[Moon] Failed to get Controls module — script aborted")
-    return
-end
-
-local originalMoveFunction = Controls.moveFunction
+-- ============================================
+-- MOVEMENT — pakai humanoid:Move() loop
+-- (ganti hook PlayerModule yang gak support)
+-- ============================================
 local autoMoveDirection = Vector3.zero
 
-Controls.moveFunction = function(self, direction, relativeToCamera)
-	local char = LocalPlayer.Character
-	local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-	if not humanoid then return end
+RunService.Heartbeat:Connect(function()
+    if autoMoveDirection.Magnitude > 0 then
+        local char = LocalPlayer.Character
+        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid:Move(autoMoveDirection, false)
+        end
+    end
+end)
 
 	if autoMoveDirection.Magnitude > 0 then
 		humanoid:Move(autoMoveDirection, false)
