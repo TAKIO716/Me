@@ -274,16 +274,6 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
-	if autoMoveDirection.Magnitude > 0 then
-		humanoid:Move(autoMoveDirection, false)
-	else
-		if originalMoveFunction then
-			originalMoveFunction(self, direction, relativeToCamera)
-		else
-			humanoid:Move(direction, relativeToCamera)
-		end
-	end
-end
 
 local CONFIG_FILE = "Jamalkin.json"
 
