@@ -1,3 +1,253 @@
+-- ============================================
+-- DEBUG CONSOLE OVERLAY v1.0
+-- Overlay buat liat output print/warn/error
+-- Fitur: Copy, Clear, Minimize, Drag, Close
+-- ============================================
+local DebugConsole = (function()
+    local Players = game:GetService("Players")
+    local UserInputService = game:GetService("UserInputService")
+    local LogService = game:GetService("LogService")
+    local LocalPlayer = Players.LocalPlayer
+
+    -- Parent GUI (support gethui biar di atas game UI)
+    local parentGui
+    if gethui then
+        local ok, result = pcall(gethui)
+        if ok and result then parentGui = result end
+    end
+    if not parentGui then
+        parentGui = LocalPlayer:WaitForChild("PlayerGui")
+    end
+
+    -- Cleanup existing
+    local existing = parentGui:FindFirstChild("LanzDebugConsole")
+    if existing then existing:Destroy() end
+
+    -- ScreenGui
+    local screen = Instance.new("ScreenGui")
+    screen.Name = "LanzDebugConsole"
+    screen.ResetOnSpawn = false
+    screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screen.DisplayOrder = 99999
+    screen.Parent = parentGui
+
+    -- Main frame
+    local main = Instance.new("Frame")
+    main.Size = UDim2.new(0, 520, 0, 320)
+    main.Position = UDim2.new(0.5, -260, 0, 15)
+    main.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
+    main.BackgroundTransparency = 0.05
+    main.BorderSizePixel = 0
+    main.Active = true
+    main.Parent = screen
+
+    local corner = Instance.new("UICorner", main)
+    corner.CornerRadius = UDim.new(0, 8)
+
+    local stroke = Instance.new("UIStroke", main)
+    stroke.Color = Color3.fromRGB(90, 90, 140)
+    stroke.Thickness = 1.5
+
+    -- Title bar
+    local title = Instance.new("Frame")
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.BackgroundColor3 = Color3.fromRGB(22, 22, 32)
+    title.BorderSizePixel = 0
+    title.Parent = main
+    local titleCorner = Instance.new("UICorner", title)
+    titleCorner.CornerRadius = UDim.new(0, 8)
+
+    -- Cover bottom curve
+    local titleCover = Instance.new("Frame")
+    titleCover.Size = UDim2.new(1, 0, 0, 8)
+    titleCover.Position = UDim2.new(0, 0, 1, -8)
+    titleCover.BackgroundColor3 = Color3.fromRGB(22, 22, 32)
+    titleCover.BorderSizePixel = 0
+    titleCover.Parent = title
+
+    local titleLbl = Instance.new("TextLabel")
+    titleLbl.Size = UDim2.new(1, -240, 1, 0)
+    titleLbl.Position = UDim2.new(0, 12, 0, 0)
+    titleLbl.BackgroundTransparency = 1
+    titleLbl.Text = "Debug Console"
+    titleLbl.TextColor3 = Color3.fromRGB(180, 180, 255)
+    titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+    titleLbl.Font = Enum.Font.GothamBold
+    titleLbl.TextSize = 13
+    titleLbl.Parent = title
+
+    -- Log state
+    local logText = ""
+    local lines = {}
+    local MAX_LINES = 300
+
+    -- Scroll
+    local scroll = Instance.new("ScrollingFrame")
+    scroll.Size = UDim2.new(1, -10, 1, -40)
+    scroll.Position = UDim2.new(0, 5, 0, 35)
+    scroll.BackgroundTransparency = 1
+    scroll.BorderSizePixel = 0
+    scroll.ScrollBarThickness = 4
+    scroll.ScrollBarImageColor3 = Color3.fromRGB(120, 120, 180)
+    scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    scroll.Parent = main
+
+    local logLbl = Instance.new("TextLabel")
+    logLbl.Size = UDim2.new(1, -8, 0, 0)
+    logLbl.Position = UDim2.new(0, 4, 0, 0)
+    logLbl.BackgroundTransparency = 1
+    logLbl.Text = ""
+    logLbl.TextColor3 = Color3.fromRGB(220, 220, 220)
+    logLbl.TextXAlignment = Enum.TextXAlignment.Left
+    logLbl.TextYAlignment = Enum.TextYAlignment.Top
+    logLbl.Font = Enum.Font.Code
+    logLbl.TextSize = 11
+    logLbl.TextWrapped = true
+    logLbl.AutomaticSize = Enum.AutomaticSize.Y
+    logLbl.Parent = scroll
+
+    local function append(text)
+        table.insert(lines, tostring(text))
+        while #lines > MAX_LINES do
+            table.remove(lines, 1)
+        end
+        logText = table.concat(lines, "\n")
+        logLbl.Text = logText
+        task.defer(function()
+            scroll.CanvasPosition = Vector2.new(0, scroll.AbsoluteCanvasSize.Y)
+        end)
+    end
+
+    -- Button factory
+    local function makeBtn(text, xOff, bgColor, cb)
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(0, 55, 0, 22)
+        btn.Position = UDim2.new(1, xOff, 0.5, -11)
+        btn.BackgroundColor3 = bgColor
+        btn.BorderSizePixel = 0
+        btn.Text = text
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.Font = Enum.Font.GothamBold
+        btn.TextSize = 11
+        btn.Parent = title
+        local c = Instance.new("UICorner", btn)
+        c.CornerRadius = UDim.new(0, 4)
+        btn.MouseButton1Click:Connect(function()
+            local ok, err = pcall(cb)
+            if not ok then append("[ERR] Button: " .. tostring(err)) end
+        end)
+        return btn
+    end
+
+    -- COPY
+    makeBtn("COPY", -190, Color3.fromRGB(45, 90, 160), function()
+        if setclipboard then
+            setclipboard(logText)
+            titleLbl.Text = "Copied!"
+        elseif syn and syn.write_clipboard then
+            syn.write_clipboard(logText)
+            titleLbl.Text = "Copied!"
+        else
+            titleLbl.Text = "No clipboard"
+        end
+        task.delay(1.2, function()
+            titleLbl.Text = "Debug Console"
+        end)
+    end)
+
+    -- CLEAR
+    makeBtn("CLEAR", -130, Color3.fromRGB(160, 70, 40), function()
+        lines = {}
+        logText = ""
+        logLbl.Text = ""
+        append("[SYS] Cleared at " .. os.date("%H:%M:%S"))
+    end)
+
+    -- MINIMIZE
+    local isMin = false
+    makeBtn("_", -70, Color3.fromRGB(60, 60, 80), function()
+        isMin = not isMin
+        if isMin then
+            main.Size = UDim2.new(0, 520, 0, 30)
+        else
+            main.Size = UDim2.new(0, 520, 0, 320)
+        end
+    end)
+
+    -- CLOSE
+    makeBtn("X", -12, Color3.fromRGB(170, 45, 45), function()
+        screen:Destroy()
+    end)
+
+    -- Drag
+    local dragging = false
+    local dragStart, startPos
+
+    title.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = main.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            main.Position = UDim2.new(
+                startPos.X.Scale, startPos.X.Offset + delta.X,
+                startPos.Y.Scale, startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    -- Hook LogService (capture print, warn, error)
+    LogService.MessageOut:Connect(function(msg, msgType)
+        local prefix = "[OUT] "
+        if msgType == Enum.MessageType.MessageError then
+            prefix = "[ERR] "
+        elseif msgType == Enum.MessageType.MessageWarning then
+            prefix = "[WRN] "
+        elseif msgType == Enum.MessageType.MessageInfo then
+            prefix = "[INF] "
+        end
+        append(prefix .. msg)
+    end)
+
+    append("[SYS] Debug Console initialized")
+    append("[SYS] Waiting for output...")
+
+    -- API
+    return {
+        Log = append,
+        Clear = function()
+            lines = {}
+            logText = ""
+            logLbl.Text = ""
+        end,
+        Destroy = function() screen:Destroy() end,
+        Show = function() screen.Enabled = true end,
+        Hide = function() screen.Enabled = false end,
+    }
+end)()
+
+-- Expose ke getgenv
+if getgenv then
+    getgenv().DebugConsole = DebugConsole
+end
+
+DebugConsole.Log("[TEST] Debug Console loaded successfully")
+
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
