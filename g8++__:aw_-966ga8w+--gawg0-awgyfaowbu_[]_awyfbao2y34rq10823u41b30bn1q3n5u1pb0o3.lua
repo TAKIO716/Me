@@ -21,7 +21,7 @@ local Config = {
     WalkSpeed = 1.0,
     ParryDistance = 15,
     ParryTimeToImpact = 0.15,
-    ForceWalkSpeed = 16,
+    ForceWalkSpeed = 24,
     ForceMoveThreshold = 2,
 }
 
