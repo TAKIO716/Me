@@ -16,8 +16,8 @@ local LocalPlayer = Players.LocalPlayer
 -- CONFIG
 local Config = {
     AutoReady = true,
-    FollowBall = false,
-    Parry = false,
+    FollowBall = true,
+    Parry = true,
     WalkSpeed = 1.0,
     ParryDistance = 15,
     ParryTimeToImpact = 0.15,
