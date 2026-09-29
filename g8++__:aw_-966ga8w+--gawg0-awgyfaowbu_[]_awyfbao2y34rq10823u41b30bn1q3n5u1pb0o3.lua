@@ -1,6 +1,11 @@
 --[[
     ═══════════════════════════════════════════════════════════
-    DEATH BALL AUTO — Full Script v1.2 (Force Control)
+    DEATH BALL AUTO — v1.4 (Parry Remote + Fast Movement)
+    ═══════════════════════════════════════════════════════════
+    Parry: Remote decode (bit-packed) — akurat, dari script lama
+    Movement: Stepped + force velocity — cepet
+    Auto Ready: Intermission detect + walk to zone
+    UI: Minimize / Copy / Clear / Scan
     ═══════════════════════════════════════════════════════════
 ]]
 
@@ -8,48 +13,47 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
-local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
+local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
 
 local LocalPlayer = Players.LocalPlayer
 
+-- ============================================
 -- CONFIG
+-- ============================================
 local Config = {
     AutoReady = true,
-    FollowBall = true,
+    FollowBall = false,
     Parry = true,
-    WalkSpeed = 1.0,
+    ForceWalkSpeed = 24,
     ParryDistance = 15,
     ParryTimeToImpact = 0.15,
-    ForceWalkSpeed = 24,
-    ForceMoveThreshold = 2,
+    StopDistance = 2.5,
 }
 
+-- ============================================
 -- STATE
+-- ============================================
 local State = {
     autoMoveDir = Vector3.zero,
     walkTarget = nil,
-    currentLobbyTarget = nil,
     lastParry = 0,
-    ball = {
-        obj = nil,
-        position = nil,
-        velocity = Vector3.zero,
-        lastPos = nil,
-        lastUpdate = 0,
-        name = nil,
-        lastScan = 0,
-        scanInterval = 0.05,
-        notFoundCount = 0,
-    },
+    balls = {},             -- dari remote decode
+    lastParryTime = 0,
+    PARRY_COOLDOWN = 0,
+    PARRY_TRIGGER_TIME = 0.15,
     stats = {
         ballFound = 0,
         parryFired = 0,
-        forceApplied = 0,
+        wsReset = 0,
+        remoteBallCount = 0,
     },
 }
 
+-- ============================================
 -- LOG
+-- ============================================
 local LogConsole = { lines = {}, maxLines = 400, logText = "", label = nil, scroll = nil }
 
 function LogConsole:append(text)
@@ -67,8 +71,7 @@ function LogConsole:append(text)
 end
 
 function LogConsole:clear()
-    self.lines = {}
-    self.logText = ""
+    self.lines = {}; self.logText = ""
     if self.label then self.label.Text = "" end
 end
 
@@ -77,7 +80,9 @@ local function log(text)
     print("[DB] " .. tostring(text))
 end
 
+-- ============================================
 -- UI
+-- ============================================
 local parentGui
 if gethui then
     local ok, r = pcall(gethui)
@@ -131,7 +136,7 @@ local titleLbl = Instance.new("TextLabel")
 titleLbl.Size = UDim2.new(1, -300, 1, 0)
 titleLbl.Position = UDim2.new(0, 12, 0, 0)
 titleLbl.BackgroundTransparency = 1
-titleLbl.Text = "Death Ball Auto v1.2"
+titleLbl.Text = "Death Ball Auto v1.4"
 titleLbl.TextColor3 = Color3.fromRGB(180, 200, 255)
 titleLbl.TextXAlignment = Enum.TextXAlignment.Left
 titleLbl.Font = Enum.Font.GothamBold
@@ -150,9 +155,7 @@ local function makeTitleBtn(text, xPos, w, bg, cb)
     btn.TextSize = 10
     btn.Parent = title
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
-    btn.MouseButton1Click:Connect(function()
-        pcall(cb)
-    end)
+    btn.MouseButton1Click:Connect(function() pcall(cb) end)
     return btn
 end
 
@@ -160,27 +163,23 @@ makeTitleBtn("COPY", -230, 55, Color3.fromRGB(45, 90, 160), function()
     if setclipboard then setclipboard(LogConsole.logText)
     elseif syn and syn.write_clipboard then syn.write_clipboard(LogConsole.logText) end
     titleLbl.Text = "Copied!"
-    task.delay(1.2, function() titleLbl.Text = "Death Ball Auto v1.2" end)
+    task.delay(1.2, function() titleLbl.Text = "Death Ball Auto v1.4" end)
 end)
 
 makeTitleBtn("CLEAR", -170, 55, Color3.fromRGB(160, 70, 40), function()
-    LogConsole:clear()
-    log("Cleared")
+    LogConsole:clear(); log("Cleared")
 end)
 
 makeTitleBtn("—", -110, 30, Color3.fromRGB(70, 70, 100), function()
-    main.Visible = false
-    reopenBtn.Visible = true
+    main.Visible = false; reopenBtn.Visible = true
 end)
 
 makeTitleBtn("X", -55, 30, Color3.fromRGB(170, 45, 45), function()
-    main.Visible = false
-    reopenBtn.Visible = false
+    main.Visible = false; reopenBtn.Visible = false
 end)
 
 reopenBtn.MouseButton1Click:Connect(function()
-    main.Visible = true
-    reopenBtn.Visible = false
+    main.Visible = true; reopenBtn.Visible = false
 end)
 
 -- Stats bar
@@ -222,21 +221,15 @@ local function makeToggle(text, xPos, initState, callback)
     btn.TextSize = 11
     btn.Parent = toggleRow
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
-
     local state = initState
     local baseText = text
-
     local function render()
         btn.Text = baseText .. ": " .. (state and "ON" or "OFF")
         btn.BackgroundColor3 = state and Color3.fromRGB(50, 160, 60) or Color3.fromRGB(60, 60, 80)
     end
-
     btn.MouseButton1Click:Connect(function()
-        state = not state
-        render()
-        callback(state)
+        state = not state; render(); callback(state)
     end)
-
     render()
     return btn
 end
@@ -323,17 +316,29 @@ local function makeActionBtn(text, xPos, w, bg, cb)
 end
 
 makeActionBtn("SCAN BALL", 0, 100, Color3.fromRGB(60, 130, 60), function()
-    if _G.__DBA_scanBall then _G.__DBA_scanBall() end
+    log("=== SCAN BALL ===")
+    log("Remote balls: " .. State.stats.remoteBallCount)
+    local count = 0
+    for id, entry in pairs(State.balls) do
+        count = count + 1
+        if count > 10 then break end
+        log(string.format("ID=%s | pos=(%.1f,%.1f,%.1f) | vel=%.1f",
+            tostring(id),
+            entry.position.X, entry.position.Y, entry.position.Z,
+            entry.velocity.Magnitude))
+    end
+    if count == 0 then log("No remote balls tracked") end
 end)
 
 makeActionBtn("SCAN ZONE", 108, 100, Color3.fromRGB(60, 100, 130), function()
     if _G.__DBA_scanZone then _G.__DBA_scanZone() end
 end)
 
-makeActionBtn("RESET STATS", 216, 100, Color3.fromRGB(120, 80, 40), function()
+makeActionBtn("RESET", 216, 100, Color3.fromRGB(120, 80, 40), function()
     State.stats.ballFound = 0
     State.stats.parryFired = 0
-    State.stats.forceApplied = 0
+    State.stats.wsReset = 0
+    State.stats.remoteBallCount = 0
     log("Stats reset")
 end)
 
@@ -350,9 +355,7 @@ title.InputBegan:Connect(function(input)
         dragStart = input.Position
         startPos = main.Position
         input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
         end)
     end
 end)
@@ -367,21 +370,19 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ============================================
--- FORCE CONTROL RESTORE
+-- FORCE WALKSPEED
 -- ============================================
 task.spawn(function()
     while true do
-        task.wait(0.3)
+        task.wait(0.1)
         if screen.Parent == nil then break end
-        
         if Config.AutoReady or Config.FollowBall then
             local char = LocalPlayer.Character
             local humanoid = char and char:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.Health > 0 then
-                -- Restore WalkSpeed kalau di-lock
-                if humanoid.WalkSpeed < 8 then
+                if math.abs(humanoid.WalkSpeed - Config.ForceWalkSpeed) > 0.5 then
                     humanoid.WalkSpeed = Config.ForceWalkSpeed
-                    State.stats.forceApplied = State.stats.forceApplied + 1
+                    State.stats.wsReset = State.stats.wsReset + 1
                 end
             end
         end
@@ -389,7 +390,7 @@ task.spawn(function()
 end)
 
 -- ============================================
--- MOVEMENT
+-- MOVEMENT (Stepped + Force Velocity)
 -- ============================================
 local function walkTo(pos) State.walkTarget = pos end
 local function stopPath()
@@ -397,7 +398,7 @@ local function stopPath()
     State.autoMoveDir = Vector3.zero
 end
 
-RunService.Heartbeat:Connect(function()
+RunService.Stepped:Connect(function()
     if not State.walkTarget then
         State.autoMoveDir = Vector3.zero
         return
@@ -410,15 +411,14 @@ RunService.Heartbeat:Connect(function()
     end
     local toTarget = State.walkTarget - hrp.Position
     local flat = Vector3.new(toTarget.X, 0, toTarget.Z)
-    if flat.Magnitude < 1.5 then
+    if flat.Magnitude < Config.StopDistance then
         State.autoMoveDir = Vector3.zero
         return
     end
-    State.autoMoveDir = flat.Unit * Config.WalkSpeed
+    State.autoMoveDir = flat.Unit
 end)
 
--- Approach 1: humanoid:Move
-RunService.Heartbeat:Connect(function()
+RunService.Stepped:Connect(function()
     if State.autoMoveDir.Magnitude > 0.1 then
         local char = LocalPlayer.Character
         local humanoid = char and char:FindFirstChildOfClass("Humanoid")
@@ -428,22 +428,20 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
--- Approach 2: Force velocity (backup kalau Move gak works)
 RunService.Heartbeat:Connect(function()
     if State.autoMoveDir.Magnitude > 0.1 then
         local char = LocalPlayer.Character
         local hrp = char and char:FindFirstChild("HumanoidRootPart")
         local humanoid = char and char:FindFirstChildOfClass("Humanoid")
         if hrp and humanoid and humanoid.Health > 0 then
-            local horizontalVel = Vector3.new(
-                hrp.AssemblyLinearVelocity.X, 0, hrp.AssemblyLinearVelocity.Z
-            )
-            if horizontalVel.Magnitude < Config.ForceMoveThreshold then
-                local dir = State.autoMoveDir.Unit
+            local vel = hrp.AssemblyLinearVelocity
+            local flatVel = Vector3.new(vel.X, 0, vel.Z)
+            local targetSpeed = Config.ForceWalkSpeed
+            local dir = State.autoMoveDir.Unit
+            if flatVel.Magnitude < targetSpeed * 0.8 then
                 hrp.AssemblyLinearVelocity = Vector3.new(
-                    dir.X * 20, hrp.AssemblyLinearVelocity.Y, dir.Z * 20
+                    dir.X * targetSpeed, vel.Y, dir.Z * targetSpeed
                 )
-                State.stats.forceApplied = State.stats.forceApplied + 1
             end
         end
     end
@@ -499,18 +497,16 @@ task.spawn(function()
 
                 if os.clock() - lastARDebug > 5 and isInt then
                     lastARDebug = os.clock()
-                    local humanoid = char:FindFirstChildOfClass("Humanoid")
                     log(string.format("AR: pos=(%.1f,%.1f,%.1f) WS=%.0f",
                         hrp.Position.X, hrp.Position.Y, hrp.Position.Z,
-                        humanoid and humanoid.WalkSpeed or 0))
+                        char:FindFirstChildOfClass("Humanoid") and 
+                        char:FindFirstChildOfClass("Humanoid").WalkSpeed or 0))
                 end
 
                 if isInt and readyZone then
                     if not isInsideZone(hrp.Position, readyZone) then
-                        -- Target ke CENTER zone
                         walkTo(readyZone.Position)
                     else
-                        State.currentLobbyTarget = nil
                         stopPath()
                     end
                 end
@@ -520,17 +516,317 @@ task.spawn(function()
 end)
 
 -- ============================================
--- BALL TRACKER
+-- BIT DECODE (dari script lama)
 -- ============================================
-local function findRealBall()
+local bit32_extract = bit32.extract
+local bit32_lshift = bit32.lshift
+local bit32_rshift = bit32.rshift
+local bit32_bor = bit32.bor
+local string_unpack = string.unpack
+local string_pack = string.pack
+local table_create = table.create
+local setmetatable = setmetatable
+
+local UINT32_SCALE = 4294967296
+local POW2 = table_create(54)
+for i = 0, 53 do POW2[i] = 2 ^ i end
+
+local Bitbuf = {}
+local Methods = {}
+local Meta = { __index = Methods }
+
+function Bitbuf.fromString(str)
+    local byteCount = #str
+    local wordCount = (byteCount + 3) // 4
+    local words = table_create(wordCount, 0)
+    local fullWords = byteCount // 4
+    local pos = 1
+
+    for i = 1, fullWords do
+        words[i] = string_unpack("<I4", str, pos)
+        pos += 4
+    end
+
+    local rem = byteCount - fullWords * 4
+    if rem > 0 then
+        words[fullWords + 1] = string_unpack("<I" .. rem, str, pos)
+    end
+    return setmetatable({ buf = words, i = 0 }, Meta)
+end
+
+local function readUnit(self, size)
+    if size == 0 then return 0 end
+    local bitIndex = self.i
+    local wordIndex = bit32_rshift(bitIndex, 5) + 1
+    local offset = bitIndex % 32
+    self.i = bitIndex + size
+    local words = self.buf
+    if offset == 0 then
+        local word = words[wordIndex] or 0
+        if size == 32 then return word end
+        return bit32_extract(word, 0, size)
+    end
+    local available = 32 - offset
+    local word = words[wordIndex] or 0
+    if size <= available then
+        return bit32_extract(word, offset, size)
+    end
+    local low = bit32_extract(word, offset, available)
+    local highSize = size - available
+    local highWord = words[wordIndex + 1] or 0
+    local high = bit32_extract(highWord, 0, highSize)
+    return bit32_bor(low, bit32_lshift(high, available))
+end
+
+function Methods:ReadUint(size)
+    if size <= 32 then return readUnit(self, size) end
+    local low = readUnit(self, 32)
+    local high = readUnit(self, size - 32)
+    return low + high * UINT32_SCALE
+end
+
+function Methods:ReadInt(size)
+    local value
+    if size <= 32 then
+        value = readUnit(self, size)
+    else
+        value = readUnit(self, 32) + readUnit(self, size - 32) * UINT32_SCALE
+    end
+    local sign = POW2[size - 1]
+    if value >= sign then return value - POW2[size] end
+    return value
+end
+
+function Methods:ReadFloat(size)
+    if size == 32 then
+        local raw = readUnit(self, 32)
+        return string_unpack("<f", string_pack("<I4", raw))
+    end
+    local low = readUnit(self, 32)
+    local high = readUnit(self, 32)
+    return string_unpack("<d", string_pack("<I4I4", low, high))
+end
+
+-- ============================================
+-- SHARED DATA
+-- ============================================
+local SharedData = require(ReplicatedStorage:WaitForChild("DataBins"):WaitForChild("SharedData"))
+local replicationOrder = SharedData.BALL_REMOTE_REPLICATION_ORDER
+
+local function GetNil(name, className)
+    if getnilinstances then
+        for _, obj in ipairs(getnilinstances()) do
+            if obj.Name == name and obj.ClassName == className then
+                return obj
+            end
+        end
+    end
+    return nil
+end
+
+local BallRepUnreliable = GetNil("Action", "UnreliableRemoteEvent") or ReplicatedStorage:FindFirstChild("Action")
+
+local function GetBallSpawn()
+    local activeMap = Workspace:FindFirstChild("ActiveMap")
+    if activeMap then
+        local mapObj = activeMap:GetChildren()[1]
+        if mapObj and (mapObj:IsA("Model") or mapObj:IsA("Folder")) then
+            local spawns = mapObj:FindFirstChild("BallSpawns")
+            if spawns and #spawns:GetChildren() > 0 then
+                return spawns:GetChildren()[1]
+            end
+        end
+    end
+    return nil
+end
+
+local cachedSpawn = nil
+local function getSpawnPosition()
+    if cachedSpawn == nil or cachedSpawn.Parent == nil then
+        cachedSpawn = GetBallSpawn()
+    end
+    return cachedSpawn and cachedSpawn.Position or nil
+end
+
+local TYPE_VECTOR3 = 1
+local TYPE_UINT = 2
+local TYPE_FLOAT = 3
+local TYPE_INT = 4
+local TYPE_ID = 5
+local SCALE = 0.001
+
+local fieldCount = #replicationOrder
+local fieldNames = table_create(fieldCount)
+local fieldBits = table_create(fieldCount)
+local fieldTypes = table_create(fieldCount)
+
+for i = 1, fieldCount do
+    local field = replicationOrder[i]
+    fieldNames[i] = field[1]
+    fieldBits[i] = field[2]
+    local dataType = field[3]
+    if dataType == "Vector3" then
+        fieldTypes[i] = TYPE_VECTOR3
+    elseif dataType == "Uint" then
+        fieldTypes[i] = TYPE_UINT
+    elseif dataType == "Float" then
+        fieldTypes[i] = TYPE_FLOAT
+    elseif field[1] == "Id" then
+        fieldTypes[i] = TYPE_ID
+    else
+        fieldTypes[i] = TYPE_INT
+    end
+end
+
+local function decodeBallData(bitString)
+    local buf = Bitbuf.fromString(bitString)
+    local data = {}
+    local readInt = buf.ReadInt
+    local readUint = buf.ReadUint
+    local readFloat = buf.ReadFloat
+    local spawnPosition = getSpawnPosition()
+
+    for i = 1, fieldCount do
+        local fieldType = fieldTypes[i]
+        local bits = fieldBits[i]
+        local name = fieldNames[i]
+
+        if fieldType == TYPE_VECTOR3 then
+            local value = Vector3.new(
+                readInt(buf, bits) * SCALE,
+                readInt(buf, bits) * SCALE,
+                readInt(buf, bits) * SCALE
+            )
+            if name == "Position" and spawnPosition then
+                value += spawnPosition
+            end
+            data[name] = value
+        elseif fieldType == TYPE_UINT then
+            data[name] = readUint(buf, bits)
+        elseif fieldType == TYPE_FLOAT then
+            data[name] = readFloat(buf, bits)
+        elseif fieldType == TYPE_ID then
+            data[name] = tostring(readInt(buf, bits))
+        else
+            data[name] = readInt(buf, bits)
+        end
+    end
+    return data
+end
+
+-- ============================================
+-- REMOTE LISTENER
+-- ============================================
+if BallRepUnreliable then
+    BallRepUnreliable.OnClientEvent:Connect(function(actionType, payload)
+        local now = os.clock()
+        if actionType == "Update" then
+            local ok, data = pcall(decodeBallData, payload)
+            if ok and data and data.Id then
+                local id = data.Id
+                local existing = State.balls[id]
+                local vel = data.Velocity
+                if not vel and existing then
+                    local dt = now - existing.lastUpdate
+                    if dt > 0 then
+                        vel = (data.Position - existing.position) / dt
+                    end
+                end
+                State.balls[id] = {
+                    position = data.Position,
+                    velocity = vel or Vector3.zero,
+                    lastUpdate = now,
+                }
+                State.stats.remoteBallCount = State.stats.remoteBallCount + 1
+            end
+        elseif actionType == "Destroy" then
+            State.balls[tostring(payload)] = nil
+        end
+    end)
+end
+
+-- ============================================
+-- THREATENED CHECK (dari script lama)
+-- ============================================
+local function isPlayerThreatened()
+    local char = LocalPlayer.Character
+    if not char then return false end
+    local highlight = char:FindFirstChildWhichIsA("Highlight")
+    if highlight and highlight.Enabled then
+        return math.abs(highlight.FillTransparency - 0.34) <= 0.01
+    end
+    return false
+end
+
+-- ============================================
+-- PARRY
+-- ============================================
+local function parry()
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.F, false, game)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.F, false, game)
+    State.stats.parryFired = State.stats.parryFired + 1
+end
+
+local function calculateTimeToImpact(ballPos, ballVel, playerPos, playerVel)
+    local relPos = playerPos - ballPos
+    local relVel = ballVel - playerVel
+    local relSpeedSq = relVel:Dot(relVel)
+    if relSpeedSq <= 1e-4 then return math.huge end
+    local timeToCPA = relPos:Dot(relVel) / relSpeedSq
+    if timeToCPA <= 0 then return math.huge end
+    local closestPos = relPos - (relVel * timeToCPA)
+    local missDistance = closestPos.Magnitude
+    if missDistance <= 15 then return timeToCPA end
+    return math.huge
+end
+
+-- PARRY LOOP (dari script lama)
+RunService.Heartbeat:Connect(function()
+    if not Config.Parry then return end
+    local now = os.clock()
+
+    -- Cleanup old balls
+    for id, entry in pairs(State.balls) do
+        if now - entry.lastUpdate > 1.5 then
+            State.balls[id] = nil
+        end
+    end
+
+    if not isPlayerThreatened() then return end
+    if now - State.lastParryTime < State.PARRY_COOLDOWN then return end
+
+    local char = LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    local playerPos = hrp.Position
+    local playerVel = hrp.AssemblyLinearVelocity
+
+    for _, entry in pairs(State.balls) do
+        local ballPos = entry.position
+        local ballVel = entry.velocity
+        local ballSpeed = ballVel.Magnitude
+
+        if ballSpeed > 0.01 then
+            local timeToImpact = calculateTimeToImpact(ballPos, ballVel, playerPos, playerVel)
+            if timeToImpact > 0 and timeToImpact <= State.PARRY_TRIGGER_TIME then
+                parry()
+                State.lastParryTime = now
+                break
+            end
+        end
+    end
+end)
+
+-- ============================================
+-- FOLLOW BALL (dual mode: remote + nil fallback)
+-- ============================================
+local function findRealBallFromNil()
     if not getnilinstances then return nil end
     local char = LocalPlayer.Character
     local hrp = char and char:FindFirstChild("HumanoidRootPart")
     if not hrp then return nil end
-
-    local bestBall = nil
-    local bestDist = math.huge
-
+    local bestBall, bestDist = nil, math.huge
     for _, obj in ipairs(getnilinstances()) do
         if obj:IsA("BasePart") then
             local n = obj.Name
@@ -540,204 +836,115 @@ local function findRealBall()
             if n == "BallShadow" or n == "FakeBall" then isBall = false end
             local path = obj:GetFullName():lower()
             if path:find("/fx/") then isBall = false end
-
             if isBall then
                 local dist = (obj.Position - hrp.Position).Magnitude
-                if dist < bestDist then
-                    bestDist = dist
-                    bestBall = obj
-                end
+                if dist < bestDist then bestDist = dist; bestBall = obj end
             end
         end
     end
     return bestBall, bestDist
 end
 
-local function updateBall()
-    local now = os.clock()
-    local B = State.ball
-
-    if now - B.lastScan >= B.scanInterval or not B.obj then
-        B.lastScan = now
-        local ball, dist = findRealBall()
-        if ball then
-            if B.obj ~= ball then
-                State.stats.ballFound = State.stats.ballFound + 1
-                log("Ball found: " .. ball:GetFullName())
-                B.lastPos = ball.Position
-                B.lastUpdate = now
-            end
-            B.obj = ball
-            B.name = ball.Name
-            B.notFoundCount = 0
-        else
-            B.obj = nil
-            B.notFoundCount = B.notFoundCount + 1
-        end
-    end
-
-    if B.obj then
-        local ok, pos = pcall(function() return B.obj.Position end)
-        if ok and pos then
-            if B.lastPos then
-                local dt = now - B.lastUpdate
-                if dt >= 0.03 then
-                    local rawVel = (pos - B.lastPos) / dt
-                    B.velocity = B.velocity:Lerp(rawVel, 0.4)
-                    B.lastPos = pos
-                    B.lastUpdate = now
-                end
-            else
-                B.lastPos = pos
-                B.lastUpdate = now
-            end
-            B.position = pos
-            local char = LocalPlayer.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                return B.obj, (pos - hrp.Position).Magnitude
-            end
-        end
-    end
-    return nil
-end
-
--- ============================================
--- PARRY
--- ============================================
-local function parry()
-    if os.clock() - State.lastParry < 0.05 then return end
-    State.lastParry = os.clock()
-    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.F, false, game)
-    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.F, false, game)
-    State.stats.parryFired = State.stats.parryFired + 1
-end
-
-local function isPlayerTargeted()
-    local char = LocalPlayer.Character
-    if not char then return false end
-    local hl = char:FindFirstChildWhichIsA("Highlight")
-    if hl and hl.Enabled then
-        return hl.FillTransparency < 0.9 or hl.OutlineTransparency < 0.9
-    end
-    return false
-end
-
--- ============================================
--- MAIN LOOP
--- ============================================
-local lastStatsUpdate = 0
-
+-- Main follow ball loop
 task.spawn(function()
     while true do
-        task.wait(0.05)
+        task.wait(0.1)
         if screen.Parent == nil then break end
 
-        local ball, dist = updateBall()
-        local now = os.clock()
-
-        -- FOLLOW BALL
-        if Config.FollowBall and ball then
+        if Config.FollowBall then
             local char = LocalPlayer.Character
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
             if hrp then
-                local toBall = ball.Position - hrp.Position
-                local flat = Vector3.new(toBall.X, 0, toBall.Z)
-                if flat.Magnitude > 3 then
-                    walkTo(ball.Position)
+                local targetPos = nil
+
+                -- Prioritas 1: remote decoded ball
+                local bestBall = nil
+                local bestDist = math.huge
+                for _, entry in pairs(State.balls) do
+                    local dist = (entry.position - hrp.Position).Magnitude
+                    if dist < bestDist then
+                        bestDist = dist
+                        bestBall = entry
+                    end
+                end
+
+                if bestBall then
+                    targetPos = bestBall.position
+                else
+                    -- Prioritas 2: nil instances fallback
+                    local nilBall = findRealBallFromNil()
+                    if nilBall then
+                        targetPos = nilBall.Position
+                    end
+                end
+
+                if targetPos then
+                    local flat = Vector3.new(
+                        (targetPos - hrp.Position).X, 0,
+                        (targetPos - hrp.Position).Z
+                    )
+                    if flat.Magnitude > 3 then
+                        walkTo(targetPos)
+                    else
+                        stopPath()
+                    end
                 else
                     stopPath()
                 end
             end
         end
-
-        -- PARRY
-        if Config.Parry and ball and isPlayerTargeted() then
-            local char = LocalPlayer.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local ballVel = State.ball.velocity
-                local ballSpeed = ballVel.Magnitude
-                if ballSpeed > 5 then
-                    local playerVel = hrp.AssemblyLinearVelocity
-                    local relPos = hrp.Position - ball.Position
-                    local relVel = ballVel - playerVel
-                    local relSpeedSq = relVel:Dot(relVel)
-                    if relSpeedSq > 1e-4 then
-                        local timeToCPA = relPos:Dot(relVel) / relSpeedSq
-                        if timeToCPA > 0 and timeToCPA <= Config.ParryTimeToImpact then
-                            local closestPos = relPos - (relVel * timeToCPA)
-                            if closestPos.Magnitude <= Config.ParryDistance then
-                                parry()
-                            end
-                        end
-                    end
-                end
-            end
-        end
-
-        -- STATS
-        if now - lastStatsUpdate > 0.3 then
-            lastStatsUpdate = now
-            local char = LocalPlayer.Character
-            local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-            local matchTxt = isIntermission() and "INTER" or "INGAME"
-            local ballTxt = ball and string.format("%.0f", dist or 0) or "-"
-            local wsTxt = humanoid and string.format("%.0f", humanoid.WalkSpeed) or "?"
-            local velTxt = ball and string.format("%.0f", State.ball.velocity.Magnitude) or "0"
-            statsLbl.Text = string.format(
-                "%s | Ball:%s | WS:%s | V:%s | Parry:%d | Force:%d",
-                matchTxt, ballTxt, wsTxt, velTxt,
-                State.stats.parryFired, State.stats.forceApplied
-            )
-        end
     end
 end)
 
 -- ============================================
--- MANUAL SCAN
+-- SCAN ZONE (manual)
 -- ============================================
-_G.__DBA_scanBall = function()
-    log("=== SCAN BALL ===")
-    if not getnilinstances then log("getnilinstances not supported"); return end
-    local char = LocalPlayer.Character
-    local hrp = char and char:FindFirstChild("HumanoidRootPart")
-    if not hrp then log("No HRP"); return end
-    local count, ballCount = 0, 0
-    for _, obj in ipairs(getnilinstances()) do
-        count = count + 1
-        if obj:IsA("BasePart") then
-            local n = obj.Name
-            if n == "Ball" or (obj:IsA("MeshPart") and n:find("Ball") and n ~= "BallShadow") then
-                ballCount = ballCount + 1
-                local dist = (obj.Position - hrp.Position).Magnitude
-                log(string.format("BALL: %s | dist=%.1f", obj:GetFullName(), dist))
-            end
-        end
-    end
-    log(string.format("Scanned: %d | Balls: %d", count, ballCount))
-end
-
 _G.__DBA_scanZone = function()
     log("=== SCAN ZONE ===")
     local char = LocalPlayer.Character
     local hrp = char and char:FindFirstChild("HumanoidRootPart")
-    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
     if not hrp then log("No HRP"); return end
-
     log("Intermission: " .. tostring(isIntermission()))
-    log("WalkSpeed: " .. tostring(humanoid and humanoid.WalkSpeed or "?"))
-
+    log("WalkSpeed: " .. tostring(char:FindFirstChildOfClass("Humanoid") and
+        char:FindFirstChildOfClass("Humanoid").WalkSpeed or "?"))
     local readyZone = getReadyZone()
     if readyZone then
         log("Zone pos: (" .. string.format("%.1f,%.1f,%.1f",
             readyZone.Position.X, readyZone.Position.Y, readyZone.Position.Z) .. ")")
-        local rel = readyZone.CFrame:PointToObjectSpace(hrp.Position)
-        log(string.format("Player rel: (%.2f, %.2f, %.2f)", rel.X, rel.Y, rel.Z))
         log("Inside: " .. tostring(isInsideZone(hrp.Position, readyZone)))
         log(string.format("Dist: %.1f stud", (hrp.Position - readyZone.Position).Magnitude))
+    else
+        log("ReadyZone not found")
     end
 end
+
+-- ============================================
+-- STATS UPDATE
+-- ============================================
+local lastStatsUpdate = 0
+task.spawn(function()
+    while true do
+        task.wait(0.3)
+        if screen.Parent == nil then break end
+
+        local char = LocalPlayer.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+        local matchTxt = isIntermission() and "INTER" or "INGAME"
+        local remoteBallTxt = 0
+        for _ in pairs(State.balls) do remoteBallTxt = remoteBallTxt + 1 end
+        local wsTxt = humanoid and string.format("%.0f", humanoid.WalkSpeed) or "?"
+        local velTxt = hrp and string.format("%.0f",
+            Vector3.new(hrp.AssemblyLinearVelocity.X, 0, hrp.AssemblyLinearVelocity.Z).Magnitude) or "0"
+        local threatenedTxt = isPlayerThreatened() and "🎯" or "safe"
+
+        statsLbl.Text = string.format(
+            "%s | RemoteBall:%d | WS:%s | Vel:%s | Parry:%d | %s",
+            matchTxt, remoteBallTxt, wsTxt, velTxt,
+            State.stats.parryFired, threatenedTxt
+        )
+    end
+end)
 
 -- ============================================
 -- KEYBIND
@@ -750,13 +957,22 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     end
 end)
 
+-- ============================================
 -- INIT
+-- ============================================
 log("═══════════════════════════════════════")
-log("Death Ball Auto v1.2 (Force Control)")
+log("Death Ball Auto v1.4")
 log("═══════════════════════════════════════")
-log("AutoReady: " .. tostring(Config.AutoReady))
-log("FollowBall: " .. tostring(Config.FollowBall))
-log("Parry: " .. tostring(Config.Parry))
+log("Parry: Remote decode (bit-packed)")
+log("Movement: Stepped + Force Velocity")
+log("Auto Ready: ON")
 log("")
-log("Fix: Force WalkSpeed + Force Velocity")
-log("Keybind: RightShift = toggle UI")
+log("Remote balls di-track via Action remote")
+log("Fallback: nil instances scan")
+log("")
+if BallRepUnreliable then
+    log("✅ BallRepUnreliable found: " .. BallRepUnreliable:GetFullName())
+else
+    log("❌ BallRepUnreliable NOT found — parry gak jalan")
+end
+log("Replication order: " .. fieldCount .. " fields")
