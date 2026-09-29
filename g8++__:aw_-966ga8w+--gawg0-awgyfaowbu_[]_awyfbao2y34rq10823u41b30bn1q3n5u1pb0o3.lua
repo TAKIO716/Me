@@ -19,7 +19,7 @@ local Config = {
     AutoReady = true,
     FollowBall = false,
     Parry = true,
-    ForceWalkSpeed = 24,
+    ForceWalkSpeed = 28,
     RotationLerp = 0.4,
     StopDistance = 2.5,
 }
