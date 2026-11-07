@@ -1,8 +1,6 @@
 --[[
     ═══════════════════════════════════════════════════════════
-    DEATH BALL AUTO — v1.5 (Body Rotation Fix)
-    ═══════════════════════════════════════════════════════════
-    NEW: Karakter muter ngikutin arah gerakan (bukan strafe)
+    DEATH BALL AUTO — v1.6 (Fix ReadyZone & Parry)
     ═══════════════════════════════════════════════════════════
 ]]
 
@@ -64,7 +62,7 @@ local function log(text)
 end
 
 -- ============================================
--- UI
+-- UI (SAMA KAYAK SEBELUMNYA)
 -- ============================================
 local parentGui
 if gethui then
@@ -119,7 +117,7 @@ local titleLbl = Instance.new("TextLabel")
 titleLbl.Size = UDim2.new(1, -300, 1, 0)
 titleLbl.Position = UDim2.new(0, 12, 0, 0)
 titleLbl.BackgroundTransparency = 1
-titleLbl.Text = "Death Ball Auto v1.5"
+titleLbl.Text = "Death Ball Auto v1.6"
 titleLbl.TextColor3 = Color3.fromRGB(180, 200, 255)
 titleLbl.TextXAlignment = Enum.TextXAlignment.Left
 titleLbl.Font = Enum.Font.GothamBold
@@ -146,7 +144,7 @@ makeTitleBtn("COPY", -230, 55, Color3.fromRGB(45, 90, 160), function()
     if setclipboard then setclipboard(LogConsole.logText)
     elseif syn and syn.write_clipboard then syn.write_clipboard(LogConsole.logText) end
     titleLbl.Text = "Copied!"
-    task.delay(1.2, function() titleLbl.Text = "Death Ball Auto v1.5" end)
+    task.delay(1.2, function() titleLbl.Text = "Death Ball Auto v1.6" end)
 end)
 
 makeTitleBtn("CLEAR", -170, 55, Color3.fromRGB(160, 70, 40), function()
@@ -421,7 +419,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- ============================================
--- BODY ROTATION (FIX!)
+-- BODY ROTATION
 -- ============================================
 RunService.Heartbeat:Connect(function()
     if State.autoMoveDir.Magnitude > 0.1 then
@@ -429,10 +427,7 @@ RunService.Heartbeat:Connect(function()
         local hrp = char and char:FindFirstChild("HumanoidRootPart")
         local humanoid = char and char:FindFirstChildOfClass("Humanoid")
         if hrp and humanoid and humanoid.Health > 0 then
-            -- Force AutoRotate ON
             humanoid.AutoRotate = true
-
-            -- Rotate toward movement
             local dir = Vector3.new(State.autoMoveDir.X, 0, State.autoMoveDir.Z)
             if dir.Magnitude > 0.01 then
                 dir = dir.Unit
@@ -446,7 +441,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- ============================================
--- AUTO READY
+-- AUTO READY (FIX FOLDER NAME)
 -- ============================================
 local function getIntermissionFrame()
     local pGui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
@@ -461,7 +456,9 @@ local function isIntermission()
 end
 
 local function getReadyZone()
-    local lobby = Workspace:FindFirstChild("New Lobby")
+    -- PATCH: Cari nama folder yang bener
+    local lobby = Workspace:FindFirstChild("New Lobby before Halloween") 
+               or Workspace:FindFirstChild("New Lobby")
     local readyArea = lobby and lobby:FindFirstChild("ReadyArea")
     return readyArea and readyArea:FindFirstChild("ReadyZone")
 end
@@ -711,7 +708,10 @@ if BallRepUnreliable then
         local now = os.clock()
         if actionType == "Update" then
             local ok, data = pcall(decodeBallData, payload)
-            if ok and data and data.Id then
+            if not ok then
+                -- Log error buat debug
+                -- log("Decode error: " .. tostring(data)) 
+            elseif ok and data and data.Id then
                 local id = data.Id
                 local existing = State.balls[id]
                 local vel = data.Velocity
@@ -732,12 +732,14 @@ if BallRepUnreliable then
     end)
 end
 
+-- PATCH: Fleksibel highlight check
 local function isPlayerThreatened()
     local char = LocalPlayer.Character
     if not char then return false end
     local highlight = char:FindFirstChildWhichIsA("Highlight")
     if highlight and highlight.Enabled then
-        return math.abs(highlight.FillTransparency - 0.34) <= 0.01
+        -- Kalo ada highlight, anggap aja threatened biar parry jalan
+        return true 
     end
     return false
 end
@@ -814,10 +816,6 @@ local function findRealBallFromNil()
     return bestBall, bestDist
 end
 
-
--- ============================================
--- SIMPLE GUARD
--- ============================================
 local function isHealthBarVisible()
     local pGui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
     local hud = pGui and pGui:FindFirstChild("HUD")
@@ -830,13 +828,11 @@ local function isHealthBarVisible()
     return hb and hb.Visible == true
 end
 
-
 task.spawn(function()
     while true do
         task.wait(0.1)
         if screen.Parent == nil then break end
         if Config.FollowBall then
-            -- GUARD: cuma jalan kalau healthbar visible (in-match)
             if not isHealthBarVisible() then
                 stopPath()
                 continue
@@ -861,7 +857,6 @@ task.spawn(function()
                     if nilBall then targetPos = nilBall.Position end
                 end
 
-                -- GUARD: cuma jalan kalau bola ada
                 if targetPos then
                     local flat = Vector3.new(
                         (targetPos - hrp.Position).X, 0,
@@ -872,7 +867,6 @@ task.spawn(function()
                         stopPath()
                     end
                 else
-                    -- Bola gak ke-detect → stop
                     stopPath()
                 end
             end
@@ -891,6 +885,8 @@ _G.__DBA_scanZone = function()
         log(string.format("Zone: (%.1f,%.1f,%.1f)",
             readyZone.Position.X, readyZone.Position.Y, readyZone.Position.Z))
         log("Inside: " .. tostring(isInsideZone(hrp.Position, readyZone)))
+    else
+        log("ReadyZone NOT found! Cek folder name.")
     end
 end
 
@@ -924,13 +920,11 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 end)
 
 log("═══════════════════════════════════════")
-log("Death Ball Auto v1.5")
+log("Death Ball Auto v1.6")
 log("═══════════════════════════════════════")
-log("✅ Body Rotation FIX (ngikutin arah gerak)")
-log("✅ RotationLerp: " .. Config.RotationLerp)
-log("✅ Parry: Remote decode")
-log("✅ Movement: Stepped + Force Velocity")
-log("✅ AutoReady: IntermissionFrame detect")
+log("✅ Fix ReadyZone Folder Name")
+log("✅ Fix Highlight Parry Check")
+log("✅ Body Rotation FIX")
 log("")
 if BallRepUnreliable then
     log("✅ BallRepUnreliable: " .. BallRepUnreliable:GetFullName())
