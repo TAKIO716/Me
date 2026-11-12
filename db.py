@@ -4,15 +4,60 @@ import sys
 import os
 
 # ═════════════════════════════════════════════════════════════════
-# HARD CODED SAFETY NET (JANGAN PERNAH HAPUS INI)
+# HARD CODED SAFETY NET - EXACT MATCH (BUKAN SUBSTRING!)
 # ═════════════════════════════════════════════════════════════════
-CRITICAL_PACKAGES = [
-    "com.android.systemui", "com.android.settings", "com.android.phone",
-    "com.android.packageinstaller", "com.android.providers.settings",
-    "com.google.android.gsf", "com.google.android.gms", "com.google.android.gsf.login",
-    "android", "com.termux", "com.topjohnwu.magisk", "io.github.vvb2060.magisk",
-    "com.android.shell", "com.android.wallpaperbackup", "com.android.providers.telephony"
-]
+CRITICAL_PACKAGES = {
+    "com.android.systemui",
+    "com.android.settings",
+    "com.android.phone",
+    "com.android.dialer",
+    "com.android.packageinstaller",
+    "com.android.providers.settings",
+    "com.android.providers.contacts",
+    "com.android.providers.telephony",
+    "com.android.providers.media",
+    "com.android.providers.media.module",
+    "com.android.providers.downloads",
+    "com.android.providers.downloads.ui",
+    "com.android.providers.blockednumber",
+    "com.android.externalstorage",
+    "com.android.shell",
+    "com.android.launcher3",
+    "com.android12.launcher3",
+    "com.android.permissioncontroller",
+    "com.android.server.telecom",
+    "com.android.networkstack.inprocess",
+    "com.android.networkstack.tethering.inprocess",
+    "com.android.networkstack.permissionconfig",
+    "com.android.connectivity.resources",
+    "com.android.modulemetadata",
+    "com.android.vending",
+    "com.android.webview",
+    "com.android.bluetooth",
+    "com.android.contacts",
+    "com.android.keychain",
+    "com.android.se",
+    "com.android.wifi.resources",
+    "com.android.cameraextensions",
+    "com.google.android.gms",
+    "com.google.android.gsf",
+    "com.google.android.gsf.login",
+    "com.google.android.webview",
+    "android",
+    "android.ext.services",
+    "android.ext.shared",
+    "com.termux",
+    "com.topjohnwu.magisk",
+    "io.github.vvb2060.magisk",
+    # Provider khusus Cloud Phone - JANGAN DIHAPUS!
+    "com.android.provider.root",
+    "com.android.provider.multiapp",
+    "com.android.provider.mock",
+    "com.android.provider.patch",
+    "com.android.provider.proxy",
+    "com.android.provider.apt",
+    "com.android.provider.devicecheck",
+}
 
 def run_su(command):
     try:
@@ -37,14 +82,10 @@ def dump_all_packages():
     if not os.path.exists("my_deletable_list.txt"):
         with open("my_deletable_list.txt", "w") as f:
             f.write("# LIST CUSTOM DEBLOAT\n")
-            f.write("# Hapus tanda '#' di depan nama package yang INGIN dihapus.\n")
-            f.write("# Contoh:\n")
-            f.write("# com.facebook.katana\n")
-            f.write("# com.google.android.videos\n\n")
+            f.write("# Hapus tanda '#' di depan nama package yang INGIN dihapus.\n\n")
             
     print(f"[Success] Berhasil mengekstrak {len(packages)} package!")
     print("File disimpan sebagai: all_packages.txt")
-    print("Silakan edit file: my_deletable_list.txt")
 
 def execute_debloat(dry_run=False):
     if not os.path.exists("my_deletable_list.txt"):
@@ -67,7 +108,8 @@ def execute_debloat(dry_run=False):
     fail_count = 0
 
     for pkg in target_packages:
-        if any(critical in pkg for critical in CRITICAL_PACKAGES):
+        # EXACT MATCH - bukan substring!
+        if pkg in CRITICAL_PACKAGES:
             print(f"[BLOCKED] {pkg} -> Critical System. Dilewati.")
             blocked_count += 1
             continue
@@ -99,7 +141,7 @@ def execute_debloat(dry_run=False):
 def print_help():
     help_lines = [
         "",
-        "KYRIEL'S CUSTOM ROOT DEBLOAT MANAGER",
+        "KYRIEL'S CUSTOM ROOT DEBLOAT MANAGER v2",
         "=" * 50,
         "",
         "Usage: python db.py [COMMAND]",
