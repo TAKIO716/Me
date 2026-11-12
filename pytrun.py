@@ -7,8 +7,8 @@ import sys
 # KONFIGURASI (SESUAIKAN DENGAN DEVICE LO)
 # ═════════════════════════════════════════════════════════════════
 # Ganti dengan package name Delta Executor lo (bisa cek pake 'pm list packages | grep delta')
-DELTA_PKG_1 = "com.delta.executor"       # Instance 1
-DELTA_PKG_2 = "com.delta.executor.clone" # Instance 2
+DELTA_PKG_1 = "com.roblox.clienw"       # Instance 1
+DELTA_PKG_2 = "com.roblox.clienx" # Instance 2
 
 GAME_URL = "https://www.roblox.com/games/15002061926" # Death Ball
 
